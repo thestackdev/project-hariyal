@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
 
@@ -165,19 +164,21 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
   }
 
   login() async {
-    setState(() {
-      loading = true;
-    });
+    handleState();
     if (await AuthServices()
-        .adminLogin(emailController.text, passwordController.text)) {
+            .adminLogin(emailController.text, passwordController.text) ==
+        true) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {
         return AdminHome();
       }));
     } else {
-      setState(() {
-        loading = false;
-      });
-      Fluttertoast.showToast(msg: 'Invalid Credintials');
+      handleState();
     }
+  }
+
+  handleState() {
+    setState(() {
+      loading = !loading;
+    });
   }
 }

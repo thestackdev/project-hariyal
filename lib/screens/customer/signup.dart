@@ -221,6 +221,7 @@ class _SignupState extends State<Signup> {
       setState(() {
         _currentAddress =
             "${place.locality}, ${place.postalCode}, ${place.country}";
+        print(_currentAddress);
       });
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());

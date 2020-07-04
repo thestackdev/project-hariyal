@@ -15,6 +15,7 @@ class SuperuserHome extends StatefulWidget {
 }
 
 class _SuperuserHomeState extends State<SuperuserHome> {
+  String uid;
   int currentScreen = 0;
   final screenList = [
     Requests(),
@@ -36,6 +37,7 @@ class _SuperuserHomeState extends State<SuperuserHome> {
     'Admins',
     'Extras'
   ];
+
   @override
   void initState() {
     super.initState();

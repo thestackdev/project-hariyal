@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_time_format/date_time_format.dart';
 import 'package:flutter/material.dart';
 
 class Admins extends StatefulWidget {
@@ -27,7 +28,8 @@ class _AdminsState extends State<Admins> {
                   ),
                   child: ListTile(
                     title: Text(snapshot.data.documents[index]['name']),
-                    subtitle: Text((snapshot.data.documents[index].documentID)),
+                    subtitle: Text(
+                        '${DateTimeFormat.format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.documents[index]['since']), format: AmericanDateFormats.dayOfWeek)}'),
                   ),
                 );
               }

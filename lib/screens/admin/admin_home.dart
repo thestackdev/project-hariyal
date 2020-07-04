@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_project_hariyal/screens/admin/admin_extras.dart';
 
 import 'admin_insert_data.dart';
 import 'admin_view_data.dart';
@@ -21,7 +22,7 @@ class _AdminHomeState extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -37,15 +38,15 @@ class _AdminHomeState extends State<AdminHome> {
               ),
               Tab(
                 text: 'View Data',
+              ),
+              Tab(
+                text: 'Extras',
               )
             ],
           ),
         ),
         body: TabBarView(
-          children: [
-            AdminInsertData(),
-            AdminViewData(),
-          ],
+          children: [AdminInsertData(), AdminViewData(), AdminExtras()],
         ),
       ),
     );

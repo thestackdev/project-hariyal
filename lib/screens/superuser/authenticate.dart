@@ -167,16 +167,18 @@ class _AdminAthenticateState extends State<AdminAthenticate> {
     setState(() {
       loading = true;
     });
-    if (await AuthServices()
-        .superuserLogin(emailController.text, passwordController.text)) {
+
+    final result = await AuthServices()
+        .superuserLogin(emailController.text, passwordController.text);
+    if (result == true) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {
         return SuperuserHome();
       }));
     } else {
+      Fluttertoast.showToast(msg: 'Invalid Credintials');
       setState(() {
         loading = false;
       });
-      Fluttertoast.showToast(msg: 'Invalid Credintials');
     }
   }
 }

@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
 
@@ -163,20 +161,9 @@ class _ExtrasState extends State<Extras> {
                         elevation: 0,
                         color: Colors.red.shade300,
                         child: Text('Confirm'),
-                        onPressed: () async {
-                          if (email.length > 5 &&
-                              password.length > 5 &&
-                              name.length > 3) {
-                            await Firestore.instance
-                                .collection('admin')
-                                .document(email)
-                                .setData({'name': name, 'password': password});
-                            Fluttertoast.showToast(
-                                msg: 'Admin Added Successfully');
-                            Navigator.pop(context);
-                          } else {
-                            Fluttertoast.showToast(msg: 'Invalid Credintials');
-                          }
+                        onPressed: () {
+                          Navigator.pop(context);
+                          AuthServices().addAdmin(email, password, name);
                         },
                       ),
                     ),
@@ -197,7 +184,7 @@ class _ExtrasState extends State<Extras> {
           ),
           child: ListTile(
             onTap: () async {
-              AuthServices().superuserLogout();
+              AuthServices().logout();
               Phoenix.rebirth(context);
             },
             title: Center(

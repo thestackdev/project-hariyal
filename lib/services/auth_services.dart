@@ -1,16 +1,52 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_project_hariyal/screens/admin/admin_home.dart';
 import 'package:the_project_hariyal/screens/customer/home.dart';
 import 'package:the_project_hariyal/screens/customer/signin.dart';
+import 'package:the_project_hariyal/screens/superuser/superuser_home.dart';
 
 class AuthServices {
   Firestore _firestore = Firestore.instance;
+  FirebaseAuth _auth = FirebaseAuth.instance;
   SharedPreferences _preferences;
+
+  clearAllData() async {
+    _preferences = await SharedPreferences.getInstance();
+    _preferences.clear();
+  }
+
+  handleAdminAuth() async {
+    return StreamBuilder(
+      stream: _auth.onAuthStateChanged,
+      builder: (_, snap) {
+        if (snap.hasData) {
+          return AdminHome();
+        } else {
+          return Signin();
+        }
+      },
+    );
+  }
+
+  handleSuperAdminAuth() {
+    return StreamBuilder(
+      stream: _auth.onAuthStateChanged,
+      builder: (_, snap) {
+        if (snap.hasData) {
+          return SuperuserHome();
+        } else {
+          return Signin();
+        }
+      },
+    );
+  }
+
   handleAuth() {
     return StreamBuilder(
-      stream: FirebaseAuth.instance.onAuthStateChanged,
+      stream: _auth.onAuthStateChanged,
       builder: (_, snap) {
         if (snap.hasData) {
           return Home();
@@ -21,44 +57,65 @@ class AuthServices {
     );
   }
 
-  superuserLogin(email, password) {
-    return _firestore
-        .collection('admin')
-        .document('super_admin')
-        .get()
-        .then((value) async {
-      if (value.data['email'] == email && value.data['password'] == password) {
-        _preferences = await SharedPreferences.getInstance();
-        _preferences.setBool('SuperAdmin', true);
-        return true;
-      } else {
-        return false;
-      }
-    });
-  }
-
-  adminLogin(email, password) {
-    return _firestore
-        .collection('admin')
-        .document(email)
-        .get()
-        .then((value) async {
-      try {
-        if (value.data['password'] == password) {
+  superuserLogin(email, password) async {
+    Fluttertoast.showToast(msg: 'Authenticating...');
+    try {
+      final result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return _firestore
+          .collection('super_admin')
+          .document(result.user.uid)
+          .get()
+          .then((value) async {
+        if (value.data != null) {
           _preferences = await SharedPreferences.getInstance();
-          _preferences.setString('Admin', email);
+          _preferences.setBool('SuperAdmin', true);
           return true;
         } else {
+          _auth.signOut();
+          Fluttertoast.showToast(msg: 'You are just an Admin !');
           return false;
         }
-      } catch (e) {
-        return false;
-      }
-    });
+      });
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+      return false;
+    }
   }
 
-  Future superuserLogout() async {
-    _preferences = await SharedPreferences.getInstance();
-    _preferences.remove('SuperAdmin');
+  adminLogin(email, password) async {
+    Fluttertoast.showToast(msg: 'Authenticating...');
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      _preferences = await SharedPreferences.getInstance();
+      _preferences.setBool('Admin', true);
+      return true;
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+      return false;
+    }
+  }
+
+  logout() async {
+    _auth.signOut();
+    clearAllData();
+  }
+
+  addAdmin(email, password, name) async {
+    Fluttertoast.showToast(msg: 'Just a sec...');
+    try {
+      final result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+
+      _firestore.collection('admin').document(result.user.uid).setData({
+        'since': DateTime.now().millisecondsSinceEpoch,
+        'name': name,
+      });
+
+      Fluttertoast.showToast(msg: 'Admin Sucessfully Added !');
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+      return false;
+    }
   }
 }
