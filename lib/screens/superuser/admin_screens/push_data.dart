@@ -168,7 +168,7 @@ class _PushDataState extends State<PushData> {
               elevation: 9,
               onChanged: (newValue) {
                 setState(
-                      () {
+                  () {
                     selectedCategory = newValue;
                   },
                 );
