@@ -11,7 +11,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="the_project_hariyal"
+        android:label="Hariyal"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
