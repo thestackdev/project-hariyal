@@ -28,6 +28,7 @@ dependencies:
   flutter_absolute_path:
   date_time_format:
   catcher:
+  image:
 
 dev_dependencies:
   flutter_test:
