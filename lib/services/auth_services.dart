@@ -125,9 +125,7 @@ class AuthServices {
 
       _firestore.collection('admin').document(result.user.uid).setData(
         {
-          'since': DateTime
-              .now()
-              .millisecondsSinceEpoch,
+          'since': DateTime.now().millisecondsSinceEpoch,
           'name': name,
           'super_amdin': false,
         },

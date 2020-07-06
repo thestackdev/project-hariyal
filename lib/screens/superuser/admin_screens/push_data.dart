@@ -168,13 +168,13 @@ class _PushDataState extends State<PushData> {
               elevation: 9,
               onChanged: (newValue) {
                 setState(
-                      () {
+                  () {
                     selectedCategory = newValue;
                   },
                 );
               },
               items: categoryList.map<DropdownMenuItem<String>>(
-                    (e) {
+                (e) {
                   return DropdownMenuItem<String>(
                     value: e,
                     child: Text(
