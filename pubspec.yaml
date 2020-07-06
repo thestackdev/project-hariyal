@@ -19,7 +19,6 @@ dependencies:
   geolocator:
   permission_handler:
   location:
-  fluttertoast:
   multi_image_picker:
   shared_preferences:
   flutter_phoenix:
@@ -27,7 +26,8 @@ dependencies:
   path_provider:
   flutter_absolute_path:
   date_time_format:
-  catcher:
+  firebase_admin:
+  catcher:  
 
 dev_dependencies:
   flutter_test:

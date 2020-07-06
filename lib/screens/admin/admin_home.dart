@@ -5,9 +5,9 @@ import 'admin_insert_data.dart';
 import 'admin_view_data.dart';
 
 class AdminHome extends StatefulWidget {
-  final email;
+  final uid;
 
-  const AdminHome({Key key, this.email}) : super(key: key);
+  const AdminHome({Key key, this.uid}) : super(key: key);
 
   @override
   _AdminHomeState createState() => _AdminHomeState();

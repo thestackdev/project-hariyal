@@ -17,22 +17,19 @@ class _AdminsState extends State<Admins> {
           return ListView.builder(
             itemCount: snapshot.data.documents.length,
             itemBuilder: (BuildContext context, int index) {
-              if (snapshot.data.documents[index].documentID == 'super_admin') {
-                return Container();
-              } else {
-                return Container(
-                  margin: EdgeInsets.all(9),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(9),
-                    color: Colors.grey.shade300,
-                  ),
-                  child: ListTile(
-                    title: Text(snapshot.data.documents[index]['name']),
-                    subtitle: Text(
-                        '${DateTimeFormat.format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.documents[index]['since']), format: AmericanDateFormats.dayOfWeek)}'),
-                  ),
-                );
-              }
+              return Container(
+                margin: EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9),
+                  color: Colors.grey.shade300,
+                ),
+                child: ListTile(
+                  onTap: () async {},
+                  title: Text(snapshot.data.documents[index]['name']),
+                  subtitle: Text(
+                      '${DateTimeFormat.format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.documents[index]['since']), format: AmericanDateFormats.dayOfWeek)}'),
+                ),
+              );
             },
           );
         } else {

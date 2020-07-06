@@ -21,6 +21,7 @@ class PushProduct {
     title,
     description,
     uid,
+    adressID,
   ) async {
     imageUrls.clear();
     await Future.forEach(images, (element) async {
@@ -39,6 +40,7 @@ class PushProduct {
       },
       'category': category.toLowerCase(),
       'author': uid,
+      'adress': adressID,
       'isSold': false,
     });
     await _reference

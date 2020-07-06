@@ -10,6 +10,9 @@ import 'admin_screens/sold_items.dart';
 import 'admin_screens/user_intrests.dart';
 
 class SuperuserHome extends StatefulWidget {
+  final uid;
+
+  const SuperuserHome({Key key, this.uid}) : super(key: key);
   @override
   _SuperuserHomeState createState() => _SuperuserHomeState();
 }

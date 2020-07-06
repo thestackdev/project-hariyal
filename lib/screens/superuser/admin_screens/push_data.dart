@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -16,18 +16,52 @@ class _PushDataState extends State<PushData> {
   String selectedCategory;
   String selectedState;
   String selectedArea;
+  List categoryList = [];
+  List areasList = [];
+  List statesList = [];
+  List showroomList = [];
+  String adressId;
 
   String uid;
 
   final price = TextEditingController();
   final title = TextEditingController();
   final description = TextEditingController();
+  final showroomAdressController = TextEditingController();
 
   @override
   void initState() {
-    FirebaseAuth.instance.currentUser().then((value) {
-      if (value.uid == null) {}
-      uid = value.uid;
+    Firestore.instance.collection('extras').getDocuments().then(
+      (value) {
+        value.documents.forEach((element) {
+          if (element.documentID == 'category') {
+            setState(() {
+              element.data['category_array'].forEach((result) {
+                categoryList.add(result);
+              });
+            });
+          } else if (element.documentID == 'areas') {
+            setState(() {
+              element.data['areas_array'].forEach((result) {
+                areasList.add(result);
+              });
+            });
+          } else if (element.documentID == 'states') {
+            setState(() {
+              element.data['states_array'].forEach((result) {
+                statesList.add(result);
+              });
+            });
+          }
+        });
+      },
+    );
+    Firestore.instance.collection('showrooms').getDocuments().then((value) {
+      setState(() {
+        value.documents.forEach((element) {
+          showroomList.add(element);
+        });
+      });
     });
     super.initState();
   }
@@ -133,18 +167,22 @@ class _PushDataState extends State<PushData> {
               iconSize: 30,
               elevation: 9,
               onChanged: (newValue) {
-                setState(() {
-                  selectedCategory = newValue;
-                });
+                setState(
+                  () {
+                    selectedCategory = newValue;
+                  },
+                );
               },
-              items: <String>['Electronics', 'Furniture']
-                  .map<DropdownMenuItem<String>>((e) {
-                return DropdownMenuItem<String>(
+              items: categoryList.map<DropdownMenuItem<String>>(
+                (e) {
+                  return DropdownMenuItem<String>(
                     value: e,
                     child: Text(
                       e.toString(),
-                    ));
-              }).toList()),
+                    ),
+                  );
+                },
+              ).toList()),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
@@ -184,12 +222,11 @@ class _PushDataState extends State<PushData> {
                   selectedState = newValue;
                 });
               },
-              items: <String>['Telangana', 'AndhraPradesh']
-                  .map<DropdownMenuItem<String>>((e) {
+              items: statesList.map<DropdownMenuItem<String>>((e) {
                 return DropdownMenuItem<String>(
                     value: e,
                     child: Text(
-                      e.toString(),
+                      e,
                     ));
               }).toList()),
         ),
@@ -231,14 +268,107 @@ class _PushDataState extends State<PushData> {
                   selectedArea = newValue;
                 });
               },
-              items: <String>['Hyderabad', 'Secundrabad']
-                  .map<DropdownMenuItem<String>>((e) {
+              items: areasList.map<DropdownMenuItem<String>>((e) {
                 return DropdownMenuItem<String>(
                     value: e,
                     child: Text(
                       e.toString(),
                     ));
               }).toList()),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+          child: DropdownButtonFormField(
+            decoration: InputDecoration(
+              labelText: 'Showroom',
+              isDense: true,
+              labelStyle: TextStyle(
+                color: Colors.red.shade300,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 1.0,
+              ),
+              border: InputBorder.none,
+              fillColor: Colors.grey.shade200,
+              filled: true,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+            isExpanded: true,
+            iconEnabledColor: Colors.grey,
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+            iconSize: 30,
+            elevation: 9,
+            onChanged: (newValue) {
+              setState(() {
+                selectedCategory = newValue;
+                showroomList.forEach((element) {
+                  if (element['name'] == newValue) {
+                    setState(() {
+                      showroomAdressController.text = element['adress'];
+                      adressId = element.documentID;
+                    });
+                    return false;
+                  } else {
+                    return true;
+                  }
+                });
+              });
+            },
+            items: showroomList.map(
+              (value) {
+                return DropdownMenuItem(
+                  value: value['name'],
+                  child: Text(value['name']),
+                );
+              },
+            ).toList(),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+          child: TextField(
+            readOnly: true,
+            maxLines: null,
+            controller: showroomAdressController,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: 'Showroom Adress',
+              isDense: true,
+              labelStyle: TextStyle(
+                color: Colors.red.shade300,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 1.0,
+              ),
+              contentPadding: EdgeInsets.all(18),
+              border: InputBorder.none,
+              fillColor: Colors.grey.shade200,
+              filled: true,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
@@ -312,7 +442,7 @@ class _PushDataState extends State<PushData> {
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
           child: TextField(
             controller: description,
-            maxLines: 5,
+            maxLines: null,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               alignLabelWithHint: true,
@@ -389,6 +519,7 @@ class _PushDataState extends State<PushData> {
                   title.text,
                   description.text,
                   uid,
+                  adressId,
                 );
                 setState(() {
                   images.clear();
