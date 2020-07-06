@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image/image.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image/image.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PushProduct {
@@ -21,6 +21,7 @@ class PushProduct {
     title,
     description,
     uid,
+    adressID,
   ) async {
     imageUrls.clear();
     await Future.forEach(images, (element) async {
@@ -39,6 +40,7 @@ class PushProduct {
       },
       'category': category.toLowerCase(),
       'author': uid,
+      'adress': adressID,
       'isSold': false,
     });
     await _reference

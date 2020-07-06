@@ -1,6 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -8,6 +7,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:the_project_hariyal/services/upload_product.dart';
 
 class AdminInsertData extends StatefulWidget {
+  final uid;
+
+  const AdminInsertData({Key key, this.uid}) : super(key: key);
+
   @override
   _AdminInsertDataState createState() => _AdminInsertDataState();
 }
@@ -18,19 +21,9 @@ class _AdminInsertDataState extends State<AdminInsertData> {
   String selectedState;
   String selectedArea;
 
-  String uid;
-
   final price = TextEditingController();
   final title = TextEditingController();
   final description = TextEditingController();
-
-  @override
-  void initState() {
-    FirebaseAuth.instance.currentUser().then((value) {
-      uid = value.uid;
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +381,8 @@ class _AdminInsertDataState extends State<AdminInsertData> {
                   price.text,
                   title.text,
                   description.text,
-                  uid,
+                  widget.uid,
+                  '',
                 );
                 setState(() {
                   images.clear();
