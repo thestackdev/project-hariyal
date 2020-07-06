@@ -29,6 +29,10 @@ dependencies:
   date_time_format:
   catcher:
   image:
+  wave:
+  geocoder:
+  font_awesome_flutter:
+  email_validator:
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +40,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+fonts:
+  - family: Ubuntu
+    fonts:
+      - asset: assets/fonts/ubuntu.ttf
+      - asset: assets/fonts/ubuntu_bold.ttf
+      - asset: assets/fonts/ubuntu_bold_italic.ttf
+      - asset: assets/fonts/ubuntu_italic.ttf

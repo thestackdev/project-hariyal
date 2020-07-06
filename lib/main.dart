@@ -6,6 +6,7 @@ import 'package:catcher/model/catcher_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'services/auth_services.dart';
 
 void main() async {
@@ -20,12 +21,21 @@ void main() async {
     EmailManualHandler(["shanmukeshwar1028@gmail.com"])
   ]);
 
+  final appTheme = ThemeData(
+      brightness: Brightness.light,
+      fontFamily: 'Ubuntu',
+      pageTransitionsTheme: PageTransitionsTheme(builders: {
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      }));
+
   try {
     Catcher(
       Phoenix(
         child: MaterialApp(
           navigatorKey: Catcher.navigatorKey,
           debugShowCheckedModeBanner: false,
+          theme: appTheme,
           home: getScreen(isSuperuser, isAdmin),
         ),
       ),
