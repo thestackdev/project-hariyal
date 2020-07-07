@@ -19,9 +19,11 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  String _pinCode, _state, _cityDistrict, _country;
+  String _pinCode, _state, _cityDistrict;
   double _latitude, _longitude;
   var currentLocation;
+
+  Location location = new Location();
 
   final _nameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
@@ -188,21 +190,19 @@ class _SignupState extends State<Signup> {
     phoneStream.cancel();
     emailStream.cancel();
 
-    Map<String, double> _loc = new HashMap();
+    Map<String, dynamic> _loc = new HashMap();
     _loc['lat'] = _latitude;
     _loc['long'] = _longitude;
+    _loc['pinCode'] = _pinCode;
+    _loc['state'] = _state;
+    _loc['cityDistrict'] = _cityDistrict;
 
     final _fireStore = Firestore.instance;
 
     UserModel userModel = new UserModel(
-        uid: uid,
         name: _nameController.text,
         email: _emailController.text,
         phoneNumber: _phoneController.text,
-        pinCode: _pinCode,
-        state: _state,
-        cityDistrict: _cityDistrict,
-        country: _country,
         location: _loc);
 
     await _fireStore
@@ -215,9 +215,22 @@ class _SignupState extends State<Signup> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
+  void checkLocationEnabled() async {
+    bool serviceStatus = await location.serviceEnabled();
+
+    if (!serviceStatus) {
+      Utils().toast(context, 'Enable Location to SignUp',
+          bgColor: Utils().randomGenerator());
+      Navigator.pop(context);
+      return;
+    }
+
+    getUserLocation();
+  }
+
   @override
   void initState() {
-    getUserLocation();
+    checkLocationEnabled();
 
     _nameController.addListener(() {
       if (_nameController.text.length <= 0) {
@@ -437,7 +450,7 @@ class _SignupState extends State<Signup> {
                       WhitelistingTextInputFormatter.digitsOnly
                     ],
                     decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock_outline),
+                        prefixIcon: Icon(Icons.phone),
                         suffixIcon: Icon(
                           _phoneValidated ? Icons.check_circle : null,
                           color: Colors.green[800],
@@ -511,21 +524,25 @@ class _SignupState extends State<Signup> {
   getUserLocation() async {
     LocationData myLocation;
     String error;
-    Location location = new Location();
     try {
       myLocation = await location.getLocation();
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
         error = 'please grant permission';
         print(error);
+        Navigator.pop(context);
+        return;
       }
       if (e.code == 'PERMISSION_DENIED_NEVER_ASK') {
         error = 'permission denied- please enable it from app settings';
         print(error);
+        Navigator.pop(context);
+        return;
       }
-      Utils().toast(context, error,
+      Utils().toast(context, e.code,
           bgColor: Colors.red[800], textColor: Colors.white);
       myLocation = null;
+      Navigator.pop(context);
     }
 
     currentLocation = myLocation;
@@ -539,10 +556,8 @@ class _SignupState extends State<Signup> {
       _longitude = myLocation.longitude;
       _pinCode = first.postalCode;
       _state = first.adminArea;
-      _country = first.countryName;
       _cityDistrict =
           first.locality == null ? first.subAdminArea : first.locality;
     });
-    return first;
   }
 }
