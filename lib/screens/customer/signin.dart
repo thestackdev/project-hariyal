@@ -378,8 +378,8 @@ class _SigninState extends State<Signin> {
                         onPressed: () {
                           Navigator.push(_scaffoldKey.currentContext,
                               MaterialPageRoute(builder: (_) {
-                                return Signup();
-                              }));
+                            return Signup();
+                          }));
                         },
                       )
                     ],
