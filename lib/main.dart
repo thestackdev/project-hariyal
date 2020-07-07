@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_project_hariyal/screens/customer/splash.dart';
 
 import 'services/auth_services.dart';
 
@@ -21,9 +22,7 @@ void main() async {
     runApp(Phoenix(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: isAdmin
-            ? AuthServices().handleAdminAuth()
-            : AuthServices().handleAuth(),
+        home: SplashScreen(isAdmin),
         theme: appTheme,
       ),
     ));

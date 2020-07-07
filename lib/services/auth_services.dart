@@ -5,7 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_project_hariyal/screens/admin/admin_home.dart';
 import 'package:the_project_hariyal/screens/customer/signin.dart';
-import 'package:the_project_hariyal/screens/customer/splash.dart';
 
 class AuthServices {
   Firestore _db = Firestore.instance;
@@ -37,7 +36,7 @@ class AuthServices {
     );
   }
 
-  handleAuth() {
+  /*handleAuth() {
     return StreamBuilder<FirebaseUser>(
       stream: _auth.onAuthStateChanged,
       builder: (_, snap) {
@@ -48,7 +47,7 @@ class AuthServices {
         }
       },
     );
-  }
+  }*/
 
   adminLogin(email, password) async {
     Fluttertoast.showToast(msg: 'Authenticating...');

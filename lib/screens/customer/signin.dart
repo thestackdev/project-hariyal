@@ -341,9 +341,7 @@ class _SigninState extends State<Signin> {
                   ),
                   Row(
                     children: <Widget>[
-                      SizedBox(
-                        width: 20.0,
-                      ),
+                      Spacer(),
                       Expanded(
                         child: RaisedButton(
                           child: Text(
@@ -363,6 +361,7 @@ class _SigninState extends State<Signin> {
                           },
                         ),
                       ),
+                      Spacer(),
                     ],
                   ),
                   Row(
@@ -378,12 +377,13 @@ class _SigninState extends State<Signin> {
                         onPressed: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (_) {
-                            return Signup();
-                          }));
+                                return Signup();
+                              }));
                         },
                       )
                     ],
-                  )
+                  ),
+                  Divider()
                 ],
               ),
             )
