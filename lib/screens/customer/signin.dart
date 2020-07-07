@@ -301,7 +301,7 @@ class _SigninState extends State<Signin> {
                                 border: OutlineInputBorder(
                                   borderSide: BorderSide.none,
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(40.0)),
+                                      BorderRadius.all(Radius.circular(40.0)),
                                 ),
                                 contentPadding: EdgeInsets.symmetric(
                                     horizontal: 20.0, vertical: 16.0)),
