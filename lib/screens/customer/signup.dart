@@ -443,7 +443,7 @@ class _SignupState extends State<Signup> {
                     controller: _phoneController,
                     focusNode: _phoneFocusNode,
                     onFieldSubmitted: (_) {
-                      //fieldFocusChange(context, _passFocusNode, _phoneFocusNode);
+                      signUp();
                     },
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
