@@ -7,7 +7,6 @@ import 'services/auth_services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences _pref = await SharedPreferences.getInstance();
-  final isSuperuser = _pref.getBool('SuperAdmin');
   final isAdmin = _pref.getBool('Admin');
 
   final appTheme = ThemeData(
@@ -22,22 +21,14 @@ void main() async {
     runApp(Phoenix(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: getScreen(isSuperuser, isAdmin),
+        home: isAdmin
+            ? AuthServices().handleAdminAuth()
+            : AuthServices().handleAuth(),
         theme: appTheme,
       ),
     ));
   } catch (e) {
     AuthServices().logout();
     main();
-  }
-}
-
-getScreen(isSuperuser, isAdmin) {
-  if (isSuperuser == true) {
-    return AuthServices().handleSuperAdminAuth();
-  } else if (isAdmin == true) {
-    return AuthServices().handleAdminAuth();
-  } else {
-    return AuthServices().handleAuth();
   }
 }

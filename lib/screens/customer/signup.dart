@@ -200,10 +200,11 @@ class _SignupState extends State<Signup> {
     final _fireStore = Firestore.instance;
 
     UserModel userModel = new UserModel(
-        name: _nameController.text,
-        email: _emailController.text,
-        phoneNumber: _phoneController.text,
-        location: _loc);
+      name: _nameController.text,
+      email: _emailController.text,
+      phoneNumber: _phoneController.text,
+      location: _loc,
+    );
 
     await _fireStore
         .collection('customers')
@@ -213,7 +214,11 @@ class _SignupState extends State<Signup> {
     _hideDialog();
     Utils().toast(context, 'User created', bgColor: Utils().randomGenerator());
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Home(userModel)));
+        context,
+        MaterialPageRoute(
+            builder: (context) => Home(
+                  uid: uid,
+                )));
   }
 
   void checkLocationEnabled() async {
