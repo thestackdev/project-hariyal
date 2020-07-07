@@ -160,16 +160,15 @@ class _SigninState extends State<Signin> {
     return (await showDialog(
       context: _scaffoldKey.currentContext,
       barrierDismissible: false,
-      builder: (context) =>
-          WillPopScope(
-            onWillPop: () {},
-            child: AlertDialog(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              title: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                alignment: WrapAlignment.center,
-                children: [
+      builder: (context) => WillPopScope(
+        onWillPop: () {},
+        child: AlertDialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          title: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.center,
+            children: [
               Container(
                 padding: EdgeInsets.all(24),
                 color: Colors.black12,
