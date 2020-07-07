@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
 import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
-import 'package:the_project_hariyal/screens/customer/network_image.dart';
 import 'package:the_project_hariyal/screens/customer/product_details.dart';
+
+import 'file:///E:/000Gautham/Flutter%20Projects%20VS/hariyal/lib/screens/customer/widgets/network_image.dart';
 
 class Home extends StatefulWidget {
   final UserModel userModel;

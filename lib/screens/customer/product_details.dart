@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:the_project_hariyal/screens/customer/image_slider.dart';
 import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
+
+import 'file:///E:/000Gautham/Flutter%20Projects%20VS/hariyal/lib/screens/customer/widgets/image_slider.dart';
 
 class ProductDetail extends StatefulWidget {
   final ProductModel productModel;

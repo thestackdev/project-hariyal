@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:the_project_hariyal/screens/customer/network_image.dart';
+
+import 'file:///E:/000Gautham/Flutter%20Projects%20VS/hariyal/lib/screens/customer/widgets/network_image.dart';
 
 import 'dot_indicator.dart';
 
