@@ -236,32 +236,30 @@ class _SigninState extends State<Signin> {
         child: Stack(
           children: [
             Container(
-              height: 650,
-              child: RotatedBox(
-                quarterTurns: 2,
-                child: WaveWidget(
-                  config: CustomConfig(
-                    gradients: [
-                      [Colors.deepPurple, Colors.deepPurple.shade200],
-                      [Colors.indigo.shade200, Colors.purple.shade200],
-                    ],
-                    durations: [19440, 10800],
-                    heightPercentages: [0.20, 0.25],
-                    blur: MaskFilter.blur(BlurStyle.solid, 10),
-                    gradientBegin: Alignment.bottomLeft,
-                    gradientEnd: Alignment.topRight,
+                height: 650,
+                child: RotatedBox(
+                  quarterTurns: 2,
+                  child: WaveWidget(
+                    config: CustomConfig(
+                      gradients: [
+                        [Colors.deepPurple, Colors.deepPurple.shade200],
+                        [Colors.indigo.shade200, Colors.purple.shade200],
+                      ],
+                      durations: [19440, 10800],
+                      heightPercentages: [0.20, 0.25],
+                      blur: MaskFilter.blur(BlurStyle.solid, 10),
+                      gradientBegin: Alignment.bottomLeft,
+                      gradientEnd: Alignment.topRight,
+                    ),
+                    waveAmplitude: 0,
+                    size: Size(
+                      double.infinity,
+                      double.infinity,
+                    ),
                   ),
-                  waveAmplitude: 0,
-                  size: Size(
-                    double.infinity,
-                    double.infinity,
-                  ),
-                ),
-              ),
-            ),
-            ListView(
-              children: [
-                Container(
+                )),
+            ListView(children: [
+              Container(
                   height: 500,
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -325,10 +323,8 @@ class _SigninState extends State<Signin> {
                                     color: Colors.white, fontSize: 20)),
                           ),
                         ),
-                      ]),
-                )
-              ],
-            ),
+                      ]))
+            ]),
             SizedBox(
               height: 100,
             ),
