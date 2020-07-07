@@ -319,7 +319,7 @@ class _SigninState extends State<Signin> {
                             elevation: 12,
                             shape: RoundedRectangleBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(40.0))),
+                                    BorderRadius.all(Radius.circular(40.0))),
                             child: Text("Request Otp",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20)),

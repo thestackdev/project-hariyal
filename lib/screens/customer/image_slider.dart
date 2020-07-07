@@ -1,8 +1,6 @@
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:the_project_hariyal/screens/customer/network_image.dart';
 
 import 'dot_indicator.dart';
 
@@ -103,14 +101,8 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
   Widget _buildImagePageItem(String imgUrl) {
     return ClipRRect(
       borderRadius: widget.imageBorderRadius,
-      child: CachedNetworkImage(
-        imageUrl: imgUrl,
-        placeholder: (context, url) => Center(
-          child: Platform.isIOS
-              ? CupertinoActivityIndicator()
-              : CircularProgressIndicator(),
-        ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
+      child: PNetworkImage(
+        imgUrl,
         fit: BoxFit.cover,
       ),
     );
