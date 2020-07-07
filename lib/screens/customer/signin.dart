@@ -9,6 +9,7 @@ import 'package:the_project_hariyal/utils.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
+import 'models/user_model.dart';
 import 'signup.dart';
 
 class Signin extends StatefulWidget {
@@ -49,9 +50,11 @@ class _SigninState extends State<Signin> {
                 FirebaseUser user = result.user;
 
                 if (user != null) {
+                  UserModel userModel = await getUserInfo();
+
                   _hideDialog();
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Home()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Home(userModel)));
                 } else {
                   _hideDialog();
                   Utils().toast(context, 'Failed to SignUp',
@@ -112,11 +115,12 @@ class _SigninState extends State<Signin> {
                               FirebaseUser user = result.user;
 
                               if (user != null) {
+                                UserModel userModel = await getUserInfo();
                                 _hideDialog();
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Home()));
+                                        builder: (context) => Home(userModel)));
                               } else {
                                 _hideDialog();
                                 Utils().toast(context, 'Failed to SignUp',
@@ -133,6 +137,14 @@ class _SigninState extends State<Signin> {
         }
       });
     }
+  }
+
+  getUserInfo() async {
+    var user = await FirebaseAuth.instance.currentUser();
+
+    var doc = Firestore.instance.collection('customers').document(user.uid);
+    var document = await doc.get();
+    return UserModel.fromMap(document.data);
   }
 
   Future<bool> _showDialog({String text}) async {

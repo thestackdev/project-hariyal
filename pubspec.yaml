@@ -33,6 +33,7 @@ dependencies:
   geocoder:
   font_awesome_flutter:
   email_validator:
+  flutter_spinkit:
 
 dev_dependencies:
   flutter_test:

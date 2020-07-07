@@ -212,7 +212,8 @@ class _SignupState extends State<Signup> {
 
     _hideDialog();
     Utils().toast(context, 'User created', bgColor: Utils().randomGenerator());
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Home(userModel)));
   }
 
   void checkLocationEnabled() async {
