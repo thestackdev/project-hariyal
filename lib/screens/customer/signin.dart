@@ -377,8 +377,8 @@ class _SigninState extends State<Signin> {
                         onPressed: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (_) {
-                                return Signup();
-                              }));
+                            return Signup();
+                          }));
                         },
                       )
                     ],
