@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:the_project_hariyal/screens/admin/authenticate.dart';
 import 'package:the_project_hariyal/screens/customer/home.dart';
+import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
 import 'package:the_project_hariyal/utils.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -48,9 +49,12 @@ class _SigninState extends State<Signin> {
                 FirebaseUser user = result.user;
 
                 if (user != null) {
+                  UserModel userModel = await getUserInfo();
                   _hideDialog();
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Home()));
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Home(user.uid, userModel)));
                 } else {
                   _hideDialog();
                   Utils().toast(context, 'Failed to SignUp',
@@ -111,13 +115,13 @@ class _SigninState extends State<Signin> {
                               FirebaseUser user = result.user;
 
                               if (user != null) {
+                                UserModel userModel = await getUserInfo();
                                 _hideDialog();
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Home(
-                                              uid: user.uid,
-                                            )));
+                                        builder: (context) =>
+                                            Home(user.uid, userModel)));
                               } else {
                                 _hideDialog();
                                 Utils().toast(context, 'Failed to SignUp',
@@ -134,6 +138,14 @@ class _SigninState extends State<Signin> {
         }
       });
     }
+  }
+
+  getUserInfo() async {
+    var user = await FirebaseAuth.instance.currentUser();
+
+    var doc = Firestore.instance.collection('customers').document(user.uid);
+    var document = await doc.get();
+    return UserModel.fromMap(document.data);
   }
 
   Future<bool> _showDialog({String text}) async {

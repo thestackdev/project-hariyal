@@ -4,8 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_project_hariyal/screens/admin/admin_home.dart';
-import 'package:the_project_hariyal/screens/customer/home.dart';
 import 'package:the_project_hariyal/screens/customer/signin.dart';
+import 'package:the_project_hariyal/screens/customer/splash.dart';
 
 class AuthServices {
   Firestore _db = Firestore.instance;
@@ -42,9 +42,7 @@ class AuthServices {
       stream: _auth.onAuthStateChanged,
       builder: (_, snap) {
         if (snap.hasData) {
-          return Home(
-            uid: snap.data.uid,
-          );
+          return SplashScreen();
         } else {
           return Signin();
         }

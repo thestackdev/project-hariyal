@@ -9,8 +9,9 @@ import 'package:the_project_hariyal/screens/customer/product_details.dart';
 
 class Home extends StatefulWidget {
   final UserModel userModel;
+  final uid;
 
-  Home(this.userModel);
+  Home(this.uid, this.userModel);
 
   @override
   _HomeState createState() => _HomeState(userModel);
