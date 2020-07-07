@@ -34,6 +34,10 @@ dependencies:
   font_awesome_flutter:
   email_validator:
   flutter_spinkit:
+  rxdart:
+
+  #Using Old version to avoid errors
+  cached_network_image: ^2.0.0
 
 dev_dependencies:
   flutter_test:
