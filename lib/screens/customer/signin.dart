@@ -22,6 +22,8 @@ class _SigninState extends State<Signin> {
   var suffixColor = Colors.grey;
   bool _isOpen = false;
 
+  GlobalKey _scaffoldKey = GlobalKey();
+
   void login() {
     if (_controller.text.length == 10) {
       FirebaseAuth _auth = FirebaseAuth.instance;
@@ -51,27 +53,27 @@ class _SigninState extends State<Signin> {
                 if (user != null) {
                   UserModel userModel = await getUserInfo();
                   _hideDialog();
-                  Navigator.push(
-                      context,
+                  Navigator.pushReplacement(
+                      _scaffoldKey.currentContext,
                       MaterialPageRoute(
                           builder: (context) => Home(user.uid, userModel)));
                 } else {
                   _hideDialog();
-                  Utils().toast(context, 'Failed to SignUp',
+                  Utils().toast(_scaffoldKey.currentContext, 'Failed to SignUp',
                       bgColor: Utils().randomGenerator());
                   print("Error: Failed to SignUp");
                 }
               },
               verificationFailed: (AuthException exception) {
                 _hideDialog();
-                Utils().toast(context, exception.message,
+                Utils().toast(_scaffoldKey.currentContext, exception.message,
                     bgColor: Colors.red[800], textColor: Colors.white);
                 print(exception);
               },
               codeSent: (String verificationId, [int forceResendingToken]) {
                 _hideDialog();
                 showDialog(
-                    context: context,
+                    context: _scaffoldKey.currentContext,
                     barrierDismissible: false,
                     builder: (context) {
                       return AlertDialog(
@@ -96,11 +98,12 @@ class _SigninState extends State<Signin> {
                             color: Colors.blue,
                             onPressed: () async {
                               if (_codeController.text.length != 6) {
-                                Utils().toast(context, 'Enter valid code');
+                                Utils().toast(_scaffoldKey.currentContext,
+                                    'Enter valid code');
                                 return;
                               }
 
-                              Navigator.of(context).pop();
+                              Navigator.of(_scaffoldKey.currentContext).pop();
                               _showDialog(text: "Signing in");
 
                               final code = _codeController.text.trim();
@@ -117,14 +120,15 @@ class _SigninState extends State<Signin> {
                               if (user != null) {
                                 UserModel userModel = await getUserInfo();
                                 _hideDialog();
-                                Navigator.push(
-                                    context,
+                                Navigator.pushReplacement(
+                                    _scaffoldKey.currentContext,
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             Home(user.uid, userModel)));
                               } else {
                                 _hideDialog();
-                                Utils().toast(context, 'Failed to SignUp',
+                                Utils().toast(_scaffoldKey.currentContext,
+                                    'Failed to SignUp',
                                     bgColor: Utils().randomGenerator());
                                 print("Error: Failed to SignUp");
                               }
@@ -154,17 +158,18 @@ class _SigninState extends State<Signin> {
     });
 
     return (await showDialog(
-      context: context,
+      context: _scaffoldKey.currentContext,
       barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () {},
-        child: AlertDialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            alignment: WrapAlignment.center,
-            children: [
+      builder: (context) =>
+          WillPopScope(
+            onWillPop: () {},
+            child: AlertDialog(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              title: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.center,
+                children: [
               Container(
                 padding: EdgeInsets.all(24),
                 color: Colors.black12,
@@ -194,7 +199,7 @@ class _SigninState extends State<Signin> {
 
   void _hideDialog() {
     if (_isOpen) {
-      Navigator.of(context).pop(true);
+      Navigator.of(_scaffoldKey.currentContext).pop(true);
       setState(() {
         _isOpen = false;
       });
@@ -227,6 +232,7 @@ class _SigninState extends State<Signin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SafeArea(
         child: Stack(
           children: [
@@ -272,7 +278,7 @@ class _SigninState extends State<Signin> {
                           elevation: 11,
                           shape: RoundedRectangleBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(40))),
+                              BorderRadius.all(Radius.circular(40))),
                           child: TextFormField(
                             controller: _controller,
                             keyboardType: TextInputType.number,
@@ -296,7 +302,7 @@ class _SigninState extends State<Signin> {
                                 border: OutlineInputBorder(
                                   borderSide: BorderSide.none,
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(40.0)),
+                                  BorderRadius.all(Radius.circular(40.0)),
                                 ),
                                 contentPadding: EdgeInsets.symmetric(
                                     horizontal: 20.0, vertical: 16.0)),
@@ -314,7 +320,7 @@ class _SigninState extends State<Signin> {
                             elevation: 12,
                             shape: RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(40.0))),
+                                BorderRadius.all(Radius.circular(40.0))),
                             child: Text("Request Otp",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20)),
@@ -354,10 +360,10 @@ class _SigninState extends State<Signin> {
                             borderRadius: BorderRadius.all(Radius.circular(40)),
                           ),
                           onPressed: () {
-                            Navigator.push(context,
+                            Navigator.push(_scaffoldKey.currentContext,
                                 MaterialPageRoute(builder: (_) {
-                              return AdminAuthenticate();
-                            }));
+                                  return AdminAuthenticate();
+                                }));
                           },
                         ),
                       ),
@@ -375,10 +381,10 @@ class _SigninState extends State<Signin> {
                         ),
                         textColor: Colors.indigo,
                         onPressed: () {
-                          Navigator.push(context,
+                          Navigator.push(_scaffoldKey.currentContext,
                               MaterialPageRoute(builder: (_) {
-                            return Signup();
-                          }));
+                                return Signup();
+                              }));
                         },
                       )
                     ],
