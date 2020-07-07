@@ -24,27 +24,30 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    isAdmin != null
-        ? isAdmin ? adminLogin() : getUserInfo()
-        : Timer(Duration(seconds: 2), () {
-            return Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (BuildContext context) => Signin()));
-          });
-    ;
+    handleAuth();
     super.initState();
   }
 
-  Future adminLogin() async {
+  Future handleAuth() async {
     var user = await FirebaseAuth.instance.currentUser();
 
     if (user == null) {
-      Timer(Duration(seconds: 1), () {
+      Timer(Duration(seconds: 2), () {
         return Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (BuildContext context) => Signin()));
       });
       return;
     }
 
+    if (isAdmin != null && isAdmin) {
+      adminLogin(user);
+      return;
+    }
+
+    getUserInfo(user);
+  }
+
+  void adminLogin(FirebaseUser user) {
     Timer(Duration(seconds: 1), () {
       return Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => AdminHome(
@@ -53,22 +56,12 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  Future getUserInfo() async {
-    var user = await FirebaseAuth.instance.currentUser();
-
-    if (user == null) {
-      Timer(Duration(seconds: 1), () {
-        return Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (BuildContext context) => Signin()));
-      });
-      return;
-    }
-
+  Future getUserInfo(FirebaseUser user) async {
     var doc = Firestore.instance.collection('customers').document(user.uid);
     var document = await doc.get();
     UserModel userModel = UserModel.fromMap(document.data);
 
-    Timer(Duration(seconds: 1), () {
+    Timer(Duration(milliseconds: 1500), () {
       return Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => Home(user.uid, userModel)));
     });
