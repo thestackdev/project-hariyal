@@ -43,8 +43,8 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
       return widget.isZoomable == null
           ? _buildImagePageItem(url, widget.tag, widget.onTap)
           : widget.isZoomable
-          ? _buildZoomablePageItem(url, widget.tag)
-          : _buildImagePageItem(url, widget.tag, widget.onTap);
+              ? _buildZoomablePageItem(url, widget.tag)
+              : _buildImagePageItem(url, widget.tag, widget.onTap);
     }).toList();
   }
 
