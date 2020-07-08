@@ -91,10 +91,7 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
 
   Positioned _buildDotsIndicatorOverlay() {
     return Positioned(
-      bottom: MediaQuery
-          .of(context)
-          .size
-          .height / 8,
+      bottom: MediaQuery.of(context).size.height / 8,
       left: 0.0,
       right: 0.0,
       child: Padding(
