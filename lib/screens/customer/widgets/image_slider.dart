@@ -56,10 +56,7 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
   Widget _buildingImageSlider() {
     return Container(
       height: widget.imageHeight == null
-          ? MediaQuery
-          .of(context)
-          .size
-          .height / 1.5
+          ? MediaQuery.of(context).size.height / 1.5
           : widget.imageHeight,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
