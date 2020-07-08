@@ -462,11 +462,11 @@ class _HomeState extends State<Home> {
                   },
                   icon: interestedList != null
                       ? interestedList.contains(productModel.id)
-                      ? Icon(
-                    Icons.favorite,
-                    color: Colors.red[800],
-                  )
-                      : Icon(Icons.favorite_border)
+                          ? Icon(
+                              Icons.favorite,
+                              color: Colors.red[800],
+                            )
+                          : Icon(Icons.favorite_border)
                       : Icon(Icons.favorite_border),
                 )
               ],
