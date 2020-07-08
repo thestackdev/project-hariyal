@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
   List<dynamic> areas = [];
   List<dynamic> categories = [];
 
-  List<dynamic> interestedList = [];
+  List<dynamic> interestedList = List();
 
   String stateCategory, stateValue;
   String areaCategory, areaValue;
@@ -80,7 +80,11 @@ class _HomeState extends State<Home> {
   }
 
   Future setInterested(dynamic id) async {
-    if (interestedList.contains(id)) {
+    if (interestedList == null || interestedList.length <= 0) {
+      setState(() {
+        interestedList.add(id);
+      });
+    } else if (interestedList.contains(id)) {
       setState(() {
         interestedList.remove(id);
       });
@@ -92,7 +96,7 @@ class _HomeState extends State<Home> {
     firestore
         .collection('customers')
         .document(uid)
-        .updateData({'intrested_products': interestedList});
+        .updateData({'interested_products': interestedList});
   }
 
   Future getFilters() async {

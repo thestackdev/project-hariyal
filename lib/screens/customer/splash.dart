@@ -47,23 +47,40 @@ class _SplashScreenState extends State<SplashScreen> {
     getUserInfo(user);
   }
 
-  void adminLogin(FirebaseUser user) {
-    Timer(Duration(seconds: 1), () {
-      return Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (BuildContext context) => AdminHome(
-                uid: user.uid,
-              )));
+  Future adminLogin(FirebaseUser user) async {
+    var doc = Firestore.instance.collection('admin').document(user.uid);
+    var document = await doc.get();
+    if (document.exists) {
+      Timer(Duration(seconds: 1), () {
+        return Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) => AdminHome(
+                  uid: user.uid,
+                )));
+      });
+      return;
+    }
+    FirebaseAuth.instance.signOut();
+    Timer(Duration(milliseconds: 1500), () {
+      return Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (BuildContext context) => Signin()));
     });
   }
 
   Future getUserInfo(FirebaseUser user) async {
     var doc = Firestore.instance.collection('customers').document(user.uid);
     var document = await doc.get();
-    UserModel userModel = UserModel.fromMap(document.data);
-
+    if (document.exists) {
+      UserModel userModel = UserModel.fromMap(document.data);
+      Timer(Duration(milliseconds: 1500), () {
+        return Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) => Home(user.uid, userModel)));
+      });
+      return;
+    }
+    FirebaseAuth.instance.signOut();
     Timer(Duration(milliseconds: 1500), () {
-      return Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (BuildContext context) => Home(user.uid, userModel)));
+      return Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (BuildContext context) => Signin()));
     });
   }
 

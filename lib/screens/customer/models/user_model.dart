@@ -8,7 +8,7 @@ class UserModel {
       search_value,
       current_search;
   Map<String, dynamic> location;
-  List<dynamic> interested_products;
+  List<String> interested_products;
   bool isBlocked;
 
   UserModel(
@@ -36,7 +36,7 @@ class UserModel {
     map['isBlocked'] = false;
     map['current_search'] = "location.state";
     map['search_value'] = location['state'];
-    map['interested_products'] = [];
+    map['interested_products'] = [0];
     return map;
   }
 
