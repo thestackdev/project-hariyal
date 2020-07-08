@@ -8,7 +8,7 @@ class UserModel {
       search_value,
       current_search;
   Map<String, dynamic> location;
-  List<String> interested_products;
+  List<dynamic> interested_products;
   bool isBlocked;
 
   UserModel(

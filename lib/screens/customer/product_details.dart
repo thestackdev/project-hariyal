@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_project_hariyal/screens/customer/full_screen.dart';
 import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
 
 import 'widgets/image_slider.dart';
@@ -18,6 +19,11 @@ class _ProductDetailState extends State<ProductDetail> {
   _ProductDetailState(this.productModel);
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
@@ -26,8 +32,17 @@ class _ProductDetailState extends State<ProductDetail> {
               height: MediaQuery.of(context).size.height / 1.5,
               width: MediaQuery.of(context).size.width,
               child: ImageSliderWidget(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 500),
+                          pageBuilder: (_, __, ___) => FullScreenView(
+                              productModel.images, productModel.id)));
+                },
+                imageHeight: MediaQuery.of(context).size.height / 1.5,
+                tag: productModel.id,
                 imageUrls: productModel.images,
-                imageBorderRadius: BorderRadius.circular(8.0),
               )),
           SafeArea(
             child: Column(

@@ -1,6 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:photo_view/photo_view.dart';
 
 import 'dot_indicator.dart';
 import 'network_image.dart';
@@ -9,13 +10,18 @@ class ImageSliderWidget extends StatefulWidget {
   final List<dynamic> imageUrls;
   final BorderRadius imageBorderRadius;
   final double imageHeight;
+  final dynamic tag;
 
-  const ImageSliderWidget({
-    Key key,
-    @required this.imageUrls,
-    @required this.imageBorderRadius,
-    this.imageHeight = 350.0,
-  }) : super(key: key);
+  final GestureTapCallback onTap;
+  final isZoomable;
+
+  const ImageSliderWidget(
+      {this.tag,
+      this.imageUrls,
+      this.imageBorderRadius,
+      this.imageHeight,
+      this.onTap,
+      this.isZoomable});
 
   @override
   ImageSliderWidgetState createState() {
@@ -34,7 +40,11 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
   void initState() {
     super.initState();
     _pages = widget.imageUrls.map((url) {
-      return _buildImagePageItem(url);
+      return widget.isZoomable == null
+          ? _buildImagePageItem(url, widget.tag, widget.onTap)
+          : widget.isZoomable
+          ? _buildZoomablePageItem(url, widget.tag)
+          : _buildImagePageItem(url, widget.tag, widget.onTap);
     }).toList();
   }
 
@@ -45,7 +55,12 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
 
   Widget _buildingImageSlider() {
     return Container(
-      height: 350.0,
+      height: widget.imageHeight == null
+          ? MediaQuery
+          .of(context)
+          .size
+          .height / 1.5
+          : widget.imageHeight,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         elevation: 4.0,
@@ -79,7 +94,10 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
 
   Positioned _buildDotsIndicatorOverlay() {
     return Positioned(
-      bottom: 20.0,
+      bottom: MediaQuery
+          .of(context)
+          .size
+          .height / 8,
       left: 0.0,
       right: 0.0,
       child: Padding(
@@ -99,12 +117,32 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
     );
   }
 
-  Widget _buildImagePageItem(String imgUrl) {
-    return ClipRRect(
-      borderRadius: widget.imageBorderRadius,
-      child: PNetworkImage(
-        imgUrl,
-        fit: BoxFit.cover,
+  Widget _buildZoomablePageItem(String imgUrl, dynamic key) {
+    return PhotoView(
+      heroAttributes: PhotoViewHeroAttributes(tag: key),
+      imageProvider: CachedNetworkImageProvider(imgUrl),
+      loadingBuilder: (context, event) =>
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+    );
+  }
+
+  Widget _buildImagePageItem(String imgUrl, dynamic key,
+      GestureTapCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Hero(
+        tag: widget.tag == null ? 4 : key,
+        child: ClipRRect(
+          borderRadius: widget.imageBorderRadius == null
+              ? BorderRadius.circular(8.0)
+              : widget.imageBorderRadius,
+          child: PNetworkImage(
+            imgUrl,
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
