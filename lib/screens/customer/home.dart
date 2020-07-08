@@ -75,7 +75,7 @@ class _HomeState extends State<Home> {
         .document(uid)
         .snapshots()
         .listen((event) {
-      interestedList = event.data['intrested_products'];
+      interestedList = event.data['interested_products'];
     });
   }
 

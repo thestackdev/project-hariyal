@@ -8,6 +8,7 @@ class UserModel {
       search_value,
       current_search;
   Map<String, dynamic> location;
+  List<dynamic> interested_products;
   bool isBlocked;
 
   UserModel(
@@ -20,6 +21,7 @@ class UserModel {
       this.search_value,
       this.current_search,
       this.location,
+      this.interested_products,
       this.isBlocked});
 
   Map<String, dynamic> toMap() {
@@ -34,6 +36,7 @@ class UserModel {
     map['isBlocked'] = false;
     map['current_search'] = "location.state";
     map['search_value'] = location['state'];
+    map['interested_products'] = [];
     return map;
   }
 
@@ -48,6 +51,7 @@ class UserModel {
         location: map['location'],
         isBlocked: map['isBlocked'],
         current_search: map['current_search'],
-        search_value: map['search_value']);
+        search_value: map['search_value'],
+        interested_products: map['interested_products']);
   }
 }
