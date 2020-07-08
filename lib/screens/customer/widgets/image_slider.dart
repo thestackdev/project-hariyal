@@ -115,15 +115,14 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
     return PhotoView(
       heroAttributes: PhotoViewHeroAttributes(tag: key),
       imageProvider: CachedNetworkImageProvider(imgUrl),
-      loadingBuilder: (context, event) =>
-          Center(
-            child: CircularProgressIndicator(),
-          ),
+      loadingBuilder: (context, event) => Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 
-  Widget _buildImagePageItem(String imgUrl, dynamic key,
-      GestureTapCallback onTap) {
+  Widget _buildImagePageItem(
+      String imgUrl, dynamic key, GestureTapCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Hero(
