@@ -15,21 +15,33 @@ class Home extends StatefulWidget {
   Home(this.uid, this.userModel);
 
   @override
-  _HomeState createState() => _HomeState(userModel);
+  _HomeState createState() => _HomeState(userModel, uid);
 }
 
 class _HomeState extends State<Home> {
   final UserModel userModel;
+  final uid;
 
-  _HomeState(this.userModel);
+  _HomeState(this.userModel, this.uid);
+
+  var doc;
+
+  List<dynamic> states = [];
+  List<dynamic> areas = [];
+  List<dynamic> categories = [];
+
+  List<dynamic> interestedList = [];
 
   String stateCategory, stateValue;
   String areaCategory, areaValue;
 
-  List<DocumentSnapshot> products = [];
+  Firestore firestore;
 
   @override
   void initState() {
+    firestore = Firestore.instance;
+    getFilters();
+    getInterested();
     setState(() {
       stateCategory = 'location.state';
       stateValue = userModel.location['state'];
@@ -39,68 +51,220 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
+  Future getInterested() async {
+    doc = firestore
+        .collection('customers')
+        .document(uid)
+        .snapshots()
+        .listen((event) {
+      interestedList = event.data['intrested_products'];
+    });
+  }
+
+  Future setInterested(dynamic id) async {
+    if (interestedList.contains(id)) {
+      setState(() {
+        interestedList.remove(id);
+      });
+    } else {
+      setState(() {
+        interestedList.add(id);
+      });
+    }
+    firestore
+        .collection('customers')
+        .document(uid)
+        .updateData({'intrested_products': interestedList});
+  }
+
+  Future getFilters() async {
+    var doc0 = firestore.collection('extras').document('states');
+    var document0 = await doc0.get();
+    states = document0['states_array'];
+
+    var doc1 = firestore.collection('extras').document('areas');
+    var document1 = await doc1.get();
+    areas = document1['areas_array'];
+
+    var doc2 = firestore.collection('extras').document('category');
+    var document2 = await doc2.get();
+    categories = document2['category_array'];
+  }
+
   void showFilterDialog() {
-    showDialog(
+    showModalBottomSheet(
         context: context,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(6), topRight: Radius.circular(6))),
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Filter'),
-            content: Wrap(
-              children: [
-                Column(
+          return StatefulBuilder(
+            builder: (context, state) {
+              return Container(
+                padding: EdgeInsets.all(12),
+                margin: EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Area',
-                          textScaleFactor: 1.4,
-                        ),
-                        new DropdownButton<String>(
-                          items: <String>['hyderabad', 'secunderabad']
-                              .map((String value) {
-                            return new DropdownMenuItem<String>(
-                              value: value,
-                              child: new Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              areaCategory = 'location.area';
-                              areaValue = newValue;
-                            });
-                          },
-                        )
-                      ],
+                    Divider(),
+                    Text(
+                      'Filter by',
+                      style:
+                          TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          'State',
-                          textScaleFactor: 1.4,
+                    Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                    ),
+                    DropdownButtonFormField(
+                        decoration: InputDecoration(
+                          labelText: 'State',
+                          isDense: true,
+                          labelStyle: TextStyle(
+                            color: Colors.red.shade300,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 1.0,
+                          ),
+                          border: InputBorder.none,
+                          fillColor: Colors.grey.shade200,
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
                         ),
-                        new DropdownButton<String>(
-                          items: <String>['andhra pradesh', 'telangana']
-                              .map((String value) {
-                            return new DropdownMenuItem<String>(
-                              value: value,
-                              child: new Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              stateCategory = 'location.state';
-                              stateValue = newValue;
-                            });
-                          },
-                        )
-                      ],
-                    )
+                        isExpanded: true,
+                        iconEnabledColor: Colors.grey,
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                        iconSize: 30,
+                        elevation: 9,
+                        onChanged: (newValue) {
+                          setState(() {
+                            //stateSelected = newValue;
+                          });
+                        },
+                        items: states.map<DropdownMenuItem<String>>((e) {
+                          return DropdownMenuItem<String>(
+                              value: e,
+                              child: Text(
+                                e.toString(),
+                              ));
+                        }).toList()),
+                    Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                    ),
+                    DropdownButtonFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Area',
+                          isDense: true,
+                          labelStyle: TextStyle(
+                            color: Colors.red.shade300,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 1.0,
+                          ),
+                          border: InputBorder.none,
+                          fillColor: Colors.grey.shade200,
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                        isExpanded: true,
+                        iconEnabledColor: Colors.grey,
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                        iconSize: 30,
+                        elevation: 9,
+                        onChanged: (newValue) {
+                          setState(() {
+                            //stateSelected = newValue;
+                          });
+                        },
+                        items: areas.map<DropdownMenuItem<String>>((e) {
+                          return DropdownMenuItem<String>(
+                              value: e,
+                              child: Text(
+                                e.toString(),
+                              ));
+                        }).toList()),
+                    Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                    ),
+                    DropdownButtonFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Category',
+                          isDense: true,
+                          labelStyle: TextStyle(
+                            color: Colors.red.shade300,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 1.0,
+                          ),
+                          border: InputBorder.none,
+                          fillColor: Colors.grey.shade200,
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                        isExpanded: true,
+                        iconEnabledColor: Colors.grey,
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                        iconSize: 30,
+                        elevation: 9,
+                        onChanged: (newValue) {
+                          setState(() {
+                            //stateSelected = newValue;
+                          });
+                        },
+                        items: categories.map<DropdownMenuItem<String>>((e) {
+                          return DropdownMenuItem<String>(
+                              value: e,
+                              child: Text(
+                                e.toString(),
+                              ));
+                        }).toList())
                   ],
-                )
-              ],
-            ),
+                ),
+              );
+            },
           );
         });
+  }
+
+  @override
+  void dispose() {
+    doc.cancel();
+    super.dispose();
   }
 
   @override
@@ -194,7 +358,7 @@ class _HomeState extends State<Home> {
       ),
       body: SafeArea(
         child: StreamBuilder(
-          stream: Firestore.instance.collection('products').snapshots(),
+          stream: firestore.collection('products').snapshots(),
           builder: (context, snapshot) {
             if (snapshot.data == null ||
                 snapshot.connectionState == ConnectionState.none ||
@@ -293,8 +457,17 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.favorite_border),
+                  onPressed: () {
+                    setInterested(productModel.id);
+                  },
+                  icon: interestedList != null
+                      ? interestedList.contains(productModel.id)
+                      ? Icon(
+                    Icons.favorite,
+                    color: Colors.red[800],
+                  )
+                      : Icon(Icons.favorite_border)
+                      : Icon(Icons.favorite_border),
                 )
               ],
             ),
