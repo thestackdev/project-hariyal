@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:the_project_hariyal/screens/customer/booked_items.dart';
+import 'package:the_project_hariyal/screens/customer/edit_profile.dart';
 import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
 import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
 import 'package:the_project_hariyal/screens/customer/product_details.dart';
@@ -317,6 +319,12 @@ class _HomeState extends State<Home> {
             Padding(
               padding: EdgeInsets.only(left: 50, right: 10),
               child: ListTile(
+                onTap: () {
+                  Navigator.of(context).pop(true);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) {
+                    return EditProfile();
+                  }));
+                },
                 title: Row(
                   children: [
                     Text(
@@ -338,6 +346,12 @@ class _HomeState extends State<Home> {
             Padding(
               padding: EdgeInsets.only(left: 50, right: 10),
               child: ListTile(
+                onTap: () {
+                  Navigator.of(context).pop(true);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) {
+                    return BookedItems();
+                  }));
+                },
                 title: Row(
                   children: [
                     Text(
