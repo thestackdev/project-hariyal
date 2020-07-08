@@ -322,7 +322,7 @@ class _HomeState extends State<Home> {
                 onTap: () {
                   Navigator.of(context).pop(true);
                   Navigator.push(context, MaterialPageRoute(builder: (_) {
-                    return EditProfile();
+                    return EditProfile(userModel, uid);
                   }));
                 },
                 title: Row(
