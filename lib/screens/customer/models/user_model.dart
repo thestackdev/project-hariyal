@@ -4,8 +4,11 @@ class UserModel {
       phoneNumber,
       gender,
       alternatePhoneNumber,
-      permanentAddress;
+      permanentAddress,
+      search_value,
+      current_search;
   Map<String, dynamic> location;
+  bool isBlocked;
 
   UserModel(
       {this.name,
@@ -14,7 +17,10 @@ class UserModel {
       this.gender,
       this.alternatePhoneNumber,
       this.permanentAddress,
-      this.location});
+      this.search_value,
+      this.current_search,
+      this.location,
+      this.isBlocked});
 
   Map<String, dynamic> toMap() {
     final map = new Map<String, dynamic>();
@@ -25,6 +31,9 @@ class UserModel {
     map['alternatePhoneNumber'] = "default";
     map['permanentAddress'] = "default";
     map['location'] = location;
+    map['isBlocked'] = false;
+    map['current_search'] = "location.state";
+    map['search_value'] = location['state'];
     return map;
   }
 
@@ -36,6 +45,9 @@ class UserModel {
         gender: map['gender'],
         alternatePhoneNumber: map['alternatePhoneNumber'],
         permanentAddress: map['permanentAddress'],
-        location: map['location']);
+        location: map['location'],
+        isBlocked: map['isBlocked'],
+        current_search: map['current_search'],
+        search_value: map['search_value']);
   }
 }
