@@ -36,7 +36,7 @@ class UserModel {
     map['isBlocked'] = false;
     map['current_search'] = "location.state";
     map['search_value'] = location['state'];
-    map['interested_products'] = [0];
+    map['interested_products'] = ["0"];
     return map;
   }
 
