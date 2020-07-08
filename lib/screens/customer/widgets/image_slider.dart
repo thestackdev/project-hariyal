@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'file:///E:/000Gautham/Flutter%20Projects%20VS/hariyal/lib/screens/customer/widgets/network_image.dart';
 
 import 'dot_indicator.dart';
+import 'network_image.dart';
 
 class ImageSliderWidget extends StatefulWidget {
   final List<dynamic> imageUrls;
