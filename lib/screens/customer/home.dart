@@ -28,7 +28,9 @@ class _HomeState extends State<Home> {
 
   var doc;
 
-  List<dynamic> states = [];
+  ScrollController _scrollController;
+
+  List states = [];
   List<dynamic> areas = [];
   List<dynamic> categories = [];
 
@@ -39,8 +41,22 @@ class _HomeState extends State<Home> {
 
   Firestore firestore;
 
+  int count = 30;
+
+  _scrollListener() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        count += 30;
+      });
+    }
+  }
+
   @override
   void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
     firestore = Firestore.instance;
     getFilters();
     getInterested();
@@ -150,9 +166,15 @@ class _HomeState extends State<Home> {
                         iconSize: 30,
                         elevation: 9,
                         onChanged: (newValue) {
-                          setState(() {
-                            //stateSelected = newValue;
+                          firestore
+                              .collection('customers')
+                              .document(widget.uid)
+                              .updateData({
+                            'current_search': 'location.state',
+                            'search_value': newValue,
                           });
+
+                          Navigator.pop(context);
                         },
                         items: states.map<DropdownMenuItem<String>>((e) {
                           return DropdownMenuItem<String>(
@@ -197,9 +219,15 @@ class _HomeState extends State<Home> {
                         iconSize: 30,
                         elevation: 9,
                         onChanged: (newValue) {
-                          setState(() {
-                            //stateSelected = newValue;
+                          firestore
+                              .collection('customers')
+                              .document(widget.uid)
+                              .updateData({
+                            'current_search': 'location.area',
+                            'search_value': newValue,
                           });
+
+                          Navigator.pop(context);
                         },
                         items: areas.map<DropdownMenuItem<String>>((e) {
                           return DropdownMenuItem<String>(
@@ -244,9 +272,15 @@ class _HomeState extends State<Home> {
                         iconSize: 30,
                         elevation: 9,
                         onChanged: (newValue) {
-                          setState(() {
-                            //stateSelected = newValue;
+                          firestore
+                              .collection('customers')
+                              .document(widget.uid)
+                              .updateData({
+                            'current_search': 'category',
+                            'search_value': newValue,
                           });
+
+                          Navigator.pop(context);
                         },
                         items: categories.map<DropdownMenuItem<String>>((e) {
                           return DropdownMenuItem<String>(
@@ -371,45 +405,50 @@ class _HomeState extends State<Home> {
         ),
       ),
       body: SafeArea(
-        child: StreamBuilder(
-          stream: firestore.collection('products').snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.data == null ||
-                snapshot.connectionState == ConnectionState.none ||
-                snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: SpinKitWave(
-                  color: Colors.orange,
-                  size: 50.0,
-                ),
-              );
-            }
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                  snapshot.error,
-                  textScaleFactor: 2,
-                ),
-              );
-            }
-            if (!snapshot.hasData || snapshot.data.documents.length <= 0) {
-              return Center(
-                child: Text(
-                  'No Products Available',
-                  textScaleFactor: 2,
-                ),
-              );
-            }
-            return ListView.builder(
-                itemCount: snapshot.data.documents.length,
-                itemBuilder: (context, index) {
-                  ProductModel productModel = ProductModel.fromMap(
-                      snapshot.data.documents[index].data,
-                      snapshot.data.documents[index].documentID);
-                  return buildItems(context, productModel);
-                });
-          },
-        ),
+        child: StreamBuilder<DocumentSnapshot>(
+            stream: firestore
+                .collection('customers')
+                .document(widget.uid)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return StreamBuilder(
+                  stream: firestore
+                      .collection('products')
+                      .where(snapshot.data['current_search'],
+                          isEqualTo: snapshot.data['search_value'])
+                      .limit(count)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                          controller: _scrollController,
+                          itemCount: snapshot.data.documents.length,
+                          itemBuilder: (context, index) {
+                            ProductModel productModel = ProductModel.fromMap(
+                                snapshot.data.documents[index].data,
+                                snapshot.data.documents[index].documentID);
+                            return buildItems(context, productModel);
+                          });
+                    } else {
+                      return Center(
+                        child: SpinKitWave(
+                          color: Colors.orange,
+                          size: 50.0,
+                        ),
+                      );
+                    }
+                  },
+                );
+              } else {
+                return Center(
+                  child: SpinKitWave(
+                    color: Colors.orange,
+                    size: 50.0,
+                  ),
+                );
+              }
+            }),
       ),
     );
   }
