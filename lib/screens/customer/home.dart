@@ -602,7 +602,7 @@ class _HomeState extends State<Home> {
                       Padding(
                         padding: EdgeInsets.only(left: 20),
                         child: Text(
-                          'Price',
+                          productModel.price,
                           style: TextStyle(fontSize: 18),
                         ),
                       )

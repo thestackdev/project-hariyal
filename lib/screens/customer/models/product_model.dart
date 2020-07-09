@@ -1,6 +1,6 @@
 class ProductModel {
   dynamic id;
-  String category, description, title;
+  String category, description, title, price;
   List<dynamic> images;
   Map<String, dynamic> location;
   bool isSold;
@@ -10,6 +10,7 @@ class ProductModel {
       this.category,
       this.description,
       this.title,
+      this.price,
       this.images,
       this.location,
       this.isSold});
@@ -22,6 +23,7 @@ class ProductModel {
         images: map['images'],
         isSold: map['isSold'],
         location: map['location'],
-        title: map['title']);
+        title: map['title'],
+        price: map['price']);
   }
 }
