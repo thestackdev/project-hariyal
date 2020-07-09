@@ -117,6 +117,7 @@ class _HomeState extends State<Home> {
         .listen((event) {
       interestedList = event.data['interests'];
       if (interestedList != null) {
+        interestedList = new List();
         for (int i = 0; i < interestedList.length; i++) {
           if (!interests.contains(interestedList[i]['product_id']))
             interests.add(interestedList[i]['product_id']);
@@ -127,6 +128,7 @@ class _HomeState extends State<Home> {
 
   Future setInterested(dynamic id) async {
     if (interestedList == null || interestedList.length <= 0) {
+      interestedList = new List();
       setState(() {
         interestedList.add({
           'product_id': id,
