@@ -39,8 +39,8 @@ class _HomeState extends State<Home> {
   List<dynamic> areas = [];
   List<dynamic> categories = [];
 
-  List<dynamic> interestedList = List();
-  List<dynamic> interests = List();
+  List<dynamic> interestedList;
+  List<dynamic> interests;
 
   String stateCategory, stateValue;
   String areaCategory, areaValue;
@@ -61,6 +61,8 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    interestedList = new List();
+    interests = new List();
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     firestore = Firestore.instance;
@@ -114,15 +116,17 @@ class _HomeState extends State<Home> {
         .snapshots()
         .listen((event) {
       interestedList = event.data['interests'];
-      for (int i = 0; i < interestedList.length; i++) {
-        if (!interests.contains(interestedList[i]['product_id']))
-          interests.add(interestedList[i]['product_id']);
+      if (interestedList != null) {
+        for (int i = 0; i < interestedList.length; i++) {
+          if (!interests.contains(interestedList[i]['product_id']))
+            interests.add(interestedList[i]['product_id']);
+        }
       }
     });
   }
 
   Future setInterested(dynamic id) async {
-    if (interestedList.length <= 0 || interests.length <= 0) {
+    if (interestedList == null || interestedList.length <= 0) {
       setState(() {
         interestedList.add({
           'product_id': id,
