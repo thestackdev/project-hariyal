@@ -36,6 +36,7 @@ dependencies:
   flutter_spinkit:
   rxdart:
   photo_view:
+  intl:
 
   #Using Old version to avoid errors
   cached_network_image: ^2.0.0

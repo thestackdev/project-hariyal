@@ -211,14 +211,6 @@ class _SignupState extends State<Signup> {
         .document(uid)
         .setData(userModel.toMap());
 
-    List<Map<dynamic, dynamic>> interested = List();
-    interested.add({'0': '0'});
-
-    await _fireStore
-        .collection('interested')
-        .document(uid)
-        .setData({'items': interested});
-
     _hideDialog();
     Utils().toast(context, 'User created', bgColor: Utils().randomGenerator());
     Navigator.push(

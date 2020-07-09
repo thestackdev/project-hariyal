@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:the_project_hariyal/screens/customer/booked_items.dart';
 import 'package:the_project_hariyal/screens/customer/edit_profile.dart';
 import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
@@ -38,6 +39,7 @@ class _HomeState extends State<Home> {
   List<dynamic> categories = [];
 
   List<dynamic> interestedList = List();
+  List<dynamic> interests = List();
 
   String stateCategory, stateValue;
   String areaCategory, areaValue;
@@ -96,32 +98,58 @@ class _HomeState extends State<Home> {
 
   Future getInterested() async {
     doc = firestore
-        .collection('customers')
+        .collection('interested')
         .document(uid)
         .snapshots()
         .listen((event) {
-      interestedList = event.data['interested_products'];
+      interestedList = event.data['interests'];
+      for (int i = 0; i < interestedList.length; i++) {
+        if (!interests.contains(interestedList[i]['product_id']))
+          interests.add(interestedList[i]['product_id']);
+      }
     });
   }
 
   Future setInterested(dynamic id) async {
-    if (interestedList == null || interestedList.length <= 0) {
+    if (interestedList.length <= 0 || interests.length <= 0) {
       setState(() {
-        interestedList.add(id);
+        interestedList.add({
+          'product_id': id,
+          'time': DateFormat("dd-MM-yyyy | hh:mm:ss a")
+              .format(DateTime.now())
+              .toString()
+        });
       });
-    } else if (interestedList.contains(id)) {
+    } else if (interests.contains(id)) {
       setState(() {
-        interestedList.remove(id);
+        interests.remove(id);
       });
+
+      for (int i = 0; i < interestedList.length; i++) {
+        Map<dynamic, dynamic> map = interestedList[i];
+        if (map.containsValue(id)) {
+          setState(() {
+            interests.remove(id);
+            interestedList.removeAt(i);
+          });
+          break;
+        }
+      }
     } else {
       setState(() {
-        interestedList.add(id);
+        interestedList.add({
+          'product_id': id,
+          'time': DateFormat("dd-MM-yyyy | hh:mm:ss a")
+              .format(DateTime.now())
+              .toString()
+        });
       });
     }
+
     firestore
-        .collection('customers')
+        .collection('interested')
         .document(uid)
-        .updateData({'interested_products': interestedList});
+        .updateData({'interests': interestedList});
   }
 
   Future getFilters() async {
@@ -542,8 +570,8 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     setInterested(productModel.id);
                   },
-                  icon: interestedList != null
-                      ? interestedList.contains(productModel.id)
+                  icon: interests != null
+                      ? interests.contains(productModel.id)
                           ? Icon(
                               Icons.favorite,
                               color: Colors.red[800],
