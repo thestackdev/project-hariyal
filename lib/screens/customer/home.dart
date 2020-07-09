@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -7,6 +8,8 @@ import 'package:the_project_hariyal/screens/customer/edit_profile.dart';
 import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
 import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
 import 'package:the_project_hariyal/screens/customer/product_details.dart';
+import 'package:the_project_hariyal/screens/customer/splash.dart';
+import 'package:the_project_hariyal/utils.dart';
 
 import 'widgets/network_image.dart';
 
@@ -21,7 +24,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final UserModel userModel;
+  UserModel userModel;
   final uid;
 
   _HomeState(this.userModel, this.uid);
@@ -66,7 +69,29 @@ class _HomeState extends State<Home> {
       areaCategory = 'location.area';
       areaValue = userModel.location['cityDistrict'];
     });
+    userInfoExists();
     super.initState();
+  }
+
+  Future userInfoExists() async {
+    doc = firestore
+        .collection('customers')
+        .document(uid)
+        .snapshots()
+        .listen((event) {
+      if (event.exists) {
+        setState(() {
+          userModel = UserModel.fromMap(event.data);
+        });
+      } else {
+        FirebaseAuth.instance.signOut();
+        Navigator.push(context, MaterialPageRoute(builder: (_) {
+          Utils().toast(context, 'User have been deleted from database',
+              bgColor: Utils().randomGenerator());
+          return SplashScreen(false);
+        }));
+      }
+    });
   }
 
   Future getInterested() async {
