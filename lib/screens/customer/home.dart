@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
 
   _HomeState(this.userModel, this.uid);
 
-  var doc;
+  var doc, trackUserInfo;
 
   ScrollController _scrollController;
 
@@ -76,18 +76,28 @@ class _HomeState extends State<Home> {
   }
 
   Future userInfoExists() async {
-    doc = firestore
+    trackUserInfo = firestore
         .collection('customers')
         .document(uid)
         .snapshots()
         .listen((event) {
       if (event.exists) {
+        if (event.data['isBlocked']) {
+          FirebaseAuth.instance.signOut();
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {
+            Utils().toast(
+                context, 'User have been blocked, contact support for detail',
+                bgColor: Utils().randomGenerator());
+            return SplashScreen(false);
+          }));
+          return;
+        }
         setState(() {
           userModel = UserModel.fromMap(event.data);
         });
       } else {
         FirebaseAuth.instance.signOut();
-        Navigator.push(context, MaterialPageRoute(builder: (_) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {
           Utils().toast(context, 'User have been deleted from database',
               bgColor: Utils().randomGenerator());
           return SplashScreen(false);
@@ -357,6 +367,7 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     doc.cancel();
+    trackUserInfo.cancel();
     super.dispose();
   }
 
