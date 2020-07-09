@@ -6,6 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:the_project_hariyal/screens/customer/booked_items.dart';
 import 'package:the_project_hariyal/screens/customer/edit_profile.dart';
+import 'package:the_project_hariyal/screens/customer/interested_items.dart';
 import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
 import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
 import 'package:the_project_hariyal/screens/customer/product_details.dart';
@@ -458,6 +459,33 @@ class _HomeState extends State<Home> {
                   children: [
                     Text(
                       'Booked Items',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 18,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 50, right: 10),
+              child: ListTile(
+                onTap: () {
+                  Navigator.of(context).pop(true);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) {
+                    return InterestedItems(uid);
+                  }));
+                },
+                title: Row(
+                  children: [
+                    Text(
+                      'Interested Items',
                       style: TextStyle(fontSize: 18),
                     ),
                     Spacer(),
