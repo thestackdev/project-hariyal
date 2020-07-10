@@ -41,7 +41,7 @@ class _SigninState extends State<Signin> {
               timeout: Duration(seconds: 60),
               verificationCompleted: (AuthCredential credential) async {
                 AuthResult result =
-                await _auth.signInWithCredential(credential);
+                    await _auth.signInWithCredential(credential);
 
                 if (result.user.uid != null) {
                   _hideDialog();
