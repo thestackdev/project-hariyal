@@ -11,17 +11,18 @@ class ImageSliderWidget extends StatefulWidget {
   final BorderRadius imageBorderRadius;
   final double imageHeight;
   final dynamic tag;
+  final fit;
 
   final GestureTapCallback onTap;
   final isZoomable;
 
-  const ImageSliderWidget(
-      {this.tag,
-      this.imageUrls,
-      this.imageBorderRadius,
-      this.imageHeight,
-      this.onTap,
-      this.isZoomable});
+  const ImageSliderWidget({this.tag,
+    this.imageUrls,
+    this.imageBorderRadius,
+    this.imageHeight,
+    this.onTap,
+    this.isZoomable,
+    this.fit});
 
   @override
   ImageSliderWidgetState createState() {
@@ -133,7 +134,7 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
               : widget.imageBorderRadius,
           child: PNetworkImage(
             imgUrl,
-            fit: BoxFit.cover,
+            fit: widget.fit == null ? BoxFit.cover : widget.fit,
           ),
         ),
       ),

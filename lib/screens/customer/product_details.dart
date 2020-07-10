@@ -40,6 +40,8 @@ class _ProductDetailState extends State<ProductDetail> {
                     ),
                   );
                 },
+                isZoomable: false,
+                fit: BoxFit.contain,
                 imageHeight: MediaQuery.of(context).size.height / 1.5,
                 tag: widget.productSnap.documentID,
                 imageUrls: widget.productSnap['images'],

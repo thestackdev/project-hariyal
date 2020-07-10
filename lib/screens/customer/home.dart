@@ -296,7 +296,6 @@ class _HomeState extends State<Home> {
                                   Navigator.of(context).pop(true);
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (_) {
-                                    print(interestedsnap.data.data);
                                     return InterestedItems(
                                       interestedsnap: interestedsnap.data,
                                     );
@@ -387,17 +386,14 @@ class _HomeState extends State<Home> {
                     children: [
                       Container(
                         height: 120,
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width / 3,
+                        width: MediaQuery.of(context).size.width / 3,
                         child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(6)),
                           child: Hero(
                             tag: productsnap.data.documents[index].documentID,
                             child: PNetworkImage(
                               productsnap.data.documents[index].data['images']
-                              [0],
+                                  [0],
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -422,7 +418,8 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: EdgeInsets.only(left: 20),
                               child: Text(
-                                'Price',
+                                '${productsnap.data
+                                    .documents[index]['price']} Rs',
                                 style: TextStyle(fontSize: 18),
                               ),
                             )
