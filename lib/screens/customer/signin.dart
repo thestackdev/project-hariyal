@@ -136,8 +136,7 @@ class _SigninState extends State<Signin> {
     return (await showDialog(
       context: _scaffoldKey.currentContext,
       barrierDismissible: false,
-      builder: (context) =>
-          WillPopScope(
+      builder: (context) => WillPopScope(
         onWillPop: () {},
         child: AlertDialog(
           elevation: 0,
