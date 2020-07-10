@@ -191,7 +191,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
         stream:
-        firestore.collection('customers').document(widget.uid).snapshots(),
+            firestore.collection('customers').document(widget.uid).snapshots(),
         builder: (context, customersnap) {
           if (customersnap.hasData) {
             return StreamBuilder<DocumentSnapshot>(
