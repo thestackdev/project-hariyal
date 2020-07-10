@@ -296,11 +296,11 @@ class _HomeState extends State<Home> {
                                   Navigator.of(context).pop(true);
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (_) {
-                                        print(interestedsnap.data.data);
-                                        return InterestedItems(
-                                          interestedsnap: interestedsnap.data,
-                                        );
-                                      }));
+                                    print(interestedsnap.data.data);
+                                    return InterestedItems(
+                                      interestedsnap: interestedsnap.data,
+                                    );
+                                  }));
                                 },
                                 title: Row(
                                   children: [
