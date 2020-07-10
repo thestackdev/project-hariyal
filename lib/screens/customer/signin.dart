@@ -40,17 +40,7 @@ class _SigninState extends State<Signin> {
               phoneNumber: '+91' + _controller.text,
               timeout: Duration(seconds: 60),
               verificationCompleted: (AuthCredential credential) async {
-                AuthResult result =
-                    await _auth.signInWithCredential(credential);
-
-                if (result.user.uid != null) {
-                  _hideDialog();
-                } else {
-                  _hideDialog();
-                  Utils().toast(
-                      _scaffoldKey.currentContext, 'Failed to Sign in',
-                      bgColor: Utils().randomGenerator());
-                }
+                signIn(credential);
               },
               verificationFailed: (AuthException exception) {
                 _hideDialog();
@@ -92,22 +82,12 @@ class _SigninState extends State<Signin> {
                                       .pop();
                                   _showDialog(text: "Signing in");
                                   final code = _codeController.text.trim();
+                                  _codeController.text = "";
                                   AuthCredential credential =
                                       PhoneAuthProvider.getCredential(
                                           verificationId: verificationId,
                                           smsCode: code);
-
-                                  AuthResult result = await _auth
-                                      .signInWithCredential(credential);
-
-                                  if (result.user.uid != null) {
-                                    _hideDialog();
-                                  } else {
-                                    _hideDialog();
-                                    Utils().toast(_scaffoldKey.currentContext,
-                                        'Failed to Signin',
-                                        bgColor: Utils().randomGenerator());
-                                  }
+                                  signIn(credential);
                                 }
                               })
                         ],
@@ -128,6 +108,26 @@ class _SigninState extends State<Signin> {
     }
   }
 
+  Future signIn(AuthCredential credential) async {
+    AuthResult result = await FirebaseAuth.instance
+        .signInWithCredential(credential)
+        .catchError((error) {
+      _hideDialog();
+      Utils()
+          .toast(_scaffoldKey.currentContext, 'Wrong Otp', bgColor: Colors.red);
+      print(error);
+      return;
+    });
+
+    _hideDialog();
+
+    if (result.user.uid == null) {
+      Utils().toast(
+          _scaffoldKey.currentContext, 'Sign-In: Otp Verification Failed',
+          bgColor: Utils().randomGenerator());
+    }
+  }
+
   Future<bool> _showDialog({String text}) async {
     setState(() {
       _isOpen = true;
@@ -136,7 +136,8 @@ class _SigninState extends State<Signin> {
     return (await showDialog(
       context: _scaffoldKey.currentContext,
       barrierDismissible: false,
-      builder: (context) => WillPopScope(
+      builder: (context) =>
+          WillPopScope(
         onWillPop: () {},
         child: AlertDialog(
           elevation: 0,

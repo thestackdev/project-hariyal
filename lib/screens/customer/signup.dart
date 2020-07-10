@@ -37,8 +37,6 @@ class _SignupState extends State<Signup> {
       _emailValidated = false,
       _phoneValidated = false,
       _isOpen = false;
-  StreamSubscription<QuerySnapshot> phoneStream;
-  StreamSubscription<QuerySnapshot> emailStream;
 
   void fieldFocusChange(
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
@@ -67,18 +65,18 @@ class _SignupState extends State<Signup> {
 
     _showDialog(text: 'Please wait');
 
-    phoneStream = Firestore.instance
+    Firestore.instance
         .collection('customers')
-        .where('phoneNumber', isEqualTo: _phoneController.text)
-        .snapshots()
-        .listen((data) {
-      if (data.documentChanges.length <= 0) {
-        emailStream = Firestore.instance
+        .where('phoneNumber', isEqualTo: _phoneController.text.trim())
+        .getDocuments()
+        .then((value) {
+      if (value.documents.length <= 0) {
+        Firestore.instance
             .collection('customers')
-            .where('email', isEqualTo: _emailController.text)
-            .snapshots()
-            .listen((data) {
-          if (data.documents.length <= 0) {
+            .where('email', isEqualTo: _emailController.text.trim())
+            .getDocuments()
+            .then((value) {
+          if (value.documents.length <= 0) {
             _hideDialog();
             _showDialog(text: 'Requesting Otp');
 
@@ -88,20 +86,7 @@ class _SignupState extends State<Signup> {
                 phoneNumber: '+91' + _phoneController.text,
                 timeout: Duration(seconds: 60),
                 verificationCompleted: (AuthCredential credential) async {
-                  Navigator.of(context).pop();
-
-                  AuthResult result =
-                      await _auth.signInWithCredential(credential);
-
-                  FirebaseUser user = result.user;
-
-                  if (user != null) {
-                    uploadUserInfo(user.uid);
-                  } else {
-                    Utils().toast(context, 'Failed to SignUp',
-                        bgColor: Utils().randomGenerator());
-                    print("Error: Failed to SignUp");
-                  }
+                  authenticate(credential);
                 },
                 verificationFailed: (AuthException exception) {
                   _hideDialog();
@@ -147,20 +132,7 @@ class _SignupState extends State<Signup> {
                                         verificationId: verificationId,
                                         smsCode: code);
 
-                                AuthResult result = await _auth
-                                    .signInWithCredential(credential);
-
-                                FirebaseUser user = result.user;
-
-                                if (user != null) {
-                                  Navigator.pop(context);
-                                  uploadUserInfo(user.uid);
-                                } else {
-                                  _hideDialog();
-                                  print("Error: Failed to SignUp");
-                                  Utils().toast(context, 'Failed to SignUp',
-                                      bgColor: Utils().randomGenerator());
-                                }
+                                authenticate(credential);
                               },
                             )
                           ],
@@ -182,12 +154,29 @@ class _SignupState extends State<Signup> {
     });
   }
 
+  Future authenticate(AuthCredential credential) async {
+    AuthResult result = await FirebaseAuth.instance
+        .signInWithCredential(credential)
+        .catchError((error) {
+      _hideDialog();
+      Utils().toast(context, 'Wrong Otp', bgColor: Colors.red);
+      print(error);
+      return;
+    });
+
+    _hideDialog();
+
+    if (result.user == null) {
+      Utils().toast(context, 'Sign-Up: Otp Verification Failed',
+          bgColor: Utils().randomGenerator());
+    } else {
+      uploadUserInfo(result.user.uid);
+    }
+  }
+
   Future uploadUserInfo(String uid) async {
     _hideDialog();
     _showDialog(text: 'Registering User');
-
-    phoneStream.cancel();
-    emailStream.cancel();
 
     Map<String, dynamic> _loc = new HashMap();
     _loc['lat'] = _latitude;
