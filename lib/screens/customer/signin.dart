@@ -24,9 +24,9 @@ class _SigninState extends State<Signin> {
 
   void login() {
     FirebaseAuth _auth = FirebaseAuth.instance;
-    _showDialog(text: 'Authenticating');
 
     if (_controller.text.length == 10) {
+      _showDialog(text: 'Authenticating');
       try {
         Firestore.instance
             .collection('customers')
@@ -41,7 +41,7 @@ class _SigninState extends State<Signin> {
               timeout: Duration(seconds: 60),
               verificationCompleted: (AuthCredential credential) async {
                 AuthResult result =
-                    await _auth.signInWithCredential(credential);
+                await _auth.signInWithCredential(credential);
 
                 if (result.user.uid != null) {
                   _hideDialog();
@@ -92,9 +92,9 @@ class _SigninState extends State<Signin> {
                                   _showDialog(text: "Signing in");
                                   final code = _codeController.text.trim();
                                   AuthCredential credential =
-                                  PhoneAuthProvider.getCredential(
-                                      verificationId: verificationId,
-                                      smsCode: code);
+                                      PhoneAuthProvider.getCredential(
+                                          verificationId: verificationId,
+                                          smsCode: code);
 
                                   AuthResult result = await _auth
                                       .signInWithCredential(credential);
@@ -121,6 +121,7 @@ class _SigninState extends State<Signin> {
           }
         });
       } catch (e) {
+        _hideDialog();
         Utils().toast(context, e.toString());
       }
     }
