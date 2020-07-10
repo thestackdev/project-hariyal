@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:the_project_hariyal/screens/admin/authenticate.dart';
-import 'package:the_project_hariyal/screens/customer/home.dart';
-import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
 import 'package:the_project_hariyal/utils.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -25,50 +23,38 @@ class _SigninState extends State<Signin> {
   GlobalKey _scaffoldKey = GlobalKey();
 
   void login() {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    _showDialog(text: 'Authenticating');
+
     if (_controller.text.length == 10) {
-      FirebaseAuth _auth = FirebaseAuth.instance;
-
-      _showDialog(text: 'Authenticating');
-
-      Firestore.instance
-          .collection('customers')
-          .where('phoneNumber', isEqualTo: _controller.text)
-          .snapshots()
-          .listen((data) {
-        if (data.documents.length <= 0) {
-          _hideDialog();
-          Utils().toast(context, 'User Not Found');
-        } else {
-          _hideDialog();
-          _showDialog(text: 'Requesting Otp');
-          _auth.verifyPhoneNumber(
+      try {
+        Firestore.instance
+            .collection('customers')
+            .where('phoneNumber', isEqualTo: _controller.text)
+            .getDocuments()
+            .then((value) {
+          if (value.documents.length != 0) {
+            _hideDialog();
+            _showDialog(text: 'Requesting Otp');
+            _auth.verifyPhoneNumber(
               phoneNumber: '+91' + _controller.text,
               timeout: Duration(seconds: 60),
               verificationCompleted: (AuthCredential credential) async {
                 AuthResult result =
                     await _auth.signInWithCredential(credential);
 
-                FirebaseUser user = result.user;
-
-                if (user != null) {
-                  UserModel userModel = await getUserInfo();
+                if (result.user.uid != null) {
                   _hideDialog();
-                  Navigator.pushReplacement(
-                      _scaffoldKey.currentContext,
-                      MaterialPageRoute(
-                          builder: (context) => Home(user.uid, userModel)));
                 } else {
                   _hideDialog();
-                  Utils().toast(_scaffoldKey.currentContext, 'Failed to SignUp',
+                  Utils().toast(_scaffoldKey.currentContext, 'Failed to Signin',
                       bgColor: Utils().randomGenerator());
-                  print("Error: Failed to SignUp");
                 }
               },
               verificationFailed: (AuthException exception) {
                 _hideDialog();
                 Utils().toast(_scaffoldKey.currentContext, exception.message,
                     bgColor: Colors.red[800], textColor: Colors.white);
-                print(exception);
               },
               codeSent: (String verificationId, [int forceResendingToken]) {
                 _hideDialog();
@@ -93,63 +79,51 @@ class _SigninState extends State<Signin> {
                         ),
                         actions: <Widget>[
                           FlatButton(
-                            child: Text("Confirm"),
-                            textColor: Colors.white,
-                            color: Colors.blue,
-                            onPressed: () async {
-                              if (_codeController.text.length != 6) {
-                                Utils().toast(_scaffoldKey.currentContext,
-                                    'Enter valid code');
-                                return;
-                              }
-
-                              Navigator.of(_scaffoldKey.currentContext).pop();
-                              _showDialog(text: "Signing in");
-
-                              final code = _codeController.text.trim();
-                              AuthCredential credential =
+                              child: Text("Confirm"),
+                              textColor: Colors.white,
+                              color: Colors.blue,
+                              onPressed: () async {
+                                if (_codeController.text.length != 6) {
+                                  Utils().toast(_scaffoldKey.currentContext,
+                                      'Enter valid code');
+                                } else {
+                                  Navigator.of(_scaffoldKey.currentContext)
+                                      .pop();
+                                  _showDialog(text: "Signing in");
+                                  final code = _codeController.text.trim();
+                                  AuthCredential credential =
                                   PhoneAuthProvider.getCredential(
                                       verificationId: verificationId,
                                       smsCode: code);
 
-                              AuthResult result =
-                                  await _auth.signInWithCredential(credential);
+                                  AuthResult result = await _auth
+                                      .signInWithCredential(credential);
 
-                              FirebaseUser user = result.user;
-
-                              if (user != null) {
-                                UserModel userModel = await getUserInfo();
-                                _hideDialog();
-                                Navigator.pushReplacement(
-                                    _scaffoldKey.currentContext,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            Home(user.uid, userModel)));
-                              } else {
-                                _hideDialog();
-                                Utils().toast(_scaffoldKey.currentContext,
-                                    'Failed to SignUp',
-                                    bgColor: Utils().randomGenerator());
-                                print("Error: Failed to SignUp");
-                              }
-                            },
-                          )
+                                  if (result.user.uid != null) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    _hideDialog();
+                                    Utils().toast(_scaffoldKey.currentContext,
+                                        'Failed to Signin',
+                                        bgColor: Utils().randomGenerator());
+                                  }
+                                }
+                              })
                         ],
                       );
                     });
               },
-              codeAutoRetrievalTimeout: null);
-        }
-      });
+              codeAutoRetrievalTimeout: null,
+            );
+          } else {
+            _hideDialog();
+            Utils().toast(context, 'No user Found with this credintials');
+          }
+        });
+      } catch (e) {
+        Utils().toast(context, e.toString());
+      }
     }
-  }
-
-  getUserInfo() async {
-    var user = await FirebaseAuth.instance.currentUser();
-
-    var doc = Firestore.instance.collection('customers').document(user.uid);
-    var document = await doc.get();
-    return UserModel.fromMap(document.data);
   }
 
   Future<bool> _showDialog({String text}) async {

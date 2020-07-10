@@ -1,23 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:the_project_hariyal/screens/customer/full_screen.dart';
-import 'package:the_project_hariyal/screens/customer/models/product_model.dart';
 
 import 'widgets/image_slider.dart';
 
 class ProductDetail extends StatefulWidget {
-  final ProductModel productModel;
+  final DocumentSnapshot productSnap;
 
-  ProductDetail(this.productModel);
+  const ProductDetail({Key key, this.productSnap}) : super(key: key);
 
   @override
-  _ProductDetailState createState() => _ProductDetailState(productModel);
+  _ProductDetailState createState() => _ProductDetailState();
 }
 
 class _ProductDetailState extends State<ProductDetail> {
-  final ProductModel productModel;
-
-  _ProductDetailState(this.productModel);
-
   @override
   void initState() {
     super.initState();
@@ -34,15 +30,19 @@ class _ProductDetailState extends State<ProductDetail> {
               child: ImageSliderWidget(
                 onTap: () {
                   Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 500),
-                          pageBuilder: (_, __, ___) => FullScreenView(
-                              productModel.images, productModel.id)));
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500),
+                      pageBuilder: (_, __, ___) => FullScreenView(
+                        widget.productSnap['images'],
+                        widget.productSnap.documentID,
+                      ),
+                    ),
+                  );
                 },
                 imageHeight: MediaQuery.of(context).size.height / 1.5,
-                tag: productModel.id,
-                imageUrls: productModel.images,
+                tag: widget.productSnap.documentID,
+                imageUrls: widget.productSnap['images'],
               )),
           SafeArea(
             child: Column(
@@ -83,7 +83,7 @@ class _ProductDetailState extends State<ProductDetail> {
                               children: [
                                 ListTile(
                                   title: Text(
-                                    productModel.title,
+                                    widget.productSnap['title'],
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16.0, vertical: 12.0),
                                   child: Text(
-                                    productModel.description,
+                                    widget.productSnap['description'],
                                     style: TextStyle(
                                         color: Colors.black, fontSize: 18),
                                   ),
@@ -119,7 +119,7 @@ class _ProductDetailState extends State<ProductDetail> {
                           child: Row(
                             children: [
                               Text(
-                                'Price' + " Rs",
+                                'Price ${widget.productSnap['price']}',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -155,7 +155,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                              BorderRadius.circular(10.0)),
+                                          BorderRadius.circular(10.0)),
                                     )
                                   ],
                                 ),

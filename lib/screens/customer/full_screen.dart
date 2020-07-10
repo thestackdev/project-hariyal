@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:the_project_hariyal/screens/customer/widgets/image_slider.dart';
 
 class FullScreenView extends StatefulWidget {
-  final List<dynamic> images;
-  final dynamic tag;
+  final images;
+  final tag;
 
   FullScreenView(this.images, this.tag);
 

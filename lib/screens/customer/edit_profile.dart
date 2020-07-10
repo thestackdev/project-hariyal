@@ -2,24 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
 
 class EditProfile extends StatefulWidget {
-  final UserModel userModel;
-  final String uid;
+  final DocumentSnapshot usersnap;
+  final uid;
 
-  EditProfile(this.userModel, this.uid);
+  const EditProfile({Key key, this.usersnap, this.uid}) : super(key: key);
 
   @override
-  _EditProfileState createState() => _EditProfileState(userModel, uid);
+  _EditProfileState createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
-  UserModel userModel;
-  final String uid;
-
-  _EditProfileState(this.userModel, this.uid);
-
   Firestore firestore;
 
   String img =
@@ -28,16 +22,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     firestore = Firestore.instance;
-    getUserInfoAsync();
     super.initState();
-  }
-
-  Future getUserInfoAsync() async {
-    firestore.collection('customers').document(uid).snapshots().listen((event) {
-      setState(() {
-        userModel = UserModel.fromMap(event.data);
-      });
-    });
   }
 
   @override
@@ -98,7 +83,7 @@ class _EditProfileState extends State<EditProfile> {
             children: <Widget>[
               avatar(),
               Text(
-                userModel.name,
+                widget.usersnap['name'],
                 style: Theme.of(context).textTheme.headline4,
               ),
             ],
@@ -158,41 +143,49 @@ class _EditProfileState extends State<EditProfile> {
                                 horizontal: 12, vertical: 4),
                             leading: Icon(Icons.my_location),
                             title: Text("Location"),
-                            subtitle: Text(userModel.location['state']),
+                            subtitle:
+                            Text(widget.usersnap['location']['state']),
                           ),
                           ListTile(
                             leading: Icon(Icons.email),
                             title: Text("Email"),
-                            subtitle: Text(userModel.email),
+                            subtitle: Text(widget.usersnap['email']),
                           ),
                           ListTile(
                             leading: Icon(Icons.phone),
                             title: Text("Phone"),
-                            subtitle: Text(userModel.phoneNumber),
+                            subtitle: Text(widget.usersnap['phoneNumber']),
                           ),
-                          if (userModel.alternatePhoneNumber != "default")
+                          if (widget.usersnap['alternatePhoneNumber'] !=
+                              "default")
                             ListTile(
                               leading: Icon(Icons.phone),
                               title: Text("Alternate Phone"),
-                              subtitle: Text(userModel.alternatePhoneNumber),
+                              subtitle:
+                              Text(widget.usersnap['alternatePhoneNumber']),
                             ),
-                          if (userModel.gender != "default")
+                          if (widget.usersnap['gender'] != "default")
                             ListTile(
                               leading: Icon(Icons.person_pin),
                               title: Text("Gender"),
-                              subtitle: Text(userModel.gender),
+                              subtitle: Text(widget.usersnap['gender']),
                             ),
-                          if (userModel.permanentAddress != "default")
+                          if (widget.usersnap['permanentAddress'] != "default")
                             ListTile(
                               leading: Icon(Icons.person),
                               title: Text("Address"),
-                              subtitle: Text(userModel.permanentAddress),
+                              subtitle:
+                              Text(widget.usersnap['permanentAddress']),
                             ),
-                          if (userModel.alternatePhoneNumber == "default" ||
-                              userModel.gender == "default" ||
-                              userModel.permanentAddress == "default")
+                          if (widget.usersnap['alternatePhoneNumber'] ==
+                              "default" ||
+                              widget.usersnap['gender'] == "default" ||
+                              widget.usersnap['permanentAddress'] == "default")
                             Container(
-                              width: MediaQuery.of(context).size.width - 32,
+                              width: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width - 32,
                               margin: EdgeInsets.only(top: 20),
                               child: RaisedButton(
                                 onPressed: () => addMoreFields(context),
@@ -235,7 +228,7 @@ class _EditProfileState extends State<EditProfile> {
               padding: MediaQuery.of(context).viewInsets,
               child: Wrap(
                 children: [
-                  if (userModel.permanentAddress == 'default')
+                  if (widget.usersnap['permanentAddress'] == 'default')
                     Container(
                       margin: EdgeInsets.only(top: 24),
                       child: TextFormField(
@@ -259,7 +252,7 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                     ),
-                  if (userModel.alternatePhoneNumber == 'default')
+                  if (widget.usersnap['alternatePhoneNumber'] == 'default')
                     Container(
                       margin: EdgeInsets.only(top: 24),
                       child: TextFormField(
@@ -288,7 +281,7 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                     ),
-                  if (userModel.gender == 'default')
+                  if (widget.usersnap['gender'] == 'default')
                     Container(
                       margin: EdgeInsets.only(top: 24, bottom: 24),
                       child: DropdownButtonFormField(
@@ -344,7 +337,7 @@ class _EditProfileState extends State<EditProfile> {
                         if (_alternatePhoneController.text.isNotEmpty) {
                           firestore
                               .collection('customers')
-                              .document(uid)
+                              .document(widget.uid)
                               .updateData({
                             "alternatePhoneNumber":
                                 _alternatePhoneController.text
@@ -354,7 +347,7 @@ class _EditProfileState extends State<EditProfile> {
                         if (_addressController.text.isNotEmpty) {
                           firestore
                               .collection('customers')
-                              .document(uid)
+                              .document(widget.uid)
                               .updateData({
                             "permanentAddress": _addressController.text
                           });
@@ -363,7 +356,7 @@ class _EditProfileState extends State<EditProfile> {
                         if (genderValue != 'default') {
                           firestore
                               .collection('customers')
-                              .document(uid)
+                              .document(widget.uid)
                               .updateData({"gender": genderValue});
                         }
 
@@ -383,7 +376,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void editFields(BuildContext context) {
-    var genderValue = userModel.gender;
+    var genderValue = widget.usersnap['gender'];
     final _addressController = TextEditingController();
     final _alternatePhoneController = TextEditingController();
     final _nameController = TextEditingController();
@@ -406,14 +399,15 @@ class _EditProfileState extends State<EditProfile> {
                     Container(
                       margin: EdgeInsets.only(top: 24),
                       child: TextFormField(
-                        controller: _nameController..text = userModel.name,
+                        controller: _nameController
+                          ..text = widget.usersnap['name'],
                         style: TextStyle(color: Colors.black, fontSize: 16),
                         decoration: new InputDecoration(
                           prefixIcon: Icon(Icons.person),
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                              BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
@@ -426,19 +420,19 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                     ),
-                    if (userModel.permanentAddress != 'default')
+                    if (widget.usersnap['permanentAddress'] != 'default')
                       Container(
                         margin: EdgeInsets.only(top: 24),
                         child: TextFormField(
                           controller: _addressController
-                            ..text = userModel.permanentAddress,
+                            ..text = widget.usersnap['permanentAddress'],
                           style: TextStyle(color: Colors.black, fontSize: 16),
                           decoration: new InputDecoration(
                             prefixIcon: Icon(Icons.pin_drop),
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
+                                BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
@@ -451,12 +445,12 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                       ),
-                    if (userModel.alternatePhoneNumber != 'default')
+                    if (widget.usersnap['alternatePhoneNumber'] != 'default')
                       Container(
                         margin: EdgeInsets.only(top: 24),
                         child: TextFormField(
                           controller: _alternatePhoneController
-                            ..text = userModel.alternatePhoneNumber,
+                            ..text = widget.usersnap['alternatePhoneNumber'],
                           keyboardType: TextInputType.phone,
                           inputFormatters: <TextInputFormatter>[
                             WhitelistingTextInputFormatter.digitsOnly
@@ -481,11 +475,11 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                       ),
-                    if (userModel.gender != 'default')
+                    if (widget.usersnap['gender'] != 'default')
                       Container(
                         margin: EdgeInsets.only(top: 24, bottom: 24),
                         child: DropdownButtonFormField(
-                            value: userModel.gender,
+                            value: widget.usersnap['gender'],
                             decoration: InputDecoration(
                               labelText: 'Gender',
                               isDense: true,
@@ -538,39 +532,40 @@ class _EditProfileState extends State<EditProfile> {
                           if (_alternatePhoneController.text.isNotEmpty &&
                               _alternatePhoneController.text.length == 10 &&
                               _alternatePhoneController.text !=
-                                  userModel.alternatePhoneNumber) {
+                                  widget.usersnap['alternatePhoneNumber']) {
                             firestore
                                 .collection('customers')
-                                .document(uid)
+                                .document(widget.uid)
                                 .updateData({
                               "alternatePhoneNumber":
-                                  _alternatePhoneController.text
+                              _alternatePhoneController.text
                             });
                           }
 
                           if (_addressController.text.isNotEmpty &&
                               _addressController.text !=
-                                  userModel.permanentAddress) {
+                                  widget.usersnap['permanentAdress']) {
                             firestore
                                 .collection('customers')
-                                .document(uid)
+                                .document(widget.uid)
                                 .updateData({
                               "permanentAddress": _addressController.text
                             });
                           }
 
-                          if (_addressController != userModel.gender) {
+                          if (_addressController.text !=
+                              widget.usersnap['gender']) {
                             firestore
                                 .collection('customers')
-                                .document(uid)
+                                .document(widget.uid)
                                 .updateData({"gender": genderValue});
                           }
 
                           if (_nameController.text.isNotEmpty &&
-                              _nameController.text != userModel.name) {
+                              _nameController.text != widget.usersnap['name']) {
                             firestore
                                 .collection('customers')
-                                .document(uid)
+                                .document(widget.uid)
                                 .updateData({"name": _nameController.text});
                           }
 

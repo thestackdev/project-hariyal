@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_project_hariyal/screens/admin/admin_home.dart';
+import 'package:the_project_hariyal/screens/customer/home.dart';
 import 'package:the_project_hariyal/screens/customer/signin.dart';
 
 class AuthServices {
@@ -16,7 +17,7 @@ class AuthServices {
     _preferences.clear();
   }
 
-  handleAdminAuth() async {
+  /* handleAdminAuth() async {
     return StreamBuilder<FirebaseUser>(
       stream: _auth.onAuthStateChanged,
       builder: (_, snap) {
@@ -34,20 +35,24 @@ class AuthServices {
         }
       },
     );
-  }
+  } */
 
-  /*handleAuth() {
+  handleAuth(final isAdmin) {
     return StreamBuilder<FirebaseUser>(
-      stream: _auth.onAuthStateChanged,
-      builder: (_, snap) {
-        if (snap.hasData) {
-          return SplashScreen();
+      stream: FirebaseAuth.instance.onAuthStateChanged,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (isAdmin == true) {
+            return AdminHome(uid: snapshot.data.uid);
+          } else {
+            return Home(uid: snapshot.data.uid);
+          }
         } else {
           return Signin();
         }
       },
     );
-  }*/
+  }
 
   adminLogin(email, password) async {
     Fluttertoast.showToast(msg: 'Authenticating...');
