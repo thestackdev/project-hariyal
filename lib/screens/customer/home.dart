@@ -410,7 +410,7 @@ class _HomeState extends State<Home> {
                               ),
                               subtitle: Text(
                                 productsnap.data.documents[index]
-                                ['description'],
+                                    ['description'],
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
