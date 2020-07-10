@@ -10,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
 import 'package:the_project_hariyal/screens/customer/home.dart';
-import 'package:the_project_hariyal/screens/customer/models/user_model.dart';
 import 'package:the_project_hariyal/utils.dart';
 
 class Signup extends StatefulWidget {
@@ -199,17 +198,19 @@ class _SignupState extends State<Signup> {
 
     final _fireStore = Firestore.instance;
 
-    UserModel userModel = new UserModel(
-      name: _nameController.text,
-      email: _emailController.text,
-      phoneNumber: _phoneController.text,
-      location: _loc,
-    );
+    final userInfo = new Map<String, dynamic>();
+    userInfo['name'] = _nameController.text;
+    userInfo['email'] = _emailController.text;
+    userInfo['phoneNumber'] = _phoneController.text;
+    userInfo['gender'] = "default";
+    userInfo['alternatePhoneNumber'] = "default";
+    userInfo['permanentAddress'] = "default";
+    userInfo['location'] = _loc;
+    userInfo['isBlocked'] = false;
+    userInfo['current_search'] = "location.state";
+    userInfo['search_value'] = _loc['state'];
 
-    await _fireStore
-        .collection('customers')
-        .document(uid)
-        .setData(userModel.toMap());
+    await _fireStore.collection('customers').document(uid).setData(userInfo);
 
     _hideDialog();
     Utils().toast(context, 'User created', bgColor: Utils().randomGenerator());
