@@ -38,39 +38,47 @@ class _InterestedItemsState extends State<InterestedItems> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: StreamBuilder<QuerySnapshot>(
-            stream: fireStore
-                .collection('products')
-                .where(
-                  FieldPath.documentId,
-                  whereIn: widget.interestedsnap.data['interested'],
-                )
-                .limit(count)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    controller: _scrollController,
-                    itemCount: snapshot.data.documents.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin: EdgeInsets.all(12),
-                        child: ListTile(
-                          title: Text(snapshot.data.documents[index]['title']),
-                          subtitle:
-                              Text(snapshot.data.documents[index]['price']),
-                        ),
-                      );
-                    });
-              } else {
-                return Center(
-                  child: SpinKitWave(
-                    color: Colors.orange,
-                    size: 50.0,
-                  ),
-                );
-              }
-            }),
+        child: widget.interestedsnap.data == null
+            ? Center(
+                child: Text(
+                'You don\'t have interests in any of our product :/',
+                style: TextStyle(fontSize: 24),
+                textAlign: TextAlign.center,
+              ))
+            : StreamBuilder<QuerySnapshot>(
+                stream: fireStore
+                    .collection('products')
+                    .where(
+                      FieldPath.documentId,
+                      whereIn: widget.interestedsnap.data['interested'],
+                    )
+                    .limit(count)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        controller: _scrollController,
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            margin: EdgeInsets.all(12),
+                            child: ListTile(
+                              title:
+                                  Text(snapshot.data.documents[index]['title']),
+                              subtitle:
+                                  Text(snapshot.data.documents[index]['price']),
+                            ),
+                          );
+                        });
+                  } else {
+                    return Center(
+                      child: SpinKitWave(
+                        color: Colors.orange,
+                        size: 50.0,
+                      ),
+                    );
+                  }
+                }),
       ),
     );
   }

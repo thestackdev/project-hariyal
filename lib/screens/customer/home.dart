@@ -325,7 +325,7 @@ class _HomeState extends State<Home> {
                           stream: firestore
                               .collection('products')
                               .where(customersnap.data['current_search'],
-                              isEqualTo: customersnap.data['search_value'])
+                                  isEqualTo: customersnap.data['search_value'])
                               .limit(count)
                               .snapshots(),
                           builder: (context, productsnap) {
@@ -450,6 +450,12 @@ class _HomeState extends State<Home> {
                                 )
                               });
                             }
+                          } else {
+                            interestsnap.data.reference.setData({
+                              'interested': FieldValue.arrayUnion(
+                                [productsnap.data.documents[index].documentID],
+                              )
+                            });
                           }
                         },
                         icon: interestsnap.data.data != null
