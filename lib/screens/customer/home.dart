@@ -422,7 +422,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: EdgeInsets.only(left: 20),
                               child: Text(
-                                'Price',
+                                '${productsnap.data.documents[index]['price']} Rs',
                                 style: TextStyle(fontSize: 18),
                               ),
                             )
