@@ -20,7 +20,7 @@ class _SigninState extends State<Signin> {
   var suffixColor = Colors.grey;
   bool _isOpen = false;
 
-  GlobalKey _scaffoldKey = GlobalKey();
+  GlobalKey<_SigninState> _scaffoldKey = GlobalKey<_SigninState>();
 
   void login() {
     FirebaseAuth _auth = FirebaseAuth.instance;
@@ -47,7 +47,8 @@ class _SigninState extends State<Signin> {
                   _hideDialog();
                 } else {
                   _hideDialog();
-                  Utils().toast(_scaffoldKey.currentContext, 'Failed to Signin',
+                  Utils().toast(
+                      _scaffoldKey.currentContext, 'Failed to Sign in',
                       bgColor: Utils().randomGenerator());
                 }
               },
@@ -100,7 +101,7 @@ class _SigninState extends State<Signin> {
                                       .signInWithCredential(credential);
 
                                   if (result.user.uid != null) {
-                                    Navigator.pop(context);
+                                    _hideDialog();
                                   } else {
                                     _hideDialog();
                                     Utils().toast(_scaffoldKey.currentContext,

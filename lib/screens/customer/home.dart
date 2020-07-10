@@ -24,8 +24,6 @@ class _HomeState extends State<Home> {
   List states = [];
   List areas = [];
   List categories = [];
-  List interestedList = [];
-  List interests = [];
 
   Firestore firestore;
 
@@ -39,6 +37,12 @@ class _HomeState extends State<Home> {
         count += 30;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -496,14 +500,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-/* if (customersnap.data.data['isBlocked'] == true) {
-                          FirebaseAuth.instance.signOut();
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (_) {
-                            Utils().toast(
-                                context, 'User have been deleted from database',
-                                bgColor: Utils().randomGenerator());
-                            return SplashScreen(false);
-                          }));
-                        } */
