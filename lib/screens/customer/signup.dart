@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +20,8 @@ class _SignupState extends State<Signup> {
   String _pinCode, _state, _cityDistrict;
   double _latitude, _longitude;
   var currentLocation;
+  bool _isOpen = false;
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   Location location = new Location();
 
@@ -31,12 +32,7 @@ class _SignupState extends State<Signup> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _codeController = new TextEditingController();
-
-  bool _nameValidated = false,
-      _emailValidated = false,
-      _phoneValidated = false,
-      _isOpen = false;
+  final _codeController = TextEditingController();
 
   void fieldFocusChange(
       BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
@@ -45,132 +41,123 @@ class _SignupState extends State<Signup> {
   }
 
   void signUp() {
-    if (!_nameValidated) {
-      Utils().toast(context, 'Enter a valid name',
-          bgColor: Colors.red, textColor: Colors.white);
-      return;
-    }
+    if (_nameController.text.length > 0 &&
+        _emailController.text.length > 0 &&
+        _phoneController.text.length != 10) {
+      Utils().toast(
+        context,
+        'Invalid Entries',
+        bgColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } else {
+      _showDialog(text: 'Please wait');
+      Firestore.instance
+          .collection('customers')
+          .where('phoneNumber', isEqualTo: _phoneController.text.trim())
+          .getDocuments()
+          .then((value) {
+        if (value.documents.length > 0) {
+          _hideDialog();
+          Utils().toast(
+            context,
+            'This phone number is already taken',
+            bgColor: Colors.red,
+            textColor: Colors.white,
+          );
+        } else {
+          Firestore.instance
+              .collection('customers')
+              .where('email', isEqualTo: _emailController.text.trim())
+              .getDocuments()
+              .then((value) {
+            if (value.documents.length > 0) {
+              _hideDialog();
+              Utils().toast(
+                context,
+                'This email is already taken',
+                bgColor: Colors.red,
+                textColor: Colors.white,
+              );
+            } else {
+              try {
+                _auth.verifyPhoneNumber(
+                  phoneNumber: '+91' + _phoneController.text,
+                  timeout: Duration(seconds: 60),
+                  verificationCompleted: (AuthCredential credential) async {
+                    authenticate(credential);
+                  },
+                  verificationFailed: (AuthException exception) {
+                    _hideDialog();
+                    Utils().toast(context, exception.message,
+                        bgColor: Colors.red[800], textColor: Colors.white);
+                    print(exception);
+                  },
+                  codeSent: (String verificationId, [int forceResendingToken]) {
+                    _hideDialog();
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Enter the code"),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                TextField(
+                                  controller: _codeController,
+                                  maxLength: 6,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    WhitelistingTextInputFormatter.digitsOnly
+                                  ],
+                                ),
+                              ],
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("Confirm"),
+                                textColor: Colors.white,
+                                color: Colors.blue,
+                                onPressed: () async {
+                                  if (_codeController.text.length != 6) {
+                                    Utils().toast(context, 'Enter valid code');
+                                    return;
+                                  }
+                                  _showDialog(text: "Verifying Otp");
+                                  final code = _codeController.text.trim();
+                                  AuthCredential credential =
+                                      PhoneAuthProvider.getCredential(
+                                    verificationId: verificationId,
+                                    smsCode: code,
+                                  );
 
-    if (!_emailValidated) {
-      Utils().toast(context, 'Enter a valid e-mail',
-          bgColor: Colors.red, textColor: Colors.white);
-      return;
-    }
-
-    if (!_emailValidated) {
-      Utils().toast(context, 'Enter a valid password',
-          bgColor: Colors.red, textColor: Colors.white);
-      return;
-    }
-
-    _showDialog(text: 'Please wait');
-
-    Firestore.instance
-        .collection('customers')
-        .where('phoneNumber', isEqualTo: _phoneController.text.trim())
-        .getDocuments()
-        .then((value) {
-      if (value.documents.length <= 0) {
-        Firestore.instance
-            .collection('customers')
-            .where('email', isEqualTo: _emailController.text.trim())
-            .getDocuments()
-            .then((value) {
-          if (value.documents.length <= 0) {
-            _hideDialog();
-            _showDialog(text: 'Requesting Otp');
-
-            FirebaseAuth _auth = FirebaseAuth.instance;
-
-            _auth.verifyPhoneNumber(
-                phoneNumber: '+91' + _phoneController.text,
-                timeout: Duration(seconds: 60),
-                verificationCompleted: (AuthCredential credential) async {
-                  authenticate(credential);
-                },
-                verificationFailed: (AuthException exception) {
-                  _hideDialog();
-                  Utils().toast(context, exception.message,
-                      bgColor: Colors.red[800], textColor: Colors.white);
-                  print(exception);
-                },
-                codeSent: (String verificationId, [int forceResendingToken]) {
-                  _hideDialog();
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text("Enter the code"),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              TextField(
-                                controller: _codeController,
-                                maxLength: 6,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  WhitelistingTextInputFormatter.digitsOnly
-                                ],
-                              ),
+                                  authenticate(credential);
+                                },
+                              )
                             ],
-                          ),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text("Confirm"),
-                              textColor: Colors.white,
-                              color: Colors.blue,
-                              onPressed: () async {
-                                if (_codeController.text.length != 6) {
-                                  Utils().toast(context, 'Enter valid code');
-                                  return;
-                                }
-                                _showDialog(text: "Verifying Otp");
-                                final code = _codeController.text.trim();
-                                AuthCredential credential =
-                                    PhoneAuthProvider.getCredential(
-                                        verificationId: verificationId,
-                                        smsCode: code);
-
-                                authenticate(credential);
-                              },
-                            )
-                          ],
-                        );
-                      });
-                },
-                codeAutoRetrievalTimeout: null);
-          } else {
-            _hideDialog();
-            Utils().toast(context, 'E-mail exists',
-                bgColor: Utils().randomGenerator());
-          }
-        });
-      } else {
-        _hideDialog();
-        Utils().toast(context, 'Phone number exists',
-            bgColor: Utils().randomGenerator());
-      }
-    });
+                          );
+                        });
+                  },
+                  codeAutoRetrievalTimeout: null,
+                );
+              } catch (e) {
+                Utils().toast(context, e.toString());
+              }
+            }
+          });
+        }
+      });
+    }
   }
 
   Future authenticate(AuthCredential credential) async {
-    AuthResult result = await FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .catchError((error) {
-      _hideDialog();
-      Utils().toast(context, 'Wrong Otp', bgColor: Colors.red);
-      print(error);
-      return;
-    });
-
-    _hideDialog();
-
-    if (result.user == null) {
-      Utils().toast(context, 'Sign-Up: Otp Verification Failed',
-          bgColor: Utils().randomGenerator());
-    } else {
-      uploadUserInfo(result.user.uid);
+    try {
+      final result =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      await uploadUserInfo(result.user.uid);
+    } catch (e) {
+      Utils().toast(context, e.toString());
     }
   }
 
@@ -182,8 +169,8 @@ class _SignupState extends State<Signup> {
     _loc['lat'] = _latitude;
     _loc['long'] = _longitude;
     _loc['pinCode'] = _pinCode;
-    _loc['state'] = _state;
-    _loc['cityDistrict'] = _cityDistrict;
+    _loc['state'] = _state.toLowerCase();
+    _loc['cityDistrict'] = _cityDistrict.toLowerCase();
 
     final _fireStore = Firestore.instance;
 
@@ -196,7 +183,7 @@ class _SignupState extends State<Signup> {
     userInfo['permanentAddress'] = "default";
     userInfo['location'] = _loc;
     userInfo['isBlocked'] = false;
-    userInfo['current_search'] = "location.state";
+    userInfo['current_search'] = "location.cityDistrict";
     userInfo['search_value'] = _loc['state'];
 
     await _fireStore.collection('customers').document(uid).setData(userInfo);
@@ -227,47 +214,6 @@ class _SignupState extends State<Signup> {
   @override
   void initState() {
     checkLocationEnabled();
-
-    _nameController.addListener(() {
-      if (_nameController.text.length <= 0) {
-        setState(() {
-          _nameValidated = false;
-        });
-      } else {
-        setState(() {
-          _nameValidated = true;
-        });
-      }
-    });
-
-    _emailController.addListener(() {
-      if (_emailController.text.length <= 0) {
-        setState(() {
-          _emailValidated = false;
-        });
-      } else if (!EmailValidator.validate(_emailController.text.trim())) {
-        setState(() {
-          _emailValidated = false;
-        });
-      } else {
-        setState(() {
-          _emailValidated = true;
-        });
-      }
-    });
-
-    _phoneController.addListener(() {
-      if (_phoneController.text.length != 10) {
-        setState(() {
-          _phoneValidated = false;
-        });
-      } else {
-        setState(() {
-          _phoneValidated = true;
-        });
-      }
-    });
-
     super.initState();
   }
 
@@ -382,7 +328,9 @@ class _SignupState extends State<Signup> {
                     decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person_outline),
                         suffixIcon: Icon(
-                          _nameValidated ? Icons.check_circle : null,
+                          _nameController.text.length > 0
+                              ? Icons.check_circle
+                              : null,
                           color: Colors.green[800],
                         ),
                         hintText: "Name",
@@ -414,7 +362,9 @@ class _SignupState extends State<Signup> {
                     decoration: InputDecoration(
                         prefixIcon: Icon(Icons.alternate_email),
                         suffixIcon: Icon(
-                          _emailValidated ? Icons.check_circle : null,
+                          _emailController.text.length > 0
+                              ? Icons.check_circle
+                              : null,
                           color: Colors.green[800],
                         ),
                         hintText: "E-mail",
@@ -448,7 +398,9 @@ class _SignupState extends State<Signup> {
                     decoration: InputDecoration(
                         prefixIcon: Icon(Icons.phone),
                         suffixIcon: Icon(
-                          _phoneValidated ? Icons.check_circle : null,
+                          _phoneController.text.length == 10
+                              ? Icons.check_circle
+                              : null,
                           color: Colors.green[800],
                         ),
                         hintText: "Phone Number",

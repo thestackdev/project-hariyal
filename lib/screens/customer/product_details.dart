@@ -6,16 +6,28 @@ import 'widgets/image_slider.dart';
 
 class ProductDetail extends StatefulWidget {
   final DocumentSnapshot productSnap;
+  final DocumentSnapshot interestedsnap;
 
-  const ProductDetail({Key key, this.productSnap}) : super(key: key);
+  const ProductDetail({Key key, this.productSnap, this.interestedsnap})
+      : super(key: key);
 
   @override
   _ProductDetailState createState() => _ProductDetailState();
 }
 
 class _ProductDetailState extends State<ProductDetail> {
+  bool isInterested = false;
+
   @override
   void initState() {
+    if (widget.interestedsnap.data['interested'].contains(
+          widget.productSnap.documentID,
+        ) &&
+        mounted) {
+      setState(() {
+        isInterested = true;
+      });
+    }
     super.initState();
   }
 
@@ -92,8 +104,45 @@ class _ProductDetailState extends State<ProductDetail> {
                                         fontSize: 28.0),
                                   ),
                                   trailing: IconButton(
-                                    icon: Icon(Icons.favorite_border),
-                                    onPressed: () {},
+                                    icon: isInterested
+                                        ? Icon(
+                                      Icons.favorite,
+                                      color: Colors.red[800],
+                                    )
+                                        : Icon(Icons.favorite_border),
+                                    onPressed: () {
+                                      if (widget.interestedsnap.data != null) {
+                                        if (widget
+                                            .interestedsnap.data['interested']
+                                            .contains(widget
+                                            .productSnap.documentID)) {
+                                          widget.interestedsnap.reference
+                                              .updateData({
+                                            'interested':
+                                            FieldValue.arrayRemove(
+                                              [widget.productSnap.documentID],
+                                            )
+                                          });
+                                        } else {
+                                          widget.interestedsnap.reference
+                                              .updateData({
+                                            'interested': FieldValue.arrayUnion(
+                                              [widget.productSnap.documentID],
+                                            )
+                                          });
+                                        }
+                                      } else {
+                                        widget.interestedsnap.reference
+                                            .setData({
+                                          'interested': FieldValue.arrayUnion(
+                                            [widget.productSnap.documentID],
+                                          )
+                                        });
+                                      }
+                                      setState(() {
+                                        isInterested = !isInterested;
+                                      });
+                                    },
                                   ),
                                 ),
                                 Padding(
@@ -119,6 +168,7 @@ class _ProductDetailState extends State<ProductDetail> {
                             color: Colors.grey.shade900,
                           ),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'Price ${widget.productSnap['price']}',
@@ -127,8 +177,6 @@ class _ProductDetailState extends State<ProductDetail> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18.0),
                               ),
-                              const SizedBox(width: 20.0),
-                              Spacer(),
                               RaisedButton(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 8.0, horizontal: 16.0),

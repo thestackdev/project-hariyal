@@ -24,8 +24,9 @@ class _HomeState extends State<Home> {
   List states = [];
   List areas = [];
   List categories = [];
-
-  Firestore firestore;
+  Stream _query;
+  Firestore firestore = Firestore.instance;
+  bool isFilterChanged = false;
 
   int count = 30;
 
@@ -51,7 +52,18 @@ class _HomeState extends State<Home> {
     _scrollController.addListener(_scrollListener);
     firestore = Firestore.instance;
     getFilters();
+    initFilters();
     super.initState();
+  }
+
+  initFilters() {
+    firestore.collection('customers').document(widget.uid).get().then((value) {
+      _query = firestore
+          .collection('products')
+          .where('area', isEqualTo: value.data['location.cityDistrict'])
+          .limit(count)
+          .snapshots();
+    });
   }
 
   getFilters() async {
@@ -69,6 +81,8 @@ class _HomeState extends State<Home> {
   }
 
   showFilterDialog() {
+    String state, area, category;
+
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -79,7 +93,7 @@ class _HomeState extends State<Home> {
       ),
       builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (context, state) {
+          builder: (context, buildstate) {
             return Container(
               padding: EdgeInsets.all(12),
               margin: EdgeInsets.all(12),
@@ -103,15 +117,9 @@ class _HomeState extends State<Home> {
                       iconSize: 30,
                       elevation: 9,
                       onChanged: (newValue) {
-                        firestore
-                            .collection('customers')
-                            .document(widget.uid)
-                            .updateData({
-                          'current_search': 'location.state',
-                          'search_value': newValue,
+                        setState(() {
+                          state = newValue;
                         });
-
-                        Navigator.pop(context);
                       },
                       items: states.map<DropdownMenuItem<String>>((e) {
                         return DropdownMenuItem<String>(
@@ -132,15 +140,9 @@ class _HomeState extends State<Home> {
                       iconSize: 30,
                       elevation: 9,
                       onChanged: (newValue) {
-                        firestore
-                            .collection('customers')
-                            .document(widget.uid)
-                            .updateData({
-                          'current_search': 'location.area',
-                          'search_value': newValue,
+                        setState(() {
+                          area = newValue;
                         });
-
-                        Navigator.pop(context);
                       },
                       items: areas.map<DropdownMenuItem<String>>((e) {
                         return DropdownMenuItem<String>(
@@ -161,15 +163,9 @@ class _HomeState extends State<Home> {
                       iconSize: 30,
                       elevation: 9,
                       onChanged: (newValue) {
-                        firestore
-                            .collection('customers')
-                            .document(widget.uid)
-                            .updateData({
-                          'current_search': 'category',
-                          'search_value': newValue,
+                        setState(() {
+                          category = newValue;
                         });
-
-                        Navigator.pop(context);
                       },
                       items: categories.map<DropdownMenuItem<String>>((e) {
                         return DropdownMenuItem<String>(
@@ -177,7 +173,33 @@ class _HomeState extends State<Home> {
                             child: Text(
                               e.toString(),
                             ));
-                      }).toList())
+                      }).toList()),
+                  Container(
+                    alignment: Alignment.topRight,
+                    child: RaisedButton(
+                      child: Text('Done'),
+                      onPressed: () {
+                        if (area != null && state != null && category != null) {
+                          getScenario(7, area, state, category);
+                        } else if (area != null && state != null) {
+                          getScenario(6, area, state, category);
+                        } else if (area != null && category != null) {
+                          getScenario(5, area, state, category);
+                        } else if (state != null && area != null) {
+                          getScenario(4, area, state, category);
+                        } else if (state != null && category != null) {
+                          getScenario(3, area, state, category);
+                        } else if (state != null) {
+                          getScenario(2, area, state, category);
+                        } else if (area != null) {
+                          getScenario(1, area, state, category);
+                        } else if (category != null) {
+                          getScenario(0, area, state, category);
+                        }
+                        Navigator.pop(context);
+                      },
+                    ),
+                  )
                 ],
               ),
             );
@@ -321,14 +343,26 @@ class _HomeState extends State<Home> {
                       ),
                       body: SafeArea(
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: firestore
-                              .collection('products')
-                              .where(customersnap.data['current_search'],
-                                  isEqualTo: customersnap.data['search_value'])
-                              .limit(count)
-                              .snapshots(),
+                          stream: _query,
                           builder: (context, productsnap) {
-                            if (productsnap.hasData) {
+                            if (productsnap.connectionState ==
+                                ConnectionState.waiting &&
+                                isFilterChanged) {
+                              return Center(
+                                child: SpinKitWave(
+                                  color: Colors.orange,
+                                  size: 50.0,
+                                ),
+                              );
+                            } else if (productsnap.hasData) {
+                              if (productsnap.data.documents.length == 0) {
+                                return Center(
+                                  child: Text(
+                                    'No products found with the selected category',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              }
                               return buildItem(productsnap, interestedsnap);
                             } else {
                               return Center(
@@ -370,11 +404,15 @@ class _HomeState extends State<Home> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return ProductDetail(
-                  productSnap: productsnap.data.documents[index],
-                );
-              }));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) {
+                  return ProductDetail(
+                    productSnap: productsnap.data.documents[index],
+                    interestedsnap: interestsnap.data,
+                  );
+                }),
+              );
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
@@ -501,5 +539,77 @@ class _HomeState extends State<Home> {
         borderSide: BorderSide(color: Colors.grey.shade300),
       ),
     );
+  }
+
+  getScenario(int num, area, state, category) async {
+    setState(() {
+      isFilterChanged = true;
+      switch (num) {
+        case 0:
+          _query = firestore
+              .collection('products')
+              .where('category', isEqualTo: category)
+              .limit(count)
+              .snapshots();
+          break;
+        case 1:
+          _query = firestore
+              .collection('products')
+              .where('location.area', isEqualTo: area)
+              .limit(count)
+              .snapshots();
+          break;
+        case 2:
+          _query = firestore
+              .collection('products')
+              .where('location.state', isEqualTo: state)
+              .limit(count)
+              .snapshots();
+
+          break;
+        case 3:
+          _query = firestore
+              .collection('products')
+              .where('location.state', isEqualTo: state)
+              .where('category', isEqualTo: category)
+              .limit(count)
+              .snapshots();
+          break;
+        case 4:
+          _query = firestore
+              .collection('products')
+              .where('location.state', isEqualTo: state)
+              .where('location.area', isEqualTo: area)
+              .limit(count)
+              .snapshots();
+          break;
+        case 5:
+          _query = firestore
+              .collection('products')
+              .where('location.area', isEqualTo: area)
+              .where('category', isEqualTo: category)
+              .limit(count)
+              .snapshots();
+          break;
+        case 6:
+          _query = firestore
+              .collection('products')
+              .where('location.state', isEqualTo: state)
+              .where('location.area', isEqualTo: area)
+              .limit(count)
+              .snapshots();
+          break;
+        case 7:
+          _query = firestore
+              .collection('products')
+              .where('location.state', isEqualTo: state)
+              .where('location.area', isEqualTo: area)
+              .where('category', isEqualTo: category)
+              .limit(count)
+              .snapshots();
+          break;
+      }
+    });
+    isFilterChanged = true;
   }
 }

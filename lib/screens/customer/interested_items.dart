@@ -40,13 +40,14 @@ class _InterestedItemsState extends State<InterestedItems> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: widget.interestedsnap.data == null
+        child: widget.interestedsnap.data['interested'].length == 0
             ? Center(
                 child: Text(
-                'You don\'t have interests in any of our product :/',
-                style: TextStyle(fontSize: 24),
-                textAlign: TextAlign.center,
-              ))
+                  'You don\'t have interests in any of our product :/',
+                  style: TextStyle(fontSize: 24),
+                  textAlign: TextAlign.center,
+                ),
+              )
             : StreamBuilder<QuerySnapshot>(
                 stream: fireStore
                     .collection('products')
@@ -83,42 +84,46 @@ class _InterestedItemsState extends State<InterestedItems> {
         GestureDetector(
           onTap: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProductDetail(
-                          productSnap: snapshot.data.documents[index],
-                        )));
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ProductDetail(
+                      productSnap: snapshot.data.documents[index],
+                      interestedsnap: widget.interestedsnap,
+                    ),
+              ),
+            );
           },
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
             elevation: 12,
-            margin: EdgeInsets.only(left: 15, top: 15, right: 32, bottom: 15),
+            margin: EdgeInsets.all(18),
             child: Container(
               height: 120,
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               child: Row(
                 children: <Widget>[
                   ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12.0),
-                          bottomLeft: Radius.circular(12.0)),
-                      child: PNetworkImage(
-                        snapshot.data.documents[index]['images'][0],
-                        height: 120,
-                        width: 160,
-                        fit: BoxFit.fitHeight,
-                      )),
-                  SizedBox(
-                    width: 20,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12.0),
+                        bottomLeft: Radius.circular(12.0)),
+                    child: PNetworkImage(
+                      snapshot.data.documents[index]['images'][0],
+                      height: 120,
+                      width: 160,
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Spacer(),
                       Container(
                         margin: EdgeInsets.only(left: 12),
                         child: Text(
@@ -128,7 +133,6 @@ class _InterestedItemsState extends State<InterestedItems> {
                               color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Spacer(),
                       Container(
                         margin: EdgeInsets.only(left: 12),
                         child: Text(
@@ -140,37 +144,13 @@ class _InterestedItemsState extends State<InterestedItems> {
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Spacer(),
                     ],
-                  ),
-                  SizedBox(
-                    width: 10,
                   ),
                 ],
               ),
             ),
           ),
         ),
-        Positioned(
-          top: 32,
-          right: 20,
-          child: GestureDetector(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.red, borderRadius: BorderRadius.circular(6)),
-              child: Icon(
-                Icons.close,
-                color: Colors.white,
-              ),
-            ),
-            onTap: () async {
-              await fireStore
-                  .collection('interested')
-                  .document(snapshot.data.documents[index].documentID)
-                  .delete();
-            },
-          ),
-        )
       ],
     );
   }
