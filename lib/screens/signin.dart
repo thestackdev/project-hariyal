@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:otp_text_field/otp_field.dart';
+import 'package:otp_text_field/style.dart';
 import 'package:the_project_hariyal/utils.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
 
 class Signin extends StatefulWidget {
   @override
@@ -12,172 +13,96 @@ class Signin extends StatefulWidget {
 }
 
 class _SigninState extends State<Signin> {
-  final _controller = new TextEditingController();
-  final _codeController = new TextEditingController();
+  final _phoneController = new TextEditingController();
   var suffixColor = Colors.grey;
-  bool _isOpen = false;
+  bool isLoading = false, showOtp = false, acceptTermsAndConditions = true;
+  String loadingText = "", otp;
 
   GlobalKey<_SigninState> _scaffoldKey = GlobalKey<_SigninState>();
+
+  void setLoading(bool value) {
+    if (mounted) {
+      setState(() {
+        if (value) {
+          isLoading = true;
+        } else {
+          isLoading = false;
+        }
+      });
+    }
+  }
+
+  void setLoadingText(String text) {
+    if (mounted) {
+      setState(() {
+        loadingText = text;
+      });
+    }
+  }
 
   void login() {
     FirebaseAuth _auth = FirebaseAuth.instance;
 
-    if (_controller.text.length == 10) {
-      _showDialog(text: 'Authenticating');
+    if (!acceptTermsAndConditions) {
+      Utils().toast(context, 'Accept to terms & conditions to continue');
+    }
+
+    if (_phoneController.text.length == 10) {
+      setLoading(true);
+      setLoadingText('Requesting Otp');
       try {
-        Firestore.instance
-            .collection('customers')
-            .where('phoneNumber', isEqualTo: _controller.text)
-            .getDocuments()
-            .then((value) {
-          if (value.documents.length != 0) {
-            _hideDialog();
-            _showDialog(text: 'Requesting Otp');
-            _auth.verifyPhoneNumber(
-              phoneNumber: '+91' + _controller.text,
-              timeout: Duration(seconds: 60),
-              verificationCompleted: (AuthCredential credential) {
-                signIn(credential);
-              },
-              verificationFailed: (AuthException exception) {
-                _hideDialog();
-                Utils().toast(_scaffoldKey.currentContext, exception.message,
-                    bgColor: Colors.red[800], textColor: Colors.white);
-              },
-              codeSent: (String verificationId, [int forceResendingToken]) {
-                _hideDialog();
-                if (mounted) {
-                  setState(() {
-                    _isOpen = true;
-                  });
-                }
-                showDialog(
-                    context: _scaffoldKey.currentContext,
-                    barrierDismissible: false,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Enter the code"),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            TextField(
-                              controller: _codeController,
-                              maxLength: 6,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                WhitelistingTextInputFormatter.digitsOnly
-                              ],
-                            ),
-                          ],
-                        ),
-                        actions: <Widget>[
-                          FlatButton(
-                              child: Text("Confirm"),
-                              textColor: Colors.white,
-                              color: Colors.blue,
-                              onPressed: () async {
-                                if (_codeController.text.length != 6) {
-                                  Utils().toast(
-                                    _scaffoldKey.currentContext,
-                                    'Enter valid code',
-                                  );
-                                } else {
-                                  _hideDialog();
-                                  _showDialog(text: "Signing in");
-                                  final code = _codeController.text.trim();
-                                  _codeController.text = "";
-                                  AuthCredential credential =
-                                      PhoneAuthProvider.getCredential(
-                                          verificationId: verificationId,
-                                          smsCode: code);
-                                  signIn(credential);
-                                }
-                              })
-                        ],
-                      );
-                    });
-              },
-              codeAutoRetrievalTimeout: null,
-            );
-          } else {
-            _hideDialog();
-            Utils().toast(context, 'No user Found with this credintials');
-          }
-        });
+        _auth.verifyPhoneNumber(
+          phoneNumber: '+91' + _phoneController.text,
+          timeout: Duration(seconds: 60),
+          verificationCompleted: (AuthCredential credential) {
+            signIn(credential);
+          },
+          verificationFailed: (AuthException exception) {
+            setLoading(false);
+            Utils().toast(_scaffoldKey.currentContext, exception.message,
+                bgColor: Colors.red[800], textColor: Colors.white);
+          },
+          codeSent: (String verificationId, [int forceResendingToken]) {
+            setState(() {
+              showOtp = true;
+            });
+            setLoading(false);
+            if (otp.length == 6) {
+              AuthCredential credential = PhoneAuthProvider.getCredential(
+                  verificationId: verificationId, smsCode: otp);
+              signIn(credential);
+            }
+          },
+          codeAutoRetrievalTimeout: null,
+        );
+      } on PlatformException catch (e) {
+        setLoading(false);
+        print(e.details);
+        Utils().toast(context, e.message);
       } catch (e) {
-        _hideDialog();
+        setLoading(false);
         Utils().toast(context, e.toString());
       }
     }
   }
 
   signIn(AuthCredential credential) async {
+    setLoading(true);
+    setLoadingText("Signing In");
     try {
       await FirebaseAuth.instance.signInWithCredential(credential);
-      _hideDialog();
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       Utils()
           .toast(_scaffoldKey.currentContext, 'Wrong Otp', bgColor: Colors.red);
     }
   }
 
-  Future<bool> _showDialog({String text}) async {
-    setState(() {
-      _isOpen = true;
-    });
-
-    return (await showDialog(
-      context: _scaffoldKey.currentContext,
-      barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () {},
-        child: AlertDialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            alignment: WrapAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(24),
-                color: Colors.black12,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      text != null && text.isNotEmpty ? text : 'Loading',
-                      textScaleFactor: 1.2,
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    ));
-  }
-
-  void _hideDialog() {
-    if (_isOpen) {
-      Navigator.of(_scaffoldKey.currentContext).pop(true);
-      setState(() {
-        _isOpen = false;
-      });
-    }
-  }
-
   @override
   void initState() {
-    _controller.addListener(() {
-      if (_controller.text.length == 10) {
+    _phoneController.addListener(() {
+      if (_phoneController.text.length == 10) {
         setState(() {
           suffixColor = Colors.green;
         });
@@ -193,147 +118,234 @@ class _SigninState extends State<Signin> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade200,
       key: _scaffoldKey,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-                height: 650,
-                child: RotatedBox(
-                  quarterTurns: 2,
-                  child: WaveWidget(
-                    config: CustomConfig(
-                      gradients: [
-                        [Colors.deepPurple, Colors.deepPurple.shade200],
-                        [Colors.indigo.shade200, Colors.purple.shade200],
-                      ],
-                      durations: [19440, 10800],
-                      heightPercentages: [0.20, 0.25],
-                      blur: MaskFilter.blur(BlurStyle.solid, 10),
-                      gradientBegin: Alignment.bottomLeft,
-                      gradientEnd: Alignment.topRight,
-                    ),
-                    waveAmplitude: 0,
-                    size: Size(
-                      double.infinity,
-                      double.infinity,
-                    ),
-                  ),
-                )),
-            ListView(children: [
-              Container(
-                  height: 500,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("Login",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 36.0)),
-                        Card(
-                          margin: EdgeInsets.only(left: 30, right: 30, top: 30),
-                          elevation: 11,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40))),
-                          child: TextFormField(
-                            controller: _controller,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              WhitelistingTextInputFormatter.digitsOnly
-                            ],
-                            decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.call),
-                                prefix: Text(
-                                  '+91 ',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                suffixIcon: Icon(
-                                  Icons.check_circle,
-                                  color: suffixColor,
-                                ),
-                                hintText: "Phone Number",
-                                hintStyle: TextStyle(color: Colors.grey),
-                                filled: true,
-                                fillColor: Colors.white,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(40.0)),
-                                ),
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 16.0)),
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.all(30.0),
-                          child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
-                            color: Colors.pink[400],
-                            onPressed: () {
-                              login();
-                            },
-                            elevation: 12,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(40.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Request Otp",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          ),
-                        ),
-                      ]))
-            ]),
-            SizedBox(
-              height: 100,
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Stack(
+            children: <Widget>[
+              isLoading
+                  ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    "or, Login as",
-                    style: TextStyle(color: Colors.black, fontSize: 16),
+                  Center(
+                    child: SpinKitWave(
+                      color: Colors.blueAccent,
+                      size: 50.0,
+                    ),
                   ),
                   SizedBox(
-                    height: 20.0,
+                    height: 20,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("Don't have an account?"),
-                      FlatButton(
-                        child: Text(
-                          "Sign up",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        textColor: Colors.indigo,
-                        onPressed: () {},
-                      )
-                    ],
-                  ),
-                  Divider()
+                  Text(
+                    loadingText,
+                    textAlign: TextAlign.center,
+                    textScaleFactor: 1.2,
+                  )
                 ],
+              )
+                  : showOtp ? buildOtpView() : buildLoginUI()
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLoginUI() {
+    return Column(
+      children: [
+        Text(
+          'TODO LOGO',
+          textScaleFactor: 2,
+        ),
+        SizedBox(
+          height: 40,
+        ),
+        Text(
+          'Hariyal',
+          textScaleFactor: 1.5,
+        ),
+        Expanded(
+          child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: TextField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    WhitelistingTextInputFormatter.digitsOnly
+                  ],
+                  decoration: new InputDecoration(
+                    border: new OutlineInputBorder(),
+                    hintText: 'Phone Number',
+                    labelText: 'Phone Number',
+                    prefixIcon: const Icon(
+                      Icons.phone,
+                      color: Colors.blueAccent,
+                    ),
+                    prefixText: '+91  ',
+                    suffixIcon: Icon(
+                      Icons.check_circle,
+                      color: suffixColor,
+                    ),
+                  ))),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Checkbox(
+              onChanged: (bool value) {
+                setState(() {
+                  acceptTermsAndConditions = value;
+                });
+              },
+              value: acceptTermsAndConditions,
+            ),
+            Text(
+              'I Agree To ',
+              style: TextStyle(fontSize: 18),
+            ),
+            FlatButton(
+              padding: EdgeInsets.all(0),
+              onPressed: () {},
+              child: Text(
+                'Terms & Conditions',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             )
           ],
         ),
-      ),
+        SizedBox(
+          height: 10,
+        ),
+        Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          child: RaisedButton(
+            padding: EdgeInsets.symmetric(vertical: 12.0),
+            color: Colors.blueAccent[400],
+            onPressed: () {
+              login();
+            },
+            elevation: 12,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(40.0),
+              ),
+            ),
+            child: Text(
+              "Request Otp",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget buildOtpView() {
+    return Column(
+      children: <Widget>[
+        SizedBox(
+          height: 40,
+        ),
+        Text(
+          'ENTER OTP',
+          textScaleFactor: 1.5,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'We have sent a one time verification code to your phone number ${_phoneController
+              .text}',
+          textScaleFactor: 1.5,
+          textAlign: TextAlign.center,
+        ),
+        FlatButton(
+          onPressed: () {
+            setState(() {
+              showOtp = false;
+            });
+          },
+          textColor: Colors.blueAccent,
+          child: Text(
+            'Change Number',
+            textScaleFactor: 1.5,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        SizedBox(
+          height: 40,
+        ),
+        OTPTextField(
+          length: 6,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width - 48,
+          fieldWidth: 40,
+          style: TextStyle(fontSize: 18),
+          textFieldAlignment: MainAxisAlignment.spaceAround,
+          fieldStyle: FieldStyle.box,
+          keyboardType: TextInputType.number,
+          onCompleted: (pin) {
+            if (pin.length != 6) {
+              Utils().toast(
+                _scaffoldKey.currentContext,
+                'Enter valid code',
+              );
+              return;
+            }
+            setState(() {
+              otp = pin;
+            });
+          },
+        ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              child: RaisedButton(
+                padding: EdgeInsets.symmetric(vertical: 12.0),
+                color: Colors.blueAccent[400],
+                onPressed: () {
+                  login();
+                },
+                elevation: 12,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(40.0),
+                  ),
+                ),
+                child: Text(
+                  "Resend Otp",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

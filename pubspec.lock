@@ -394,6 +394,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.6.7"
+  otp_text_field:
+    dependency: "direct main"
+    description:
+      name: otp_text_field
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   package_info:
     dependency: transitive
     description:
@@ -651,13 +658,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
-  wave:
-    dependency: "direct main"
-    description:
-      name: wave
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.8"
   xdg_directories:
     dependency: transitive
     description:

@@ -29,7 +29,6 @@ dependencies:
   date_time_format:
   catcher:
   image:
-  wave:
   geocoder:
   font_awesome_flutter:
   email_validator:
@@ -38,6 +37,7 @@ dependencies:
   photo_view:
   intl:
   splashscreen:
+  otp_text_field:
 
   #Using Old version to avoid errors
   cached_network_image: ^2.0.0
