@@ -6,9 +6,9 @@ import 'widgets/image_slider.dart';
 
 class ProductDetail extends StatefulWidget {
   final DocumentSnapshot productSnap;
-  final DocumentSnapshot interestedsnap;
+  final DocumentSnapshot interestedSnap;
 
-  const ProductDetail({Key key, this.productSnap, this.interestedsnap})
+  const ProductDetail({Key key, this.productSnap, this.interestedSnap})
       : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class _ProductDetailState extends State<ProductDetail> {
 
   @override
   void initState() {
-    if (widget.interestedsnap.data['interested'].contains(
+    if (widget.interestedSnap.data['interested'].contains(
           widget.productSnap.documentID,
         ) &&
         mounted) {
@@ -111,12 +111,12 @@ class _ProductDetailState extends State<ProductDetail> {
                                     )
                                         : Icon(Icons.favorite_border),
                                     onPressed: () {
-                                      if (widget.interestedsnap.data != null) {
+                                      if (widget.interestedSnap.data != null) {
                                         if (widget
-                                            .interestedsnap.data['interested']
+                                            .interestedSnap.data['interested']
                                             .contains(widget
                                             .productSnap.documentID)) {
-                                          widget.interestedsnap.reference
+                                          widget.interestedSnap.reference
                                               .updateData({
                                             'interested':
                                             FieldValue.arrayRemove(
@@ -124,7 +124,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                             )
                                           });
                                         } else {
-                                          widget.interestedsnap.reference
+                                          widget.interestedSnap.reference
                                               .updateData({
                                             'interested': FieldValue.arrayUnion(
                                               [widget.productSnap.documentID],
@@ -132,7 +132,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                           });
                                         }
                                       } else {
-                                        widget.interestedsnap.reference
+                                        widget.interestedSnap.reference
                                             .setData({
                                           'interested': FieldValue.arrayUnion(
                                             [widget.productSnap.documentID],
@@ -206,20 +206,20 @@ class _ProductDetailState extends State<ProductDetail> {
                                           color: Colors.white,
                                           borderRadius:
                                           BorderRadius.circular(10.0)),
-                                    )
+                                    ),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

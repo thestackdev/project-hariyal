@@ -86,20 +86,19 @@ class _InterestedItemsState extends State<InterestedItems> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    ProductDetail(
-                      productSnap: snapshot.data.documents[index],
-                      interestedsnap: widget.interestedsnap,
-                    ),
+                builder: (context) => ProductDetail(
+                  productSnap: snapshot.data.documents[index],
+                  interestedSnap: widget.interestedsnap,
+                ),
               ),
             );
           },
           child: Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(12),
             ),
-            elevation: 12,
-            margin: EdgeInsets.all(18),
+            elevation: 9,
+            margin: EdgeInsets.all(9),
             child: Container(
               height: 120,
               width: MediaQuery
@@ -110,8 +109,9 @@ class _InterestedItemsState extends State<InterestedItems> {
                 children: <Widget>[
                   ClipRRect(
                     borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12.0),
-                        bottomLeft: Radius.circular(12.0)),
+                      topLeft: Radius.circular(12.0),
+                      bottomLeft: Radius.circular(12.0),
+                    ),
                     child: PNetworkImage(
                       snapshot.data.documents[index]['images'][0],
                       height: 120,
@@ -119,32 +119,33 @@ class _InterestedItemsState extends State<InterestedItems> {
                       fit: BoxFit.fitHeight,
                     ),
                   ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(left: 12),
-                        child: Text(
-                          snapshot.data.documents[index]['title'],
-                          textScaleFactor: 1.5,
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
-                        ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 9),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            snapshot.data.documents[index]['title'],
+                            textScaleFactor: 1.4,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '₹ ${snapshot.data.documents[index]['price']}',
+                            textScaleFactor: 1.2,
+                            style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 12),
-                        child: Text(
-                          '${snapshot.data.documents[index]['price']} Rs',
-                          textScaleFactor: 1.2,
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              color: Colors.black54,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),

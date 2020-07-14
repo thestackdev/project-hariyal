@@ -154,7 +154,7 @@ class _SignupState extends State<Signup> {
   Future authenticate(AuthCredential credential) async {
     try {
       final result =
-      await FirebaseAuth.instance.signInWithCredential(credential);
+          await FirebaseAuth.instance.signInWithCredential(credential);
       await uploadUserInfo(result.user.uid);
     } catch (e) {
       Utils().toast(context, e.toString());
@@ -495,17 +495,19 @@ class _SignupState extends State<Signup> {
 
     currentLocation = myLocation;
     final coordinates =
-        new Coordinates(myLocation.latitude, myLocation.longitude);
+    new Coordinates(myLocation.latitude, myLocation.longitude);
     var addresses =
-        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var first = addresses.first;
-    setState(() {
-      _latitude = myLocation.latitude;
-      _longitude = myLocation.longitude;
-      _pinCode = first.postalCode;
-      _state = first.adminArea;
-      _cityDistrict =
-          first.locality == null ? first.subAdminArea : first.locality;
-    });
+    if (mounted) {
+      setState(() {
+        _latitude = myLocation.latitude;
+        _longitude = myLocation.longitude;
+        _pinCode = first.postalCode;
+        _state = first.adminArea;
+        _cityDistrict =
+        first.locality == null ? first.subAdminArea : first.locality;
+      });
+    }
   }
 }

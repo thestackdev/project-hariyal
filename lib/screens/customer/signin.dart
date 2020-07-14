@@ -39,7 +39,7 @@ class _SigninState extends State<Signin> {
             _auth.verifyPhoneNumber(
               phoneNumber: '+91' + _controller.text,
               timeout: Duration(seconds: 60),
-              verificationCompleted: (AuthCredential credential) async {
+              verificationCompleted: (AuthCredential credential) {
                 signIn(credential);
               },
               verificationFailed: (AuthException exception) {
@@ -49,6 +49,11 @@ class _SigninState extends State<Signin> {
               },
               codeSent: (String verificationId, [int forceResendingToken]) {
                 _hideDialog();
+                if (mounted) {
+                  setState(() {
+                    _isOpen = true;
+                  });
+                }
                 showDialog(
                     context: _scaffoldKey.currentContext,
                     barrierDismissible: false,
@@ -78,8 +83,7 @@ class _SigninState extends State<Signin> {
                                   Utils().toast(_scaffoldKey.currentContext,
                                       'Enter valid code');
                                 } else {
-                                  Navigator.of(_scaffoldKey.currentContext)
-                                      .pop();
+                                  _hideDialog();
                                   _showDialog(text: "Signing in");
                                   final code = _codeController.text.trim();
                                   _codeController.text = "";
@@ -108,23 +112,13 @@ class _SigninState extends State<Signin> {
     }
   }
 
-  Future signIn(AuthCredential credential) async {
-    AuthResult result = await FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .catchError((error) {
+  signIn(AuthCredential credential) async {
+    try {
+      await FirebaseAuth.instance.signInWithCredential(credential);
       _hideDialog();
+    } catch (e) {
       Utils()
           .toast(_scaffoldKey.currentContext, 'Wrong Otp', bgColor: Colors.red);
-      print(error);
-      return;
-    });
-
-    _hideDialog();
-
-    if (result.user.uid == null) {
-      Utils().toast(
-          _scaffoldKey.currentContext, 'Sign-In: Otp Verification Failed',
-          bgColor: Utils().randomGenerator());
     }
   }
 

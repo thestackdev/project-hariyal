@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -27,6 +28,9 @@ class _HomeState extends State<Home> {
   Stream _query;
   Firestore firestore = Firestore.instance;
   bool isFilterChanged = false;
+  String state;
+  String area;
+  String category;
 
   int count = 30;
 
@@ -58,9 +62,15 @@ class _HomeState extends State<Home> {
 
   initFilters() {
     firestore.collection('customers').document(widget.uid).get().then((value) {
+      if (mounted) {
+        setState(() {
+          state = value.data['location']['state'];
+          area = value.data['location']['cityDistrict'];
+        });
+      }
       _query = firestore
           .collection('products')
-          .where('area', isEqualTo: value.data['location.cityDistrict'])
+          .where('area', isEqualTo: value.data['location']['cityDistrict'])
           .limit(count)
           .snapshots();
     });
@@ -71,18 +81,19 @@ class _HomeState extends State<Home> {
       value.documents.forEach((element) {
         if (element.documentID == 'states') {
           states.addAll(element.data['states_array'].toList());
+          states.add('All');
         } else if (element.documentID == 'category') {
           categories.addAll(element.data['category_array'].toList());
+          categories.add('All');
         } else if (element.documentID == 'areas') {
           areas.addAll(element.data['areas_array'].toList());
+          areas.add('All');
         }
       });
     });
   }
 
   showFilterDialog() {
-    String state, area, category;
-
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -110,6 +121,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey,
                   ),
                   DropdownButtonFormField(
+                      value: state,
                       decoration: getDecoration('State'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -133,6 +145,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey,
                   ),
                   DropdownButtonFormField(
+                      value: area,
                       decoration: getDecoration('Area'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -156,6 +169,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey,
                   ),
                   DropdownButtonFormField(
+                      value: category == null ? 'All' : category,
                       decoration: getDecoration('Category'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -338,6 +352,35 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 50, right: 10),
+                              child: ListTile(
+                                onTap: () {},
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      'Refer a Friend',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    Spacer(),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 18,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 50),
+                              child: ListTile(
+                                onTap: () => FirebaseAuth.instance.signOut(),
+                                title: Text(
+                                  'Logout',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -358,7 +401,7 @@ class _HomeState extends State<Home> {
                               if (productsnap.data.documents.length == 0) {
                                 return Center(
                                   child: Text(
-                                    'No products found with the selected category',
+                                    'No products found with the search criteria',
                                     textAlign: TextAlign.center,
                                   ),
                                 );
@@ -409,7 +452,7 @@ class _HomeState extends State<Home> {
                 MaterialPageRoute(builder: (_) {
                   return ProductDetail(
                     productSnap: productsnap.data.documents[index],
-                    interestedsnap: interestsnap.data,
+                    interestedSnap: interestsnap.data,
                   );
                 }),
               );
@@ -544,6 +587,9 @@ class _HomeState extends State<Home> {
   getScenario(int num, area, state, category) async {
     setState(() {
       isFilterChanged = true;
+      if (area == 'All') area = null;
+      if (category == 'All') category = null;
+      if (state == 'All') state = null;
       switch (num) {
         case 0:
           _query = firestore
