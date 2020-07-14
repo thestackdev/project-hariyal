@@ -46,7 +46,13 @@ class _AdminHomeState extends State<AdminHome> {
           ),
         ),
         body: TabBarView(
-          children: [AdminInsertData(), AdminViewData(), AdminExtras()],
+          children: [
+            AdminInsertData(
+              uid: widget.uid,
+            ),
+            AdminViewData(),
+            AdminExtras()
+          ],
         ),
       ),
     );

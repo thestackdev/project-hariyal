@@ -41,6 +41,7 @@ class PushProduct {
       'category': category.toLowerCase(),
       'author': uid,
       'adress': adressID,
+      'price': price,
       'isSold': false,
     });
     await _reference
@@ -50,6 +51,49 @@ class PushProduct {
         .document(docID)
         .setData({
       'dateTime': docID,
+    });
+  }
+
+  updateProduct({
+    List newImages,
+    docID,
+    List oldImages,
+    category,
+    state,
+    area,
+    price,
+    title,
+    description,
+    uid,
+    adressID,
+  }) async {
+    imageUrls.clear();
+    if (oldImages == null || oldImages.length <= 0) {
+      await Future.forEach(newImages, (element) async {
+        imageUrls.add(await uploadProductImages(element));
+      });
+    } else {
+      imageUrls = oldImages;
+      if (newImages != null && newImages.length > 0) {
+        await Future.forEach(newImages, (element) async {
+          imageUrls.add(await uploadProductImages(element));
+        });
+      }
+    }
+
+    await _reference.collection('products').document(docID).updateData({
+      'title': title,
+      'description': description,
+      'images': imageUrls,
+      'location': {
+        'state': state.toLowerCase(),
+        'area': area.toLowerCase(),
+      },
+      'category': category.toLowerCase(),
+      'author': uid,
+      'adress': adressID,
+      'price': price,
+      'isSold': false,
     });
   }
 

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,12 +19,59 @@ class AdminInsertData extends StatefulWidget {
 class _AdminInsertDataState extends State<AdminInsertData> {
   List<Asset> images = [];
   String selectedCategory;
+  String selectedShowroom;
   String selectedState;
   String selectedArea;
+  List categoryList = [];
+  List areasList = [];
+  List statesList = [];
+  List showroomList = [];
+  String addressID;
+  bool loading;
+
+  String uid;
 
   final price = TextEditingController();
   final title = TextEditingController();
   final description = TextEditingController();
+  final showroomAddressController = TextEditingController();
+
+  @override
+  void initState() {
+    Firestore.instance.collection('extras').getDocuments().then(
+      (value) {
+        value.documents.forEach((element) {
+          if (element.documentID == 'category') {
+            setState(() {
+              element.data['category_array'].forEach((result) {
+                categoryList.add(result);
+              });
+            });
+          } else if (element.documentID == 'areas') {
+            setState(() {
+              element.data['areas_array'].forEach((result) {
+                areasList.add(result);
+              });
+            });
+          } else if (element.documentID == 'states') {
+            setState(() {
+              element.data['states_array'].forEach((result) {
+                statesList.add(result);
+              });
+            });
+          }
+        });
+      },
+    );
+    Firestore.instance.collection('showrooms').getDocuments().then((value) {
+      setState(() {
+        value.documents.forEach((element) {
+          showroomList.add(element);
+        });
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +133,7 @@ class _AdminInsertDataState extends State<AdminInsertData> {
               ),
               child: AssetThumb(
                 asset: images[index],
-                quality: 50,
+                quality: 75,
                 width: 270,
                 height: 270,
               ),
@@ -95,78 +143,34 @@ class _AdminInsertDataState extends State<AdminInsertData> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
           child: DropdownButtonFormField(
-              decoration: InputDecoration(
-                labelText: 'Category',
-                isDense: true,
-                labelStyle: TextStyle(
-                  color: Colors.red.shade300,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  letterSpacing: 1.0,
-                ),
-                border: InputBorder.none,
-                fillColor: Colors.grey.shade200,
-                filled: true,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-              ),
+              decoration: getDecoration('Category'),
               isExpanded: true,
               iconEnabledColor: Colors.grey,
               style: TextStyle(color: Colors.grey, fontSize: 16),
               iconSize: 30,
               elevation: 9,
               onChanged: (newValue) {
-                setState(() {
-                  selectedCategory = newValue;
-                });
+                setState(
+                  () {
+                    selectedCategory = newValue;
+                  },
+                );
               },
-              items: <String>['Electronics', 'Furniture']
-                  .map<DropdownMenuItem<String>>((e) {
-                return DropdownMenuItem<String>(
+              items: categoryList.map<DropdownMenuItem<String>>(
+                (e) {
+                  return DropdownMenuItem<String>(
                     value: e,
                     child: Text(
                       e.toString(),
-                    ));
-              }).toList()),
+                    ),
+                  );
+                },
+              ).toList()),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
           child: DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'State',
-                isDense: true,
-                labelStyle: TextStyle(
-                  color: Colors.red.shade300,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  letterSpacing: 1.0,
-                ),
-                border: InputBorder.none,
-                fillColor: Colors.grey.shade200,
-                filled: true,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-              ),
+              decoration: getDecoration('State'),
               isExpanded: true,
               iconEnabledColor: Colors.grey,
               style: TextStyle(color: Colors.grey, fontSize: 16),
@@ -177,43 +181,18 @@ class _AdminInsertDataState extends State<AdminInsertData> {
                   selectedState = newValue;
                 });
               },
-              items: <String>['Telangana', 'AndhraPradesh']
-                  .map<DropdownMenuItem<String>>((e) {
+              items: statesList.map<DropdownMenuItem<String>>((e) {
                 return DropdownMenuItem<String>(
                     value: e,
                     child: Text(
-                      e.toString(),
+                      e,
                     ));
               }).toList()),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
           child: DropdownButtonFormField(
-              decoration: InputDecoration(
-                labelText: 'Area',
-                isDense: true,
-                labelStyle: TextStyle(
-                  color: Colors.red.shade300,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  letterSpacing: 1.0,
-                ),
-                border: InputBorder.none,
-                fillColor: Colors.grey.shade200,
-                filled: true,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-              ),
+              decoration: getDecoration('Area'),
               isExpanded: true,
               iconEnabledColor: Colors.grey,
               style: TextStyle(color: Colors.grey, fontSize: 16),
@@ -224,8 +203,7 @@ class _AdminInsertDataState extends State<AdminInsertData> {
                   selectedArea = newValue;
                 });
               },
-              items: <String>['Hyderabad', 'Secundrabad']
-                  .map<DropdownMenuItem<String>>((e) {
+              items: areasList.map<DropdownMenuItem<String>>((e) {
                 return DropdownMenuItem<String>(
                     value: e,
                     child: Text(
@@ -235,105 +213,76 @@ class _AdminInsertDataState extends State<AdminInsertData> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+          child: DropdownButtonFormField(
+            decoration: getDecoration('Showroom'),
+            isExpanded: true,
+            iconEnabledColor: Colors.grey,
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+            iconSize: 30,
+            elevation: 9,
+            onChanged: (newValue) {
+              setState(() {
+                selectedShowroom = newValue;
+                showroomList.forEach((element) {
+                  if (element['name'] == newValue) {
+                    setState(() {
+                      showroomAddressController.text = element['adress'];
+                      addressID = element.documentID;
+                    });
+                    return false;
+                  } else {
+                    return true;
+                  }
+                });
+              });
+            },
+            items: showroomList.map(
+              (value) {
+                return DropdownMenuItem(
+                  value: value['name'],
+                  child: Text(
+                    value['name'],
+                  ),
+                );
+              },
+            ).toList(),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+          child: TextField(
+            readOnly: true,
+            maxLines: null,
+            controller: showroomAddressController,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            decoration: getDecoration('Showroom Adress'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
           child: TextField(
             controller: price,
-            maxLines: 1,
+            maxLines: null,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: 'Price',
-              isDense: true,
-              labelStyle: TextStyle(
-                color: Colors.red.shade300,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 1.0,
-              ),
-              contentPadding: EdgeInsets.all(18),
-              border: InputBorder.none,
-              fillColor: Colors.grey.shade200,
-              filled: true,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-            ),
+            decoration: getDecoration('Price'),
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
           child: TextField(
             controller: title,
-            maxLines: 1,
+            maxLines: null,
             keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              labelText: 'Title',
-              isDense: true,
-              labelStyle: TextStyle(
-                color: Colors.red.shade300,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 1.0,
-              ),
-              contentPadding: EdgeInsets.all(18),
-              border: InputBorder.none,
-              fillColor: Colors.grey.shade200,
-              filled: true,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-            ),
+            decoration: getDecoration('Title'),
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
           child: TextField(
             controller: description,
-            maxLines: 5,
+            maxLines: null,
             keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              alignLabelWithHint: true,
-              labelText: 'Description',
-              isDense: true,
-              labelStyle: TextStyle(
-                color: Colors.red.shade300,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 1.0,
-              ),
-              contentPadding: EdgeInsets.all(18),
-              border: InputBorder.none,
-              fillColor: Colors.grey.shade200,
-              filled: true,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-            ),
+            decoration: getDecoration('Description'),
           ),
         ),
         SizedBox(
@@ -348,24 +297,29 @@ class _AdminInsertDataState extends State<AdminInsertData> {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) {
-                  return Dialog(
-                    elevation: 18,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(27),
+                child: SimpleDialog(
+                  elevation: 9,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
+                        children: <Widget>[
                           CircularProgressIndicator(),
-                          Text("Just a sec..."),
+                          SizedBox(width: 18),
+                          Expanded(
+                            child: Text(
+                              'Please wait until process is done , make user you dont exit the application',
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  );
-                },
+                  ],
+                ),
               );
               if (images.length > 0 &&
                   selectedCategory != null &&
@@ -382,7 +336,7 @@ class _AdminInsertDataState extends State<AdminInsertData> {
                   title.text,
                   description.text,
                   widget.uid,
-                  '',
+                  addressID,
                 );
                 setState(() {
                   images.clear();
@@ -412,6 +366,35 @@ class _AdminInsertDataState extends State<AdminInsertData> {
         ),
         SizedBox(height: 50),
       ],
+    );
+  }
+
+  getDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      isDense: true,
+      labelStyle: TextStyle(
+        color: Colors.red.shade300,
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        letterSpacing: 1.0,
+      ),
+      contentPadding: EdgeInsets.all(18),
+      border: InputBorder.none,
+      fillColor: Colors.grey.shade200,
+      filled: true,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
     );
   }
 }
