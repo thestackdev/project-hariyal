@@ -134,25 +134,25 @@ class _SigninState extends State<Signin> {
             children: <Widget>[
               isLoading
                   ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: SpinKitWave(
-                      color: Colors.blueAccent,
-                      size: 50.0,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    loadingText,
-                    textAlign: TextAlign.center,
-                    textScaleFactor: 1.2,
-                  )
-                ],
-              )
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Center(
+                          child: SpinKitWave(
+                            color: Colors.blueAccent,
+                            size: 50.0,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          loadingText,
+                          textAlign: TextAlign.center,
+                          textScaleFactor: 1.2,
+                        )
+                      ],
+                    )
                   : showOtp ? buildOtpView() : buildLoginUI()
             ],
           ),
