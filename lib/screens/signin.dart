@@ -6,8 +6,6 @@ import 'package:the_project_hariyal/utils.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
-import 'signup.dart';
-
 class Signin extends StatefulWidget {
   @override
   _SigninState createState() => _SigninState();
@@ -325,12 +323,7 @@ class _SigninState extends State<Signin> {
                           style: TextStyle(fontSize: 16),
                         ),
                         textColor: Colors.indigo,
-                        onPressed: () {
-                          Navigator.push(_scaffoldKey.currentContext,
-                              MaterialPageRoute(builder: (_) {
-                            return Signup();
-                          }));
-                        },
+                        onPressed: () {},
                       )
                     ],
                   ),
