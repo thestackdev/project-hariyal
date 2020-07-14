@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:the_project_hariyal/screens/admin/authenticate.dart';
 import 'package:the_project_hariyal/utils.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -80,8 +79,10 @@ class _SigninState extends State<Signin> {
                               color: Colors.blue,
                               onPressed: () async {
                                 if (_codeController.text.length != 6) {
-                                  Utils().toast(_scaffoldKey.currentContext,
-                                      'Enter valid code');
+                                  Utils().toast(
+                                    _scaffoldKey.currentContext,
+                                    'Enter valid code',
+                                  );
                                 } else {
                                   _hideDialog();
                                   _showDialog(text: "Signing in");
@@ -313,31 +314,6 @@ class _SigninState extends State<Signin> {
                   ),
                   SizedBox(
                     height: 20.0,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Spacer(),
-                      Expanded(
-                        child: RaisedButton(
-                          child: Text(
-                            "Admin",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          textColor: Colors.white,
-                          color: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(40)),
-                          ),
-                          onPressed: () {
-                            Navigator.push(_scaffoldKey.currentContext,
-                                MaterialPageRoute(builder: (_) {
-                              return AdminAuthenticate();
-                            }));
-                          },
-                        ),
-                      ),
-                      Spacer(),
-                    ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

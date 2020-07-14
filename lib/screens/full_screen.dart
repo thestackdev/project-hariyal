@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_project_hariyal/screens/customer/widgets/image_slider.dart';
+import 'widgets/image_slider.dart';
 
 class FullScreenView extends StatefulWidget {
   final images;

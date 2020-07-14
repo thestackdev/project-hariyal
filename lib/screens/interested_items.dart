@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:the_project_hariyal/screens/customer/product_details.dart';
-import 'package:the_project_hariyal/screens/customer/widgets/network_image.dart';
+import 'product_details.dart';
+import 'widgets/network_image.dart';
 
 class InterestedItems extends StatefulWidget {
   final DocumentSnapshot interestedsnap;
@@ -88,7 +88,6 @@ class _InterestedItemsState extends State<InterestedItems> {
               MaterialPageRoute(
                 builder: (context) => ProductDetail(
                   productSnap: snapshot.data.documents[index],
-                  interestedSnap: widget.interestedsnap,
                 ),
               ),
             );
@@ -101,10 +100,7 @@ class _InterestedItemsState extends State<InterestedItems> {
             margin: EdgeInsets.all(9),
             child: Container(
               height: 120,
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               child: Row(
                 children: <Widget>[
                   ClipRRect(

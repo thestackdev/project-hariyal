@@ -3,11 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:the_project_hariyal/screens/customer/booked_items.dart';
-import 'package:the_project_hariyal/screens/customer/edit_profile.dart';
-import 'package:the_project_hariyal/screens/customer/interested_items.dart';
-import 'package:the_project_hariyal/screens/customer/product_details.dart';
-
+import 'booked_items.dart';
+import 'edit_profile.dart';
+import 'interested_items.dart';
+import 'product_details.dart';
 import 'widgets/network_image.dart';
 
 class Home extends StatefulWidget {
@@ -121,7 +120,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey,
                   ),
                   DropdownButtonFormField(
-                      value: state,
+                      // value: state.toLowerCase(),
                       decoration: getDecoration('State'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -145,7 +144,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey,
                   ),
                   DropdownButtonFormField(
-                      value: area,
+                      //  value: area.toLowerCase(),
                       decoration: getDecoration('Area'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -169,7 +168,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey,
                   ),
                   DropdownButtonFormField(
-                      value: category == null ? 'All' : category,
+                      // value: category == null ? 'All' : category.toLowerCase(),
                       decoration: getDecoration('Category'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -389,7 +388,7 @@ class _HomeState extends State<Home> {
                           stream: _query,
                           builder: (context, productsnap) {
                             if (productsnap.connectionState ==
-                                ConnectionState.waiting &&
+                                    ConnectionState.waiting &&
                                 isFilterChanged) {
                               return Center(
                                 child: SpinKitWave(
@@ -452,7 +451,7 @@ class _HomeState extends State<Home> {
                 MaterialPageRoute(builder: (_) {
                   return ProductDetail(
                     productSnap: productsnap.data.documents[index],
-                    interestedSnap: interestsnap.data,
+                    uid: widget.uid,
                   );
                 }),
               );
@@ -499,8 +498,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: EdgeInsets.only(left: 20),
                               child: Text(
-                                '${productsnap.data
-                                    .documents[index]['price']} Rs',
+                                '${productsnap.data.documents[index]['price']} Rs',
                                 style: TextStyle(fontSize: 18),
                               ),
                             )
@@ -538,13 +536,13 @@ class _HomeState extends State<Home> {
                         },
                         icon: interestsnap.data.data != null
                             ? interestsnap.data['interested'].contains(
-                          productsnap.data.documents[index].documentID,
-                        )
-                            ? Icon(
-                          Icons.favorite,
-                          color: Colors.red[800],
-                        )
-                            : Icon(Icons.favorite_border)
+                                productsnap.data.documents[index].documentID,
+                              )
+                                ? Icon(
+                                    Icons.favorite,
+                                    color: Colors.red[800],
+                                  )
+                                : Icon(Icons.favorite_border)
                             : Icon(Icons.favorite_border),
                       )
                     ],

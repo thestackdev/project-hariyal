@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
-import 'package:the_project_hariyal/screens/customer/home.dart';
 import 'package:the_project_hariyal/utils.dart';
 
 class Signup extends StatefulWidget {
@@ -190,12 +189,6 @@ class _SignupState extends State<Signup> {
 
     _hideDialog();
     Utils().toast(context, 'User created', bgColor: Utils().randomGenerator());
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Home(uid: uid),
-      ),
-    );
   }
 
   void checkLocationEnabled() async {
@@ -495,9 +488,9 @@ class _SignupState extends State<Signup> {
 
     currentLocation = myLocation;
     final coordinates =
-    new Coordinates(myLocation.latitude, myLocation.longitude);
+        new Coordinates(myLocation.latitude, myLocation.longitude);
     var addresses =
-    await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var first = addresses.first;
     if (mounted) {
       setState(() {
@@ -506,7 +499,7 @@ class _SignupState extends State<Signup> {
         _pinCode = first.postalCode;
         _state = first.adminArea;
         _cityDistrict =
-        first.locality == null ? first.subAdminArea : first.locality;
+            first.locality == null ? first.subAdminArea : first.locality;
       });
     }
   }
