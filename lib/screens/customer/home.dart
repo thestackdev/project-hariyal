@@ -456,13 +456,13 @@ class _HomeState extends State<Home> {
                         },
                         icon: interestsnap.data.data != null
                             ? interestsnap.data['interested'].contains(
-                          productsnap.data.documents[index].documentID,
-                        )
-                            ? Icon(
-                          Icons.favorite,
-                          color: Colors.red[800],
-                        )
-                            : Icon(Icons.favorite_border)
+                                productsnap.data.documents[index].documentID,
+                              )
+                                ? Icon(
+                                    Icons.favorite,
+                                    color: Colors.red[800],
+                                  )
+                                : Icon(Icons.favorite_border)
                             : Icon(Icons.favorite_border),
                       )
                     ],
