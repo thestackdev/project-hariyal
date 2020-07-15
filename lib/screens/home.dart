@@ -95,10 +95,12 @@ class _HomeState extends State<Home> {
   initFilters() {
     firestore.collection('customers').document(widget.uid).get().then((value) {
       if (mounted) {
-        setState(() {
-          state = value.data['location']['state'];
-          area = value.data['location']['cityDistrict'];
-        });
+        if (value.data != null) {
+          setState(() {
+            state = value.data['location']['state'];
+            area = value.data['location']['cityDistrict'];
+          });
+        }
       }
       if (area == "default") {
         getScenario(8, area, state, category);
@@ -227,10 +229,7 @@ class _HomeState extends State<Home> {
                   Row(
                     children: <Widget>[
                       Container(
-                        width: (MediaQuery
-                            .of(context)
-                            .size
-                            .width / 2) - 40,
+                        width: (MediaQuery.of(context).size.width / 2) - 40,
                         child: RaisedButton(
                           padding: EdgeInsets.symmetric(vertical: 12.0),
                           child: Text(

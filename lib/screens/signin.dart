@@ -46,6 +46,7 @@ class _SigninState extends State<Signin> {
 
     if (!acceptTermsAndConditions) {
       Utils().toast(context, 'Accept to terms & conditions to continue');
+      return;
     }
 
     if (_phoneController.text.length == 10) {

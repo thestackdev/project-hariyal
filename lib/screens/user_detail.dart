@@ -28,24 +28,11 @@ class _UserDetailsState extends State<UserDetails> {
 
   bool isLoading = false;
 
-  String _pinCode, _state, _cityDistrict;
-  double _latitude, _longitude;
+  String _pinCode = "default", _state = "default", _cityDistrict = "default";
+  double _latitude = 0, _longitude = 0;
   var currentLocation;
 
   Location location = new Location();
-
-  void checkLocationEnabled() async {
-    bool serviceStatus = await location.serviceEnabled();
-
-    if (!serviceStatus) {
-      await location.requestService();
-    }
-
-    setLoading(true);
-
-    await getUserLocation();
-    uploadUserInfo();
-  }
 
   Future<void> uploadUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -95,31 +82,43 @@ class _UserDetailsState extends State<UserDetails> {
     LocationData myLocation;
     String error;
     try {
+      bool serviceStatus = await location.serviceEnabled();
+      if (!serviceStatus) {
+        await location.requestService();
+      }
       myLocation = await location.getLocation();
+      await getLocationInfo(myLocation);
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
         error = 'please grant permission';
         print(error);
-        Navigator.pop(context);
+        setLoading(false);
         return;
       }
       if (e.code == 'PERMISSION_DENIED_NEVER_ASK') {
         error = 'permission denied, please enable it from app settings';
         print(error);
-        Navigator.pop(context);
+        setLoading(false);
         return;
       }
+      setLoading(false);
       Utils().toast(context, error,
           bgColor: Colors.red[800], textColor: Colors.white);
       myLocation = null;
-      Navigator.pop(context);
+    } catch (e) {
+      setLoading(false);
+      Utils().toast(context, e.toString(),
+          bgColor: Colors.red[800], textColor: Colors.white);
+      myLocation = null;
     }
+  }
 
+  Future getLocationInfo(LocationData myLocation) async {
     currentLocation = myLocation;
     final coordinates =
-        new Coordinates(myLocation.latitude, myLocation.longitude);
+    new Coordinates(myLocation.latitude, myLocation.longitude);
     var addresses =
-        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var first = addresses.first;
     setState(() {
       _latitude = myLocation.latitude;
@@ -127,7 +126,7 @@ class _UserDetailsState extends State<UserDetails> {
       _pinCode = first.postalCode;
       _state = first.adminArea;
       _cityDistrict =
-          first.locality == null ? first.subAdminArea : first.locality;
+      first.locality == null ? first.subAdminArea : first.locality;
     });
   }
 
@@ -148,7 +147,7 @@ class _UserDetailsState extends State<UserDetails> {
       return;
     }
 
-    await requestLocation();
+    uploadUserInfo();
   }
 
   void setLoading(bool value) {
@@ -161,7 +160,19 @@ class _UserDetailsState extends State<UserDetails> {
 
   @override
   void initState() {
+    locationPerm();
     super.initState();
+  }
+
+  Future locationPerm() async {
+    location.hasPermission().asStream().listen((event) async {
+      if (event == PermissionStatus.granted) {
+        requestLocation();
+      } else if (event == PermissionStatus.denied) {
+        await location.requestPermission();
+        locationPerm();
+      }
+    });
   }
 
   Future requestLocation() async {
@@ -185,7 +196,7 @@ class _UserDetailsState extends State<UserDetails> {
               FlatButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
-                  checkLocationEnabled();
+                  getUserLocation();
                 },
                 child: Text('Continue'),
               )
