@@ -43,8 +43,8 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
       return widget.isZoomable == null
           ? _buildImagePageItem(url)
           : widget.isZoomable
-          ? _buildZoomablePageItem(url)
-          : _buildImagePageItem(url);
+              ? _buildZoomablePageItem(url)
+              : _buildImagePageItem(url);
     }).toList();
   }
 
@@ -113,12 +113,11 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
 
   Widget _buildZoomablePageItem(String imgUrl) {
     return PhotoView(
-      imageProvider: CachedNetworkImageProvider(imgUrl),
-      loadingBuilder: (context, event) =>
-          Center(
-            child: CircularProgressIndicator(),
-          ),
-    );
+        imageProvider: CachedNetworkImageProvider(imgUrl),
+        loadingBuilder: (context, event) =>
+            Center(
+              child: CircularProgressIndicator(),
+            ));
   }
 
   Widget _buildImagePageItem(String imgUrl) {

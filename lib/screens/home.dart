@@ -329,8 +329,8 @@ class _HomeState extends State<Home> {
                                     Navigator.of(context).pop(true);
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (_) {
-                                          return BookedItems();
-                                        }));
+                                      return BookedItems();
+                                    }));
                                   },
                                   title: Row(
                                     children: [
@@ -481,15 +481,12 @@ class _HomeState extends State<Home> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) {
-                  return ProductDetail(
-                    productSnap: productsnap.data.documents[index],
-                    uid: widget.uid,
-                  );
-                }),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return ProductDetail(
+                  productSnap: productsnap.data.documents[index],
+                  uid: widget.uid,
+                );
+              }));
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
