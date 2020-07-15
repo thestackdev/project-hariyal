@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_project_hariyal/screens/home.dart';
 import 'package:the_project_hariyal/utils.dart';
 
@@ -46,7 +47,10 @@ class _UserDetailsState extends State<UserDetails> {
     uploadUserInfo();
   }
 
-  void uploadUserInfo() {
+  Future<void> uploadUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String phone = await prefs.get("phone");
+
     Firestore.instance
         .collection('customers')
         .where('email', isEqualTo: _emailController.text)
@@ -57,15 +61,17 @@ class _UserDetailsState extends State<UserDetails> {
         _loc['lat'] = _latitude != null ? _latitude : "default";
         _loc['long'] = _longitude != null ? _longitude : "default";
         _loc['pinCode'] = _pinCode != null ? _pinCode : "default";
-        _loc['state'] = _state != null ? _state : "telangana";
+        _loc['state'] = _state != null ? _state : "default";
         _loc['cityDistrict'] =
-            _cityDistrict != null ? _cityDistrict : "hyderabad";
+            _cityDistrict != null ? _cityDistrict : "default";
         Firestore.instance
             .collection('customers')
             .document(widget.uid)
             .setData({
           'name': _nameController.text,
           'email': _emailController.text,
+          'phone': phone,
+          'isBlocked': false,
           "location": _loc
         });
         Firestore.instance

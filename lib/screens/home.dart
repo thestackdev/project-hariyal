@@ -33,6 +33,9 @@ class _HomeState extends State<Home> {
   String area;
   String category;
 
+  TextEditingController _searchQueryController = new TextEditingController();
+  bool _isSearching = false;
+
   int count = 30;
 
   _scrollListener() {
@@ -45,9 +48,18 @@ class _HomeState extends State<Home> {
     }
   }
 
+  _searchListener() {
+    if (_searchQueryController.text.isNotEmpty) {
+      getScenario(9, area, state, category);
+    } else {
+      getScenario(8, area, state, category);
+    }
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchQueryController.dispose();
     super.dispose();
   }
 
@@ -59,6 +71,7 @@ class _HomeState extends State<Home> {
     firestore = Firestore.instance;
     getFilters();
     initFilters();
+    _searchQueryController.addListener(_searchListener);
     super.initState();
   }
 
@@ -87,11 +100,15 @@ class _HomeState extends State<Home> {
           area = value.data['location']['cityDistrict'];
         });
       }
-      _query = firestore
-          .collection('products')
-          .where('area', isEqualTo: value.data['location']['cityDistrict'])
-          .limit(count)
-          .snapshots();
+      if (area == "default") {
+        getScenario(8, area, state, category);
+      } else {
+        _query = firestore
+            .collection('products')
+            .where('area', isEqualTo: area)
+            .limit(count)
+            .snapshots();
+      }
     });
   }
 
@@ -135,12 +152,11 @@ class _HomeState extends State<Home> {
                     'Filter by',
                     style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                   ),
-                  Divider(
-                    thickness: 1,
-                    color: Colors.grey,
+                  SizedBox(
+                    height: 10,
                   ),
                   DropdownButtonFormField(
-                      // value: state.toLowerCase(),
+                    // value: state.toLowerCase(),
                       decoration: getDecoration('State'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -159,12 +175,11 @@ class _HomeState extends State<Home> {
                               e.toString(),
                             ));
                       }).toList()),
-                  Divider(
-                    thickness: 1,
-                    color: Colors.grey,
+                  SizedBox(
+                    height: 10,
                   ),
                   DropdownButtonFormField(
-                      //  value: area.toLowerCase(),
+                    //  value: area.toLowerCase(),
                       decoration: getDecoration('Area'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -183,12 +198,11 @@ class _HomeState extends State<Home> {
                               e.toString(),
                             ));
                       }).toList()),
-                  Divider(
-                    thickness: 1,
-                    color: Colors.grey,
+                  SizedBox(
+                    height: 10,
                   ),
                   DropdownButtonFormField(
-                      // value: category == null ? 'All' : category.toLowerCase(),
+                    // value: category == null ? 'All' : category.toLowerCase(),
                       decoration: getDecoration('Category'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -207,31 +221,81 @@ class _HomeState extends State<Home> {
                               e.toString(),
                             ));
                       }).toList()),
-                  Container(
-                    alignment: Alignment.topRight,
-                    child: RaisedButton(
-                      child: Text('Done'),
-                      onPressed: () {
-                        if (area != null && state != null && category != null) {
-                          getScenario(7, area, state, category);
-                        } else if (area != null && state != null) {
-                          getScenario(6, area, state, category);
-                        } else if (area != null && category != null) {
-                          getScenario(5, area, state, category);
-                        } else if (state != null && area != null) {
-                          getScenario(4, area, state, category);
-                        } else if (state != null && category != null) {
-                          getScenario(3, area, state, category);
-                        } else if (state != null) {
-                          getScenario(2, area, state, category);
-                        } else if (area != null) {
-                          getScenario(1, area, state, category);
-                        } else if (category != null) {
-                          getScenario(0, area, state, category);
-                        }
-                        Navigator.pop(context);
-                      },
-                    ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        width: (MediaQuery
+                            .of(context)
+                            .size
+                            .width / 2) - 40,
+                        child: RaisedButton(
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          child: Text(
+                            'Clear',
+                            style: TextStyle(fontSize: 20, color: Colors.black),
+                          ),
+                          elevation: 2,
+                          color: Colors.grey.shade300,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(6.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            getScenario(8, area, state, category);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      Container(
+                        width: (MediaQuery
+                            .of(context)
+                            .size
+                            .width / 2) - 40,
+                        child: RaisedButton(
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          color: Colors.blueAccent[400],
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(6.0),
+                            ),
+                          ),
+                          child: Text(
+                            'Done',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                          onPressed: () {
+                            if (area != null &&
+                                state != null &&
+                                category != null) {
+                              getScenario(7, area, state, category);
+                            } else if (area != null && state != null) {
+                              getScenario(6, area, state, category);
+                            } else if (area != null && category != null) {
+                              getScenario(5, area, state, category);
+                            } else if (state != null && area != null) {
+                              getScenario(4, area, state, category);
+                            } else if (state != null && category != null) {
+                              getScenario(3, area, state, category);
+                            } else if (state != null) {
+                              getScenario(2, area, state, category);
+                            } else if (area != null) {
+                              getScenario(1, area, state, category);
+                            } else if (category != null) {
+                              getScenario(0, area, state, category);
+                            }
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -259,15 +323,9 @@ class _HomeState extends State<Home> {
                     if (interestedsnap.hasData) {
                       return Scaffold(
                         appBar: AppBar(
-                          title: Text('Home'),
-                          actions: [
-                            IconButton(
-                              onPressed: () {
-                                showFilterDialog();
-                              },
-                              icon: Icon(Icons.filter_list),
-                            )
-                          ],
+                          title:
+                          _isSearching ? _buildSearchField() : Text('Home'),
+                          actions: _buildActions(),
                         ),
                         drawer: Drawer(
                           child: ListView(
@@ -505,8 +563,8 @@ class _HomeState extends State<Home> {
                             tag: productsnap.data.documents[index].documentID,
                             child: PNetworkImage(
                               productsnap.data.documents[index].data['images']
-                                  [0],
-                              fit: BoxFit.cover,
+                              [0],
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
@@ -614,7 +672,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  getScenario(int num, area, state, category) async {
+  getScenario(int num, area, state, category, {String name}) async {
     setState(() {
       isFilterChanged = true;
       if (area == 'All') area = null;
@@ -684,8 +742,70 @@ class _HomeState extends State<Home> {
               .limit(count)
               .snapshots();
           break;
+        case 8:
+          _query = firestore.collection('products').limit(count).snapshots();
+          break;
+        case 9:
+          _query = firestore
+              .collection('products')
+              .where('title',
+              isGreaterThanOrEqualTo:
+              _searchQueryController.text.toLowerCase())
+              .where('title',
+              isLessThan: _searchQueryController.text.toLowerCase() + 'z')
+              .snapshots();
+          break;
       }
     });
     isFilterChanged = true;
+  }
+
+  Widget _buildSearchField() {
+    return TextField(
+      controller: _searchQueryController,
+      autofocus: true,
+      decoration: InputDecoration(
+        hintText: "Search products by name",
+        border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.white70),
+      ),
+      style: TextStyle(color: Colors.white, fontSize: 16.0),
+    );
+  }
+
+  List<Widget> _buildActions() {
+    if (_isSearching) {
+      return <Widget>[
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            if (_searchQueryController != null) {
+              setState(() {
+                _isSearching = false;
+                _searchQueryController.text = "";
+              });
+              getScenario(8, area, state, category);
+            }
+          },
+        ),
+      ];
+    }
+
+    return <Widget>[
+      IconButton(
+        icon: const Icon(Icons.search),
+        onPressed: () {
+          setState(() {
+            _isSearching = true;
+          });
+        },
+      ),
+      IconButton(
+        onPressed: () {
+          showFilterDialog();
+        },
+        icon: Icon(Icons.filter_list),
+      )
+    ];
   }
 }

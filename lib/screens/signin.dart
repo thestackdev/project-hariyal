@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_project_hariyal/utils.dart';
 
 class Signin extends StatefulWidget {
@@ -90,6 +91,8 @@ class _SigninState extends State<Signin> {
     setLoading(true);
     setLoadingText("Signing In");
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString("phone", _phoneController.text);
       await FirebaseAuth.instance.signInWithCredential(credential);
       setLoading(false);
     } catch (e) {
