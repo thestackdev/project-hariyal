@@ -59,7 +59,10 @@ class _UserDetailsState extends State<UserDetails> {
           'email': _emailController.text,
           'phone': phone,
           'isBlocked': false,
-          "location": _loc
+          'alternatePhoneNumber': 'default',
+          'gender': 'default',
+          'permanentAddress': 'default',
+          'location': _loc
         });
         Firestore.instance
             .collection('interested')

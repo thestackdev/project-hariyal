@@ -202,7 +202,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                    // value: category == null ? 'All' : category.toLowerCase(),
+                      // value: category == null ? 'All' : category.toLowerCase(),
                       decoration: getDecoration('Category'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -357,7 +357,6 @@ class _HomeState extends State<Home> {
                                         MaterialPageRoute(builder: (_) {
                                       return EditProfile(
                                         uid: widget.uid,
-                                        usersnap: customersnap.data,
                                       );
                                     }));
                                   },
@@ -558,7 +557,7 @@ class _HomeState extends State<Home> {
                             tag: productsnap.data.documents[index].documentID,
                             child: PNetworkImage(
                               productsnap.data.documents[index].data['images']
-                              [0],
+                                  [0],
                               fit: BoxFit.contain,
                             ),
                           ),

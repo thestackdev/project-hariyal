@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class EditProfile extends StatefulWidget {
-  final DocumentSnapshot usersnap;
   final uid;
 
-  const EditProfile({Key key, this.usersnap, this.uid}) : super(key: key);
+  const EditProfile({Key key, this.uid}) : super(key: key);
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -28,26 +27,32 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey.shade100,
-        extendBodyBehindAppBar: true,
-        extendBody: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: SingleChildScrollView(
-          child: Column(
+      backgroundColor: Colors.grey.shade100,
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream:
+            firestore.collection('customers').document(widget.uid).snapshots(),
+        builder: (context, usersnap) {
+          return SingleChildScrollView(
+              child: Column(
             children: <Widget>[
-              profileHeader(),
+              profileHeader(usersnap.data),
               const SizedBox(height: 10.0),
-              userInfo()
+              userInfo(usersnap.data)
               //UserInfo(),
             ],
-          ),
-        ));
+          ));
+        },
+      ),
+    );
   }
 
-  Widget profileHeader() {
+  Widget profileHeader(DocumentSnapshot usersnap) {
     return Stack(
       children: <Widget>[
         Ink(
@@ -70,7 +75,7 @@ class _EditProfileState extends State<EditProfile> {
                 elevation: 0,
                 child: Icon(Icons.edit),
                 onPressed: () {
-                  editFields(context);
+                  editFields(context, usersnap);
                 },
               )
             ],
@@ -83,8 +88,11 @@ class _EditProfileState extends State<EditProfile> {
             children: <Widget>[
               avatar(),
               Text(
-                widget.usersnap['name'],
-                style: Theme.of(context).textTheme.headline4,
+                usersnap.data['name'],
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline4,
               ),
             ],
           ),
@@ -108,7 +116,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Widget userInfo() {
+  Widget userInfo(DocumentSnapshot usersnap) {
     return Container(
       padding: EdgeInsets.all(10),
       child: Column(
@@ -143,44 +151,47 @@ class _EditProfileState extends State<EditProfile> {
                                 horizontal: 12, vertical: 4),
                             leading: Icon(Icons.my_location),
                             title: Text("Location"),
-                            subtitle:
-                            Text(widget.usersnap['location']['state']),
+                            subtitle: Text(usersnap['location']['state']),
                           ),
                           ListTile(
                             leading: Icon(Icons.email),
                             title: Text("Email"),
-                            subtitle: Text(widget.usersnap['email']),
+                            subtitle: Text(usersnap['email']),
                           ),
                           ListTile(
                             leading: Icon(Icons.phone),
                             title: Text("Phone"),
-                            subtitle: Text(widget.usersnap['phoneNumber']),
+                            subtitle: Text(usersnap['phone']),
                           ),
-                          if (widget.usersnap['alternatePhoneNumber'] !=
-                              "default")
+                          if (usersnap['alternatePhoneNumber'] != "default")
                             ListTile(
                               leading: Icon(Icons.phone),
                               title: Text("Alternate Phone"),
-                              subtitle:
-                              Text(widget.usersnap['alternatePhoneNumber']),
+                              subtitle: Text(
+                                  usersnap['alternatePhoneNumber'] == null
+                                      ? ""
+                                      : usersnap['alternatePhoneNumber']),
                             ),
-                          if (widget.usersnap['gender'] != "default")
+                          if (usersnap['gender'] != "default")
                             ListTile(
                               leading: Icon(Icons.person_pin),
                               title: Text("Gender"),
-                              subtitle: Text(widget.usersnap['gender']),
+                              subtitle: Text(usersnap['gender'] == null
+                                  ? ""
+                                  : usersnap['gender']),
                             ),
-                          if (widget.usersnap['permanentAddress'] != "default")
+                          if (usersnap['permanentAddress'] != "default")
                             ListTile(
                               leading: Icon(Icons.person),
                               title: Text("Address"),
-                              subtitle:
-                              Text(widget.usersnap['permanentAddress']),
+                              subtitle: Text(
+                                  usersnap['permanentAddress'] == null
+                                      ? ""
+                                      : usersnap['permanentAddress']),
                             ),
-                          if (widget.usersnap['alternatePhoneNumber'] ==
-                              "default" ||
-                              widget.usersnap['gender'] == "default" ||
-                              widget.usersnap['permanentAddress'] == "default")
+                          if (usersnap['alternatePhoneNumber'] == "default" ||
+                              usersnap['gender'] == "default" ||
+                              usersnap['permanentAddress'] == "default")
                             Container(
                               width: MediaQuery
                                   .of(context)
@@ -188,7 +199,8 @@ class _EditProfileState extends State<EditProfile> {
                                   .width - 32,
                               margin: EdgeInsets.only(top: 20),
                               child: RaisedButton(
-                                onPressed: () => addMoreFields(context),
+                                onPressed: () =>
+                                    addMoreFields(context, usersnap),
                                 color: Colors.blueAccent.shade200,
                                 child: Text(
                                   'Add more fields',
@@ -210,7 +222,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  void addMoreFields(BuildContext context) {
+  void addMoreFields(BuildContext context, DocumentSnapshot usersnap) {
     var genderValue = 'default';
     final _addressController = TextEditingController();
     final _alternatePhoneController = TextEditingController();
@@ -228,7 +240,7 @@ class _EditProfileState extends State<EditProfile> {
               padding: MediaQuery.of(context).viewInsets,
               child: Wrap(
                 children: [
-                  if (widget.usersnap['permanentAddress'] == 'default')
+                  if (usersnap['permanentAddress'] == 'default')
                     Container(
                       margin: EdgeInsets.only(top: 24),
                       child: TextFormField(
@@ -252,7 +264,7 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                     ),
-                  if (widget.usersnap['alternatePhoneNumber'] == 'default')
+                  if (usersnap['alternatePhoneNumber'] == 'default')
                     Container(
                       margin: EdgeInsets.only(top: 24),
                       child: TextFormField(
@@ -281,7 +293,7 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                     ),
-                  if (widget.usersnap['gender'] == 'default')
+                  if (usersnap['gender'] == 'default')
                     Container(
                       margin: EdgeInsets.only(top: 24, bottom: 24),
                       child: DropdownButtonFormField(
@@ -375,8 +387,8 @@ class _EditProfileState extends State<EditProfile> {
         });
   }
 
-  void editFields(BuildContext context) {
-    var genderValue = widget.usersnap['gender'];
+  void editFields(BuildContext context, DocumentSnapshot usersnap) {
+    var genderValue = usersnap['gender'];
     final _addressController = TextEditingController();
     final _alternatePhoneController = TextEditingController();
     final _nameController = TextEditingController();
@@ -399,8 +411,7 @@ class _EditProfileState extends State<EditProfile> {
                     Container(
                       margin: EdgeInsets.only(top: 24),
                       child: TextFormField(
-                        controller: _nameController
-                          ..text = widget.usersnap['name'],
+                        controller: _nameController..text = usersnap['name'],
                         style: TextStyle(color: Colors.black, fontSize: 16),
                         decoration: new InputDecoration(
                           prefixIcon: Icon(Icons.person),
@@ -420,12 +431,12 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                     ),
-                    if (widget.usersnap['permanentAddress'] != 'default')
+                    if (usersnap['permanentAddress'] != 'default')
                       Container(
                         margin: EdgeInsets.only(top: 24),
                         child: TextFormField(
                           controller: _addressController
-                            ..text = widget.usersnap['permanentAddress'],
+                            ..text = usersnap['permanentAddress'],
                           style: TextStyle(color: Colors.black, fontSize: 16),
                           decoration: new InputDecoration(
                             prefixIcon: Icon(Icons.pin_drop),
@@ -445,12 +456,12 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                       ),
-                    if (widget.usersnap['alternatePhoneNumber'] != 'default')
+                    if (usersnap['alternatePhoneNumber'] != 'default')
                       Container(
                         margin: EdgeInsets.only(top: 24),
                         child: TextFormField(
                           controller: _alternatePhoneController
-                            ..text = widget.usersnap['alternatePhoneNumber'],
+                            ..text = usersnap['alternatePhoneNumber'],
                           keyboardType: TextInputType.phone,
                           inputFormatters: <TextInputFormatter>[
                             WhitelistingTextInputFormatter.digitsOnly
@@ -475,11 +486,11 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                       ),
-                    if (widget.usersnap['gender'] != 'default')
+                    if (usersnap['gender'] != 'default')
                       Container(
                         margin: EdgeInsets.only(top: 24, bottom: 24),
                         child: DropdownButtonFormField(
-                            value: widget.usersnap['gender'],
+                            value: usersnap['gender'],
                             decoration: InputDecoration(
                               labelText: 'Gender',
                               isDense: true,
@@ -532,7 +543,7 @@ class _EditProfileState extends State<EditProfile> {
                           if (_alternatePhoneController.text.isNotEmpty &&
                               _alternatePhoneController.text.length == 10 &&
                               _alternatePhoneController.text !=
-                                  widget.usersnap['alternatePhoneNumber']) {
+                                  usersnap['alternatePhoneNumber']) {
                             firestore
                                 .collection('customers')
                                 .document(widget.uid)
@@ -544,7 +555,7 @@ class _EditProfileState extends State<EditProfile> {
 
                           if (_addressController.text.isNotEmpty &&
                               _addressController.text !=
-                                  widget.usersnap['permanentAdress']) {
+                                  usersnap['permanentAdress']) {
                             firestore
                                 .collection('customers')
                                 .document(widget.uid)
@@ -553,8 +564,7 @@ class _EditProfileState extends State<EditProfile> {
                             });
                           }
 
-                          if (_addressController.text !=
-                              widget.usersnap['gender']) {
+                          if (_addressController.text != usersnap['gender']) {
                             firestore
                                 .collection('customers')
                                 .document(widget.uid)
@@ -562,7 +572,7 @@ class _EditProfileState extends State<EditProfile> {
                           }
 
                           if (_nameController.text.isNotEmpty &&
-                              _nameController.text != widget.usersnap['name']) {
+                              _nameController.text != usersnap['name']) {
                             firestore
                                 .collection('customers')
                                 .document(widget.uid)
