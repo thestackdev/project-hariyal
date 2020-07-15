@@ -64,9 +64,7 @@ class _UserDetailsState extends State<UserDetails> {
         Firestore.instance
             .collection('interested')
             .document(widget.uid)
-            .setData({
-          'interested': ["0"]
-        });
+            .setData({'interested': []});
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => Home(
                   uid: widget.uid,
@@ -188,8 +186,6 @@ class _UserDetailsState extends State<UserDetails> {
               FlatButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
-                  setLoading(true);
-                  uploadUserInfo();
                 },
                 child: Text('Cancel'),
               ),

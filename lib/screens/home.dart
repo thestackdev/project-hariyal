@@ -179,7 +179,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                    //  value: area.toLowerCase(),
+                      //  value: area.toLowerCase(),
                       decoration: getDecoration('Area'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -318,7 +318,7 @@ class _HomeState extends State<Home> {
                       return Scaffold(
                         appBar: AppBar(
                           title:
-                          _isSearching ? _buildSearchField() : Text('Home'),
+                              _isSearching ? _buildSearchField() : Text('Home'),
                           actions: _buildActions(),
                         ),
                         drawer: Drawer(
