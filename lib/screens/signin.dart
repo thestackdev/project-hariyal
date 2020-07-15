@@ -288,10 +288,7 @@ class _SigninState extends State<Signin> {
         ),
         OTPTextField(
           length: 6,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width - 48,
+          width: MediaQuery.of(context).size.width - 48,
           fieldWidth: 40,
           style: TextStyle(fontSize: 18),
           textFieldAlignment: MainAxisAlignment.spaceAround,

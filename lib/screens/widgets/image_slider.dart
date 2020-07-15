@@ -114,8 +114,7 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
   Widget _buildZoomablePageItem(String imgUrl) {
     return PhotoView(
         imageProvider: CachedNetworkImageProvider(imgUrl),
-        loadingBuilder: (context, event) =>
-            Center(
+        loadingBuilder: (context, event) => Center(
               child: CircularProgressIndicator(),
             ));
   }
