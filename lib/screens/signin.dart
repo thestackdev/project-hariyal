@@ -267,8 +267,7 @@ class _SigninState extends State<Signin> {
           height: 20,
         ),
         Text(
-          'We have sent a one time verification code to your phone number ${_phoneController
-              .text}',
+          'We have sent a one time verification code to your phone number ${_phoneController.text}',
           textScaleFactor: 1.5,
           textAlign: TextAlign.center,
         ),

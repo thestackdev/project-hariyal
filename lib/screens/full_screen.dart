@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'widgets/image_slider.dart';
 
 class FullScreenView extends StatefulWidget {
@@ -18,7 +19,6 @@ class _FullScreenViewState extends State<FullScreenView> {
       body: ImageSliderWidget(
         imageHeight: MediaQuery.of(context).size.height,
         imageUrls: widget.images,
-        tag: widget.tag,
         isZoomable: true,
       ),
     );

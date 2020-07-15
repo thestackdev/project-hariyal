@@ -303,11 +303,11 @@ class _HomeState extends State<Home> {
                                     Navigator.of(context).pop(true);
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (_) {
-                                          return EditProfile(
-                                            uid: widget.uid,
-                                            usersnap: customersnap.data,
-                                          );
-                                        }));
+                                      return EditProfile(
+                                        uid: widget.uid,
+                                        usersnap: customersnap.data,
+                                      );
+                                    }));
                                   },
                                   title: Row(
                                     children: [
@@ -440,10 +440,12 @@ class _HomeState extends State<Home> {
                         ),
                       );
                     } else {
-                      return Center(
-                        child: SpinKitWave(
-                          color: Colors.orange,
-                          size: 50.0,
+                      return Scaffold(
+                        body: Center(
+                          child: SpinKitWave(
+                            color: Colors.orange,
+                            size: 50.0,
+                          ),
                         ),
                       );
                     }

@@ -10,19 +10,18 @@ class ImageSliderWidget extends StatefulWidget {
   final List<dynamic> imageUrls;
   final BorderRadius imageBorderRadius;
   final double imageHeight;
-  final dynamic tag;
   final fit;
 
   final GestureTapCallback onTap;
   final isZoomable;
 
-  const ImageSliderWidget({this.tag,
-    this.imageUrls,
-    this.imageBorderRadius,
-    this.imageHeight,
-    this.onTap,
-    this.isZoomable,
-    this.fit});
+  const ImageSliderWidget(
+      {this.imageUrls,
+      this.imageBorderRadius,
+      this.imageHeight,
+      this.onTap,
+      this.isZoomable,
+      this.fit});
 
   @override
   ImageSliderWidgetState createState() {
@@ -42,10 +41,10 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
     super.initState();
     _pages = widget.imageUrls.map((url) {
       return widget.isZoomable == null
-          ? _buildImagePageItem(url, widget.tag, widget.onTap)
+          ? _buildImagePageItem(url)
           : widget.isZoomable
-              ? _buildZoomablePageItem(url, widget.tag)
-              : _buildImagePageItem(url, widget.tag, widget.onTap);
+          ? _buildZoomablePageItem(url)
+          : _buildImagePageItem(url);
     }).toList();
   }
 
@@ -112,30 +111,26 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
     );
   }
 
-  Widget _buildZoomablePageItem(String imgUrl, dynamic key) {
+  Widget _buildZoomablePageItem(String imgUrl) {
     return PhotoView(
-      heroAttributes: PhotoViewHeroAttributes(tag: key),
       imageProvider: CachedNetworkImageProvider(imgUrl),
-      loadingBuilder: (context, event) => Center(
-        child: CircularProgressIndicator(),
-      ),
+      loadingBuilder: (context, event) =>
+          Center(
+            child: CircularProgressIndicator(),
+          ),
     );
   }
 
-  Widget _buildImagePageItem(
-      String imgUrl, dynamic key, GestureTapCallback onTap) {
+  Widget _buildImagePageItem(String imgUrl) {
     return GestureDetector(
-      onTap: onTap,
-      child: Hero(
-        tag: widget.tag == null ? 4 : key,
-        child: ClipRRect(
-          borderRadius: widget.imageBorderRadius == null
-              ? BorderRadius.circular(8.0)
-              : widget.imageBorderRadius,
-          child: PNetworkImage(
-            imgUrl,
-            fit: widget.fit == null ? BoxFit.cover : widget.fit,
-          ),
+      onTap: widget.onTap,
+      child: ClipRRect(
+        borderRadius: widget.imageBorderRadius == null
+            ? BorderRadius.circular(8.0)
+            : widget.imageBorderRadius,
+        child: PNetworkImage(
+          imgUrl,
+          fit: widget.fit == null ? BoxFit.cover : widget.fit,
         ),
       ),
     );

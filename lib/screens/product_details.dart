@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import 'full_screen.dart';
 import 'widgets/image_slider.dart';
 
@@ -45,7 +46,6 @@ class _ProductDetailState extends State<ProductDetail> {
                         isZoomable: false,
                         fit: BoxFit.contain,
                         imageHeight: MediaQuery.of(context).size.height / 1.5,
-                        tag: widget.productSnap.documentID,
                         imageUrls: widget.productSnap['images'],
                       )),
                   SafeArea(

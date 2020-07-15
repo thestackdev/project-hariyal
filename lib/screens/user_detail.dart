@@ -68,6 +68,12 @@ class _UserDetailsState extends State<UserDetails> {
           'email': _emailController.text,
           "location": _loc
         });
+        Firestore.instance
+            .collection('interested')
+            .document(widget.uid)
+            .setData({
+          'interested': ["0"]
+        });
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => Home(
                   uid: widget.uid,
