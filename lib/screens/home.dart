@@ -409,7 +409,7 @@ class _HomeState extends State<Home> {
                             stream: _query,
                             builder: (context, productsnap) {
                               if (productsnap.connectionState ==
-                                  ConnectionState.waiting &&
+                                      ConnectionState.waiting &&
                                   isFilterChanged) {
                                 return Center(
                                   child: SpinKitWave(

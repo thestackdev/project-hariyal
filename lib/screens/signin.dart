@@ -312,10 +312,7 @@ class _SigninState extends State<Signin> {
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               child: RaisedButton(
                 padding: EdgeInsets.symmetric(vertical: 12.0),
                 color: Colors.blueAccent[400],
