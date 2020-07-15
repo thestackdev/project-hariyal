@@ -59,6 +59,8 @@ class _UserDetailsState extends State<UserDetails> {
           'email': _emailController.text,
           'phone': phone,
           'isBlocked': false,
+          'image':
+              'https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg',
           'alternatePhoneNumber': 'default',
           'gender': 'default',
           'permanentAddress': 'default',

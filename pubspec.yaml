@@ -39,6 +39,7 @@ dependencies:
   splashscreen:
   otp_text_field:
   workmanager:
+  image_picker:
 
   #Using Old version to avoid errors
   cached_network_image: ^2.0.0

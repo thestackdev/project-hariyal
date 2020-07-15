@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
   final uid;
@@ -14,6 +18,10 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   Firestore firestore;
+  bool isLoading = false;
+
+  File _image;
+  final picker = ImagePicker();
 
   String img =
       "https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg";
@@ -22,6 +30,39 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     firestore = Firestore.instance;
     super.initState();
+  }
+
+  void setLoading(bool value) {
+    if (mounted) {
+      setState(() {
+        isLoading = value;
+      });
+    }
+  }
+
+  Future updateImage() async {
+    StorageReference ref =
+        FirebaseStorage.instance.ref().child("customer_profile_pics");
+
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      _image = File(pickedFile.path);
+    });
+
+    setLoading(true);
+
+    StorageUploadTask storageUploadTask = ref.child(widget.uid).putFile(_image);
+
+    StorageTaskSnapshot taskSnapshot = await storageUploadTask.onComplete;
+
+    String url = await taskSnapshot.ref.getDownloadURL();
+
+    firestore
+        .collection('customers')
+        .document(widget.uid)
+        .updateData({'image': url});
+    setLoading(false);
   }
 
   @override
@@ -34,21 +75,49 @@ class _EditProfileState extends State<EditProfile> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: StreamBuilder<DocumentSnapshot>(
-        stream:
-            firestore.collection('customers').document(widget.uid).snapshots(),
-        builder: (context, usersnap) {
-          return SingleChildScrollView(
+      body: isLoading
+          ? Center(
               child: Column(
-            children: <Widget>[
-              profileHeader(usersnap.data),
-              const SizedBox(height: 10.0),
-              userInfo(usersnap.data)
-              //UserInfo(),
-            ],
-          ));
-        },
-      ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Uploading Image',
+                    style: TextStyle(fontSize: 21),
+                  )
+                ],
+              ),
+            )
+          : StreamBuilder<DocumentSnapshot>(
+              stream: firestore
+                  .collection('customers')
+                  .document(widget.uid)
+                  .snapshots(),
+              builder: (context, usersnap) {
+                return usersnap != null &&
+                        usersnap.hasData &&
+                        usersnap.data != null
+                    ? SingleChildScrollView(
+                        child: Column(
+                        children: <Widget>[
+                          profileHeader(usersnap.data),
+                          const SizedBox(height: 10.0),
+                          userInfo(usersnap.data)
+                          //UserInfo(),
+                        ],
+                      ))
+                    : Center(
+                        child: Text(
+                          'Something went wrong',
+                          style: TextStyle(fontSize: 22),
+                        ),
+                      );
+              },
+            ),
     );
   }
 
@@ -86,19 +155,40 @@ class _EditProfileState extends State<EditProfile> {
           margin: const EdgeInsets.only(top: 160),
           child: Column(
             children: <Widget>[
-              avatar(),
+              avatar(usersnap),
               Text(
                 usersnap.data['name'],
-                style: Theme.of(context).textTheme.headline4,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline4,
               ),
             ],
           ),
-        )
+        ),
+        Positioned(
+          top: 270,
+          right: 90,
+          child: MaterialButton(
+            padding: EdgeInsets.all(12),
+            color: Colors.grey.shade300,
+            shape: CircleBorder(),
+            elevation: 2,
+            child: Icon(
+              Icons.camera_alt,
+              color: Colors.black,
+              size: 22,
+            ),
+            onPressed: () {
+              updateImage();
+            },
+          ),
+        ),
       ],
     );
   }
 
-  Widget avatar() {
+  Widget avatar(DocumentSnapshot userSnap) {
     return CircleAvatar(
       radius: 80 + 6.0,
       backgroundColor: Colors.grey.shade300,
@@ -107,7 +197,7 @@ class _EditProfileState extends State<EditProfile> {
         backgroundColor: Colors.grey.shade300,
         child: CircleAvatar(
           radius: 80 - 6.0,
-          backgroundImage: NetworkImage(img),
+          backgroundImage: NetworkImage(userSnap.data['image']),
         ),
       ),
     );
@@ -248,11 +338,11 @@ class _EditProfileState extends State<EditProfile> {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                              BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                              BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.blue)),
                           filled: true,
                           contentPadding: EdgeInsets.only(
@@ -277,11 +367,11 @@ class _EditProfileState extends State<EditProfile> {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                              BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                              BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.blue)),
                           filled: true,
                           contentPadding: EdgeInsets.only(
@@ -307,15 +397,15 @@ class _EditProfileState extends State<EditProfile> {
                             filled: true,
                             enabledBorder: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
+                                BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             border: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
+                                BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
+                                BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                           ),
                           isExpanded: true,
@@ -349,7 +439,7 @@ class _EditProfileState extends State<EditProfile> {
                               .document(widget.uid)
                               .updateData({
                             "alternatePhoneNumber":
-                                _alternatePhoneController.text
+                            _alternatePhoneController.text
                           });
                         }
 
@@ -419,7 +509,7 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                              BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.blue)),
                           filled: true,
                           contentPadding: EdgeInsets.only(
@@ -444,7 +534,7 @@ class _EditProfileState extends State<EditProfile> {
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
+                                BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             filled: true,
                             contentPadding: EdgeInsets.only(
@@ -470,11 +560,11 @@ class _EditProfileState extends State<EditProfile> {
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
+                                BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
+                                BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             filled: true,
                             contentPadding: EdgeInsets.only(
@@ -501,15 +591,15 @@ class _EditProfileState extends State<EditProfile> {
                               filled: true,
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
                               border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
                               focusedBorder: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             isExpanded: true,
