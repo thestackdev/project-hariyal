@@ -184,20 +184,18 @@ class _SigninState extends State<Signin> {
                   inputFormatters: <TextInputFormatter>[
                     WhitelistingTextInputFormatter.digitsOnly
                   ],
-                  decoration: new InputDecoration(
-                    border: new OutlineInputBorder(),
-                    hintText: 'Phone Number',
-                    labelText: 'Phone Number',
-                    prefixIcon: const Icon(
-                      Icons.phone,
-                      color: Colors.blueAccent,
-                    ),
-                    prefixText: '+91  ',
-                    suffixIcon: Icon(
-                      Icons.check_circle,
-                      color: suffixColor,
-                    ),
-                  ))),
+                  decoration: Utils().textFieldDecoration(
+                      hint: "Phone Number",
+                      label: "Phone Number",
+                      prefixIcon: Icon(
+                        Icons.phone,
+                        color: Colors.blueAccent,
+                      ),
+                      suffixIcon: Icon(
+                        Icons.check_circle,
+                        color: suffixColor,
+                      ),
+                      prefixText: "+91  "))),
         ),
         SizedBox(
           height: 10,
@@ -232,10 +230,7 @@ class _SigninState extends State<Signin> {
           height: 10,
         ),
         Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          width: MediaQuery.of(context).size.width,
           child: RaisedButton(
             padding: EdgeInsets.symmetric(vertical: 12.0),
             color: Colors.blueAccent[400],
@@ -249,11 +244,11 @@ class _SigninState extends State<Signin> {
               ),
             ),
             child: Text(
-              "Request Otp",
+              'Request Otp',
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -315,6 +310,7 @@ class _SigninState extends State<Signin> {
             setState(() {
               otp = pin;
             });
+            login();
           },
         ),
         Expanded(
@@ -338,7 +334,7 @@ class _SigninState extends State<Signin> {
                   ),
                 ),
                 child: Text(
-                  "Resend Otp",
+                  'Resend Otp',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),

@@ -28,4 +28,17 @@ class Utils {
         fontSize: 16.0,
         webPosition: 'center');
   }
+
+  textFieldDecoration(
+      {String hint, label, prefixText, Icon prefixIcon, suffixIcon}) {
+    return new InputDecoration(
+      border: new OutlineInputBorder(),
+      labelStyle: TextStyle(fontSize: 18),
+      hintText: hint != null ? hint : "",
+      labelText: label != null ? label : "",
+      prefixIcon: prefixIcon != null ? prefixIcon : null,
+      prefixText: prefixText != null ? prefixText : null,
+      suffixIcon: suffixIcon != null ? suffixIcon : null,
+    );
+  }
 }
