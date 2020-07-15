@@ -312,12 +312,11 @@ class _HomeState extends State<Home> {
                 style: TextStyle(fontSize: 18)),
             actions: <Widget>[
               new FlatButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: new Text(
-                  'No',
-                  style: TextStyle(color: Colors.green[800], fontSize: 18),
-                ),
-              ),
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: new Text(
+                    'No',
+                    style: TextStyle(color: Colors.green[800], fontSize: 18),
+                  )),
               new FlatButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 child: new Text(
@@ -781,8 +780,8 @@ class _HomeState extends State<Home> {
           _query = firestore
               .collection('products')
               .where('title',
-              isGreaterThanOrEqualTo:
-              _searchQueryController.text.toLowerCase())
+                  isGreaterThanOrEqualTo:
+                      _searchQueryController.text.toLowerCase())
               .where('title',
               isLessThan: _searchQueryController.text.toLowerCase() + 'z')
               .snapshots();
