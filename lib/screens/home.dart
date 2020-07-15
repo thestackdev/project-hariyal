@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
+import 'package:the_project_hariyal/services/auth_services.dart';
 
 import 'booked_items.dart';
 import 'edit_profile.dart';
@@ -480,8 +480,7 @@ class _HomeState extends State<Home> {
                                 Padding(
                                   padding: EdgeInsets.only(left: 50),
                                   child: ListTile(
-                                    onTap: () =>
-                                        FirebaseAuth.instance.signOut(),
+                                    onTap: () => AuthServices().logout(),
                                     title: Text(
                                       'Logout',
                                       style: TextStyle(fontSize: 18),
@@ -783,7 +782,7 @@ class _HomeState extends State<Home> {
                   isGreaterThanOrEqualTo:
                       _searchQueryController.text.toLowerCase())
               .where('title',
-              isLessThan: _searchQueryController.text.toLowerCase() + 'z')
+                  isLessThan: _searchQueryController.text.toLowerCase() + 'z')
               .snapshots();
           break;
       }
