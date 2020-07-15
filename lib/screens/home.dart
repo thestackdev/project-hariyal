@@ -51,8 +51,6 @@ class _HomeState extends State<Home> {
   _searchListener() {
     if (_searchQueryController.text.isNotEmpty) {
       getScenario(9, area, state, category);
-    } else {
-      getScenario(8, area, state, category);
     }
   }
 
@@ -158,7 +156,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                    // value: state.toLowerCase(),
+                      // value: state.toLowerCase(),
                       decoration: getDecoration('State'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -253,10 +251,7 @@ class _HomeState extends State<Home> {
                         width: 30,
                       ),
                       Container(
-                        width: (MediaQuery
-                            .of(context)
-                            .size
-                            .width / 2) - 40,
+                        width: (MediaQuery.of(context).size.width / 2) - 40,
                         child: RaisedButton(
                           padding: EdgeInsets.symmetric(vertical: 12.0),
                           color: Colors.blueAccent[400],
@@ -538,6 +533,7 @@ class _HomeState extends State<Home> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
+              FocusScope.of(context).unfocus();
               Navigator.push(context, MaterialPageRoute(builder: (_) {
                 return ProductDetail(
                   productSnap: productsnap.data.documents[index],

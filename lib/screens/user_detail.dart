@@ -116,9 +116,9 @@ class _UserDetailsState extends State<UserDetails> {
   Future getLocationInfo(LocationData myLocation) async {
     currentLocation = myLocation;
     final coordinates =
-    new Coordinates(myLocation.latitude, myLocation.longitude);
+        new Coordinates(myLocation.latitude, myLocation.longitude);
     var addresses =
-    await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var first = addresses.first;
     setState(() {
       _latitude = myLocation.latitude;
@@ -126,7 +126,7 @@ class _UserDetailsState extends State<UserDetails> {
       _pinCode = first.postalCode;
       _state = first.adminArea;
       _cityDistrict =
-      first.locality == null ? first.subAdminArea : first.locality;
+          first.locality == null ? first.subAdminArea : first.locality;
     });
   }
 
