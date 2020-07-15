@@ -85,10 +85,7 @@ class _EditProfileState extends State<EditProfile> {
                   SizedBox(
                     height: 20,
                   ),
-                  Text(
-                    'Uploading Image',
-                    style: TextStyle(fontSize: 21),
-                  )
+                  Text('Uploading Image', style: TextStyle(fontSize: 21))
                 ],
               ),
             )
@@ -158,10 +155,7 @@ class _EditProfileState extends State<EditProfile> {
               avatar(usersnap),
               Text(
                 usersnap.data['name'],
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headline4,
+                style: Theme.of(context).textTheme.headline4,
               ),
             ],
           ),
