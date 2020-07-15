@@ -89,10 +89,7 @@ class _EditProfileState extends State<EditProfile> {
               avatar(),
               Text(
                 usersnap.data['name'],
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headline4,
+                style: Theme.of(context).textTheme.headline4,
               ),
             ],
           ),

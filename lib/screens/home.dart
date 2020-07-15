@@ -300,207 +300,254 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text(
+              'Are you sure?',
+              style: TextStyle(fontSize: 18),
+            ),
+            content: new Text('Do you want to exit the App',
+                style: TextStyle(fontSize: 18)),
+            actions: <Widget>[
+              new FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text(
+                  'No',
+                  style: TextStyle(color: Colors.green[800], fontSize: 18),
+                ),
+              ),
+              new FlatButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: new Text(
+                  'Yes',
+                  style: TextStyle(color: Colors.red[800], fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-        stream:
-            firestore.collection('customers').document(widget.uid).snapshots(),
-        builder: (context, customersnap) {
-          if (customersnap != null) {
-            if (customersnap.hasData && customersnap.data.exists) {
-              return StreamBuilder<DocumentSnapshot>(
-                  stream: firestore
-                      .collection('interested')
-                      .document(widget.uid)
-                      .snapshots(),
-                  builder: (context, interestedsnap) {
-                    if (interestedsnap.hasData) {
-                      return Scaffold(
-                        appBar: AppBar(
-                          title:
-                              _isSearching ? _buildSearchField() : Text('Home'),
-                          actions: _buildActions(),
-                        ),
-                        drawer: Drawer(
-                          child: ListView(
-                            children: [
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: EdgeInsets.only(left: 20),
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: IconButton(
-                                    icon: Icon(Icons.close),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: EdgeInsets.only(left: 50),
-                                child: ListTile(
-                                  title: Text(
-                                    customersnap.data['name'],
-                                    textScaleFactor: 2,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 30),
-                              Padding(
-                                padding: EdgeInsets.only(left: 50, right: 10),
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.of(context).pop(true);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (_) {
-                                      return EditProfile(
-                                        uid: widget.uid,
-                                      );
-                                    }));
-                                  },
-                                  title: Row(
-                                    children: [
-                                      Text(
-                                        'Edit Profile',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                      Spacer(),
-                                      Icon(Icons.arrow_forward_ios, size: 18)
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Padding(
-                                padding: EdgeInsets.only(left: 50, right: 10),
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.of(context).pop(true);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (_) {
-                                      return BookedItems();
-                                    }));
-                                  },
-                                  title: Row(
-                                    children: [
-                                      Text(
-                                        'Booked Items',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                      Spacer(),
-                                      Icon(Icons.arrow_forward_ios, size: 18)
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Padding(
-                                padding: EdgeInsets.only(left: 50, right: 10),
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.of(context).pop(true);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (_) {
-                                      return InterestedItems(
-                                        interestedsnap: interestedsnap.data,
-                                      );
-                                    }));
-                                  },
-                                  title: Row(
-                                    children: [
-                                      Text(
-                                        'Interested Items',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                      Spacer(),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 18,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 50, right: 10),
-                                child: ListTile(
-                                  onTap: () {},
-                                  title: Row(
-                                    children: [
-                                      Text(
-                                        'Refer a Friend',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                      Spacer(),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 18,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 50),
-                                child: ListTile(
-                                  onTap: () => FirebaseAuth.instance.signOut(),
-                                  title: Text(
-                                    'Logout',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ),
-                              ),
-                            ],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: StreamBuilder<DocumentSnapshot>(
+          stream: firestore
+              .collection('customers')
+              .document(widget.uid)
+              .snapshots(),
+          builder: (context, customersnap) {
+            if (customersnap != null) {
+              if (customersnap.hasData && customersnap.data.exists) {
+                return StreamBuilder<DocumentSnapshot>(
+                    stream: firestore
+                        .collection('interested')
+                        .document(widget.uid)
+                        .snapshots(),
+                    builder: (context, interestedsnap) {
+                      if (interestedsnap.hasData) {
+                        return Scaffold(
+                          appBar: AppBar(
+                            title: _isSearching
+                                ? _buildSearchField()
+                                : Text('Home'),
+                            actions: _buildActions(),
                           ),
-                        ),
-                        body: SafeArea(
-                          child: StreamBuilder<QuerySnapshot>(
-                            stream: _query,
-                            builder: (context, productsnap) {
-                              if (productsnap.connectionState ==
-                                      ConnectionState.waiting &&
-                                  isFilterChanged) {
-                                return Center(
-                                  child: SpinKitWave(
-                                    color: Colors.orange,
-                                    size: 50.0,
+                          drawer: Drawer(
+                            child: ListView(
+                              children: [
+                                SizedBox(height: 20),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 20),
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: IconButton(
+                                      icon: Icon(Icons.close),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
                                   ),
-                                );
-                              } else if (productsnap.hasData) {
-                                if (productsnap.data.documents.length == 0) {
+                                ),
+                                SizedBox(height: 20),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 50),
+                                  child: ListTile(
+                                    title: Text(
+                                      customersnap.data['name'],
+                                      textScaleFactor: 2,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 50, right: 10),
+                                  child: ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).pop(true);
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (_) {
+                                        return EditProfile(
+                                          uid: widget.uid,
+                                        );
+                                      }));
+                                    },
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          'Edit Profile',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                        Spacer(),
+                                        Icon(Icons.arrow_forward_ios, size: 18)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 50, right: 10),
+                                  child: ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).pop(true);
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (_) {
+                                        return BookedItems();
+                                      }));
+                                    },
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          'Booked Items',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                        Spacer(),
+                                        Icon(Icons.arrow_forward_ios, size: 18)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 50, right: 10),
+                                  child: ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).pop(true);
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (_) {
+                                        return InterestedItems(
+                                          interestedsnap: interestedsnap.data,
+                                        );
+                                      }));
+                                    },
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          'Interested Items',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                        Spacer(),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 18,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 50, right: 10),
+                                  child: ListTile(
+                                    onTap: () {},
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          'Refer a Friend',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                        Spacer(),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 18,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 50),
+                                  child: ListTile(
+                                    onTap: () =>
+                                        FirebaseAuth.instance.signOut(),
+                                    title: Text(
+                                      'Logout',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          body: SafeArea(
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: _query,
+                              builder: (context, productsnap) {
+                                if (productsnap.connectionState ==
+                                        ConnectionState.waiting &&
+                                    isFilterChanged) {
                                   return Center(
-                                    child: Text(
-                                      'No products found with the search criteria',
-                                      textAlign: TextAlign.center,
+                                    child: SpinKitWave(
+                                      color: Colors.orange,
+                                      size: 50.0,
+                                    ),
+                                  );
+                                } else if (productsnap.hasData) {
+                                  if (productsnap.data.documents.length == 0) {
+                                    return Center(
+                                      child: Text(
+                                        'No products found with the search criteria',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    );
+                                  }
+                                  return buildItem(productsnap, interestedsnap);
+                                } else {
+                                  return Center(
+                                    child: SpinKitWave(
+                                      color: Colors.orange,
+                                      size: 50.0,
                                     ),
                                   );
                                 }
-                                return buildItem(productsnap, interestedsnap);
-                              } else {
-                                return Center(
-                                  child: SpinKitWave(
-                                    color: Colors.orange,
-                                    size: 50.0,
-                                  ),
-                                );
-                              }
-                            },
+                              },
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      return Scaffold(
-                        body: Center(
-                          child: SpinKitWave(
-                            color: Colors.orange,
-                            size: 50.0,
+                        );
+                      } else {
+                        return Scaffold(
+                          body: Center(
+                            child: SpinKitWave(
+                              color: Colors.orange,
+                              size: 50.0,
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                  });
+                        );
+                      }
+                    });
+              } else {
+                return Scaffold(
+                  body: Center(
+                    child: SpinKitWave(
+                      color: Colors.orange,
+                      size: 50.0,
+                    ),
+                  ),
+                );
+              }
             } else {
               return Scaffold(
                 body: Center(
@@ -511,17 +558,8 @@ class _HomeState extends State<Home> {
                 ),
               );
             }
-          } else {
-            return Scaffold(
-              body: Center(
-                child: SpinKitWave(
-                  color: Colors.orange,
-                  size: 50.0,
-                ),
-              ),
-            );
-          }
-        });
+          }),
+    );
   }
 
   buildItem(AsyncSnapshot<QuerySnapshot> productsnap,
