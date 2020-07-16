@@ -56,30 +56,30 @@ class _InterestedItemsState extends State<InterestedItems> {
               )
             : StreamBuilder<QuerySnapshot>(
                 stream: fireStore
-                .collection('products')
-                .where(
-              FieldPath.documentId,
-              whereIn: widget.interestedsnap.data['interested'],
-            )
-                .limit(count)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    controller: _scrollController,
-                    itemCount: snapshot.data.documents.length,
-                    itemBuilder: (context, index) {
-                      return buildItems(snapshot, index);
-                    });
-              } else {
-                return Center(
-                  child: SpinKitWave(
-                    color: Colors.orange,
-                    size: 50.0,
-                  ),
-                );
-              }
-            }),
+                    .collection('products')
+                    .where(
+                      FieldPath.documentId,
+                      whereIn: widget.interestedsnap.data['interested'],
+                    )
+                    .limit(count)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        controller: _scrollController,
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context, index) {
+                          return buildItems(snapshot, index);
+                        });
+                  } else {
+                    return Center(
+                      child: SpinKitWave(
+                        color: Colors.orange,
+                        size: 50.0,
+                      ),
+                    );
+                  }
+                }),
       ),
     );
   }

@@ -130,6 +130,8 @@ class _HomeState extends State<Home> {
   }
 
   showFilterDialog() {
+    String _state, _area, _category;
+
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -156,7 +158,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                      // value: state.toLowerCase(),
+                    // value: state.toLowerCase(),
                       decoration: getDecoration('State'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -164,9 +166,7 @@ class _HomeState extends State<Home> {
                       iconSize: 30,
                       elevation: 9,
                       onChanged: (newValue) {
-                        setState(() {
-                          state = newValue;
-                        });
+                        _state = newValue;
                       },
                       items: states.map<DropdownMenuItem<String>>((e) {
                         return DropdownMenuItem<String>(
@@ -179,7 +179,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                      //  value: area.toLowerCase(),
+                    //  value: area.toLowerCase(),
                       decoration: getDecoration('Area'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -187,9 +187,7 @@ class _HomeState extends State<Home> {
                       iconSize: 30,
                       elevation: 9,
                       onChanged: (newValue) {
-                        setState(() {
-                          area = newValue;
-                        });
+                        _area = newValue;
                       },
                       items: areas.map<DropdownMenuItem<String>>((e) {
                         return DropdownMenuItem<String>(
@@ -202,7 +200,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                      // value: category == null ? 'All' : category.toLowerCase(),
+                    // value: category == null ? 'All' : category.toLowerCase(),
                       decoration: getDecoration('Category'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -210,9 +208,7 @@ class _HomeState extends State<Home> {
                       iconSize: 30,
                       elevation: 9,
                       onChanged: (newValue) {
-                        setState(() {
-                          category = newValue;
-                        });
+                        _category = newValue;
                       },
                       items: categories.map<DropdownMenuItem<String>>((e) {
                         return DropdownMenuItem<String>(
@@ -266,24 +262,24 @@ class _HomeState extends State<Home> {
                             style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
                           onPressed: () {
-                            if (area != null &&
-                                state != null &&
-                                category != null) {
-                              getScenario(7, area, state, category);
-                            } else if (area != null && state != null) {
-                              getScenario(6, area, state, category);
-                            } else if (area != null && category != null) {
-                              getScenario(5, area, state, category);
-                            } else if (state != null && area != null) {
-                              getScenario(4, area, state, category);
-                            } else if (state != null && category != null) {
-                              getScenario(3, area, state, category);
-                            } else if (state != null) {
-                              getScenario(2, area, state, category);
-                            } else if (area != null) {
-                              getScenario(1, area, state, category);
-                            } else if (category != null) {
-                              getScenario(0, area, state, category);
+                            if (_area != null &&
+                                _state != null &&
+                                _category != null) {
+                              getScenario(7, _area, _state, _category);
+                            } else if (_area != null && _state != null) {
+                              getScenario(6, _area, _state, _category);
+                            } else if (_area != null && _category != null) {
+                              getScenario(5, _area, _state, _category);
+                            } else if (_state != null && _area != null) {
+                              getScenario(4, _area, _state, _category);
+                            } else if (_state != null && _category != null) {
+                              getScenario(3, _area, _state, _category);
+                            } else if (_state != null) {
+                              getScenario(2, _area, _state, _category);
+                            } else if (_area != null) {
+                              getScenario(1, _area, _state, _category);
+                            } else if (_category != null) {
+                              getScenario(0, _area, _state, _category);
                             }
                             Navigator.pop(context);
                           },
@@ -815,7 +811,7 @@ class _HomeState extends State<Home> {
                 _isSearching = false;
                 _searchQueryController.text = "";
               });
-              getScenario(8, area, state, category);
+              getScenario(7, area, state, category);
             }
           },
         ),
