@@ -107,10 +107,7 @@ class _InterestedItemsState extends State<InterestedItems> {
             margin: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
             child: Container(
               height: 120,
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               child: Row(
                 children: <Widget>[
                   ClipRRect(

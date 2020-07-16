@@ -100,8 +100,12 @@ class _HomeState extends State<Home> {
           });
         }
       }
-      if (area == "default") {
-        getScenario(8, area, state, category);
+      if (area == "default" || state == "default") {
+        _query = firestore
+            .collection('products')
+            .orderBy('title')
+            .limit(count)
+            .snapshots();
       } else {
         _query = firestore
             .collection('products')

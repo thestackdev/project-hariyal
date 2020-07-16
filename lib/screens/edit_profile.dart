@@ -333,7 +333,7 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.blue)),
                           filled: true,
                           contentPadding: EdgeInsets.only(
