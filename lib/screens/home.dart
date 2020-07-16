@@ -440,6 +440,7 @@ class _HomeState extends State<Home> {
                                           MaterialPageRoute(builder: (_) {
                                         return InterestedItems(
                                           interestedsnap: interestedsnap.data,
+                                          uid: widget.uid,
                                         );
                                       }));
                                     },

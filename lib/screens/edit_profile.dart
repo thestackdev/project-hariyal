@@ -274,10 +274,7 @@ class _EditProfileState extends State<EditProfile> {
                               usersnap['gender'] == "default" ||
                               usersnap['permanentAddress'] == "default")
                             Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width - 32,
+                              width: MediaQuery.of(context).size.width - 32,
                               margin: EdgeInsets.only(top: 20),
                               child: RaisedButton(
                                 onPressed: () =>
