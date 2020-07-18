@@ -162,7 +162,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                    // value: state.toLowerCase(),
+                      // value: state.toLowerCase(),
                       decoration: getDecoration('State'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -183,7 +183,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                    //  value: area.toLowerCase(),
+                      //  value: area.toLowerCase(),
                       decoration: getDecoration('Area'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,
@@ -204,7 +204,7 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   DropdownButtonFormField(
-                    // value: category == null ? 'All' : category.toLowerCase(),
+                      // value: category == null ? 'All' : category.toLowerCase(),
                       decoration: getDecoration('Category'),
                       isExpanded: true,
                       iconEnabledColor: Colors.grey,

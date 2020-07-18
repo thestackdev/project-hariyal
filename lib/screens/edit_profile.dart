@@ -358,11 +358,11 @@ class _EditProfileState extends State<EditProfile> {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.blue)),
                           filled: true,
                           contentPadding: EdgeInsets.only(
@@ -388,15 +388,15 @@ class _EditProfileState extends State<EditProfile> {
                             filled: true,
                             enabledBorder: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             border: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                           ),
                           isExpanded: true,
@@ -430,7 +430,7 @@ class _EditProfileState extends State<EditProfile> {
                               .document(widget.uid)
                               .updateData({
                             "alternatePhoneNumber":
-                            _alternatePhoneController.text
+                                _alternatePhoneController.text
                           });
                         }
 
@@ -496,11 +496,11 @@ class _EditProfileState extends State<EditProfile> {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                               borderSide: BorderSide(color: Colors.blue)),
                           filled: true,
                           contentPadding: EdgeInsets.only(
@@ -521,11 +521,11 @@ class _EditProfileState extends State<EditProfile> {
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             filled: true,
                             contentPadding: EdgeInsets.only(
@@ -551,11 +551,11 @@ class _EditProfileState extends State<EditProfile> {
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             filled: true,
                             contentPadding: EdgeInsets.only(
@@ -582,15 +582,15 @@ class _EditProfileState extends State<EditProfile> {
                               filled: true,
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                                      BorderRadius.all(Radius.circular(5.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
                               border: OutlineInputBorder(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                                      BorderRadius.all(Radius.circular(5.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
                               focusedBorder: OutlineInputBorder(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
+                                      BorderRadius.all(Radius.circular(5.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             isExpanded: true,
@@ -627,7 +627,7 @@ class _EditProfileState extends State<EditProfile> {
                                 .document(widget.uid)
                                 .updateData({
                               "alternatePhoneNumber":
-                              _alternatePhoneController.text
+                                  _alternatePhoneController.text
                             });
                           }
 
