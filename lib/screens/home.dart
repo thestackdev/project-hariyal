@@ -9,6 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
 
+import '../utils.dart';
 import 'booked_items.dart';
 import 'edit_profile.dart';
 import 'interested_items.dart';
@@ -649,7 +650,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 ),
                                 subtitle: Text(
                                   productsnap.data.documents[index]
-                                  ['description'],
+                                      ['description'],
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -889,8 +890,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 (element) =>
             map[element] == productsnap.data.documents[index].documentID,
             orElse: () => null);
-        map.remove(key);
-        interestsnap.data.reference.updateData({'interested': map});
+        if (key != null) {
+          map.remove(key);
+          interestsnap.data.reference.updateData({'interested': map});
+        } else {
+          Utils().toast(context, 'Something went wrong',
+              bgColor: Utils().randomGenerator());
+        }
       } else {
         count = count + 1;
         showHeart(true, count,

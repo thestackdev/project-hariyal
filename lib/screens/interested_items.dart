@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:the_project_hariyal/utils.dart';
 
 import 'product_details.dart';
 import 'widgets/network_image.dart';
@@ -23,8 +24,11 @@ class _InterestedItemsState extends State<InterestedItems> {
   int count = 30;
   ScrollController _scrollController;
 
+  List productIds = new List();
+
   @override
   void initState() {
+    productIds = widget.interestedsnap.data['interested'].values.toList();
     fireStore = Firestore.instance;
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
@@ -48,7 +52,7 @@ class _InterestedItemsState extends State<InterestedItems> {
         title: Text('Interested Items'),
       ),
       body: SafeArea(
-        child: widget.interestedsnap.data['interested'].length == 0
+        child: productIds.length == 0
             ? Center(
                 child: Text(
                   'You don\'t have interests in any of our product :/',
@@ -56,56 +60,59 @@ class _InterestedItemsState extends State<InterestedItems> {
                   textAlign: TextAlign.center,
                 ),
               )
-            : StreamBuilder<QuerySnapshot>(
-                stream:
-                    fireStore.collection('products').limit(count).snapshots(),
-                builder: (context, snapshot) {
-                  Map map = new HashMap();
-                  map.values;
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                        controller: _scrollController,
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (context, index) {
-                          return buildItems(snapshot, index);
-                        });
-                  } else {
-                    return Center(
-                      child: SpinKitWave(
-                        color: Colors.orange,
-                        size: 50.0,
-                      ),
-                    );
-                  }
+            : ListView.builder(
+                controller: _scrollController,
+                itemCount: productIds.length,
+                itemBuilder: (context, index) {
+                  return StreamBuilder(
+                    stream: fireStore
+                        .collection('products')
+                        .document(productIds[index])
+                        .snapshots(),
+                    builder: (context, productSnap) {
+                      return productSnap.hasData
+                          ? buildItems(productSnap, index)
+                          : Center(
+                              child: SpinKitWave(
+                                color: Colors.orange,
+                                size: 50.0,
+                              ),
+                            );
+                    },
+                  );
                 }),
       ),
     );
   }
 
-  Widget buildItems(AsyncSnapshot<QuerySnapshot> snapshot, int index) {
+  Widget buildItems(AsyncSnapshot<DocumentSnapshot> snapshot, int index) {
     return Stack(
       children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductDetail(
-                  productSnap: snapshot.data.documents[index],
-                  uid: widget.uid,
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 9,
+          margin: EdgeInsets.only(top: 12, right: 24, left: 12, bottom: 12),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ProductDetail(
+                        productSnap: snapshot.data,
+                        uid: widget.uid,
+                      ),
                 ),
-              ),
-            );
-          },
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 9,
-            margin: EdgeInsets.only(top: 12, right: 24, left: 12, bottom: 12),
+              );
+            },
             child: Container(
               height: 120,
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               child: Row(
                 children: <Widget>[
                   ClipRRect(
@@ -114,7 +121,7 @@ class _InterestedItemsState extends State<InterestedItems> {
                       bottomLeft: Radius.circular(12.0),
                     ),
                     child: PNetworkImage(
-                      snapshot.data.documents[index]['images'][0],
+                      snapshot.data.data['images'][0],
                       height: 120,
                       width: 160,
                       fit: BoxFit.fitHeight,
@@ -128,7 +135,7 @@ class _InterestedItemsState extends State<InterestedItems> {
                         children: <Widget>[
                           Spacer(),
                           Text(
-                            snapshot.data.documents[index]['title'],
+                            snapshot.data.data['title'],
                             textScaleFactor: 1.4,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -138,7 +145,7 @@ class _InterestedItemsState extends State<InterestedItems> {
                           ),
                           Spacer(),
                           Text(
-                            '₹ ${snapshot.data.documents[index]['price']}',
+                            '₹ ${snapshot.data.data['price']}',
                             textScaleFactor: 1.2,
                             style: TextStyle(
                                 fontStyle: FontStyle.italic,
@@ -159,11 +166,25 @@ class _InterestedItemsState extends State<InterestedItems> {
           top: 32,
           right: 12,
           child: GestureDetector(
-            onTap: () async {
-              setState(() {
-                //cartList.removeAt(index);
-              });
-              //await _databaseHelper.deleteItem(cartModel.foodId);
+            onTap: () {
+              int count = snapshot.data.data['interested_count'];
+              Map map = new HashMap();
+              map = widget.interestedsnap.data['interested'];
+              count = count - 1;
+              var key = map.keys.firstWhere(
+                      (element) => map[element] == snapshot.data.documentID,
+                  orElse: () => null);
+              if (key != null) {
+                setState(() {
+                  productIds.remove(snapshot.data.documentID);
+                });
+                map.remove(key);
+                widget.interestedsnap.reference.updateData({'interested': map});
+                snapshot.data.reference.updateData({'interested_count': count});
+              } else {
+                Utils().toast(context, 'Something went wrong',
+                    bgColor: Utils().randomGenerator());
+              }
             },
             child: Container(
               decoration: BoxDecoration(
