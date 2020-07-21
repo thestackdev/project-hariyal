@@ -148,10 +148,10 @@ class _ProductDetailState extends State<ProductDetail> {
                                                     .setData({
                                                   'interested': {
                                                     Timestamp.now()
-                                                        .toDate()
-                                                        .toString():
-                                                    widget.productSnap
-                                                        .documentID
+                                                            .toDate()
+                                                            .toString():
+                                                        widget.productSnap
+                                                            .documentID
                                                   }
                                                 });
                                               }

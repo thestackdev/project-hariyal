@@ -654,7 +654,9 @@ class _EditProfileState extends State<EditProfile> {
                             firestore
                                 .collection('customers')
                                 .document(widget.uid)
-                                .updateData({"name": _nameController.text});
+                                .updateData({
+                              "name": _nameController.text.toLowerCase()
+                            });
                           }
 
                           Navigator.of(context).pop();

@@ -50,12 +50,12 @@ class _InterestedItemsState extends State<InterestedItems> {
       body: SafeArea(
         child: widget.interestedsnap.data['interested'].length == 0
             ? Center(
-          child: Text(
-            'You don\'t have interests in any of our product :/',
-            style: TextStyle(fontSize: 24),
-            textAlign: TextAlign.center,
-          ),
-        )
+                child: Text(
+                  'You don\'t have interests in any of our product :/',
+                  style: TextStyle(fontSize: 24),
+                  textAlign: TextAlign.center,
+                ),
+              )
             : StreamBuilder<QuerySnapshot>(
                 stream:
                     fireStore.collection('products').limit(count).snapshots(),
