@@ -667,15 +667,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   },
                                   icon: interestsnap.data.data != null
                                       ? interestsnap.data['interested']
-                                      .containsValue(
-                                    productsnap
-                                        .data.documents[index].documentID,
-                                  )
-                                      ? Icon(
-                                    Icons.favorite,
-                                    color: Colors.red[800],
-                                  )
-                                      : Icon(Icons.favorite_border)
+                                              .containsValue(
+                                          productsnap
+                                              .data.documents[index].documentID,
+                                        )
+                                          ? Icon(
+                                              Icons.favorite,
+                                              color: Colors.red[800],
+                                            )
+                                          : Icon(Icons.favorite_border)
                                       : Icon(Icons.favorite_border),
                                 ),
                                 title: Text(

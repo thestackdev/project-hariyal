@@ -82,22 +82,22 @@ class _ProductDetailState extends State<ProductDetail> {
                         ),
                         Spacer(),
                         Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(32.0),
-                                color: Colors.white),
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 30.0),
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    physics: BouncingScrollPhysics(),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        ListTile(
+                            child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(32.0),
+                              color: Colors.white),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 30.0),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  physics: BouncingScrollPhysics(),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ListTile(
                                           title: Text(
                                             utils.camelCase(
                                                 widget.productSnap['title']),
@@ -109,16 +109,16 @@ class _ProductDetailState extends State<ProductDetail> {
                                           trailing: IconButton(
                                             icon: snapshot.data.data != null
                                                 ? snapshot.data['interested']
-                                                .containsValue(
-                                              widget
-                                                  .productSnap.documentID,
-                                            )
-                                                ? Icon(
-                                              Icons.favorite,
-                                              color: Colors.red[800],
-                                            )
-                                                : Icon(
-                                                Icons.favorite_border)
+                                                    .containsValue(
+                                                  widget
+                                                      .productSnap.documentID,
+                                                )
+                                                    ? Icon(
+                                                  Icons.favorite,
+                                                  color: Colors.red[800],
+                                                )
+                                                    : Icon(
+                                                    Icons.favorite_border)
                                                 : Icon(Icons.favorite_border),
                                             onPressed: () {
                                               if (snapshot.data.data != null ||
@@ -166,85 +166,85 @@ class _ProductDetailState extends State<ProductDetail> {
                                                 });
                                               }
                                             },
+                                              )),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16.0,
+                                                vertical: 12.0),
+                                            child: Text(
+                                              widget.productSnap['description'],
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 18),
+                                            ),
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 24),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20.0),
+                                          topRight: Radius.circular(20.0)),
+                                      color: Colors.grey.shade900,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Price ${widget
+                                              .productSnap['price']}',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.0),
                                         ),
-                                        Padding(
+                                        RaisedButton(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 16.0, vertical: 12.0),
-                                          child: Text(
-                                            widget.productSnap['description'],
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 18),
+                                              vertical: 8.0, horizontal: 16.0),
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                          onPressed: () async {},
+                                          color: Colors.orange,
+                                          textColor: Colors.white,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Text(
+                                                "Book Now",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16.0),
+                                              ),
+                                              const SizedBox(width: 20.0),
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                    8.0),
+                                                child: Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: Colors.orange,
+                                                  size: 16.0,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0)),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 24),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20.0),
-                                        topRight: Radius.circular(20.0)),
-                                    color: Colors.grey.shade900,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Price ${widget.productSnap['price']}',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0),
-                                      ),
-                                      RaisedButton(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0, horizontal: 16.0),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                        onPressed: () async {},
-                                        color: Colors.orange,
-                                        textColor: Colors.white,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            Text(
-                                              "Book Now",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16.0),
-                                            ),
-                                            const SizedBox(width: 20.0),
-                                            Container(
-                                              padding:
-                                              const EdgeInsets.all(8.0),
-                                              child: Icon(
-                                                Icons.arrow_forward_ios,
-                                                color: Colors.orange,
-                                                size: 16.0,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      10.0)),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                                ],
+                              ),
+                            )),
                       ],
                     ),
                   ),
