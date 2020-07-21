@@ -86,7 +86,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         ListTile(
                                           title: Text(

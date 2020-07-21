@@ -33,7 +33,7 @@ class _InterestedItemsState extends State<InterestedItems> {
 
   _scrollListener() {
     if (_scrollController.offset >=
-        _scrollController.position.maxScrollExtent &&
+            _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         count += 30;
@@ -73,11 +73,11 @@ class _InterestedItemsState extends State<InterestedItems> {
                     return Center(
                       child: SpinKitWave(
                         color: Colors.orange,
-                    size: 50.0,
-                  ),
-                );
-              }
-            }),
+                        size: 50.0,
+                      ),
+                    );
+                  }
+                }),
       ),
     );
   }
