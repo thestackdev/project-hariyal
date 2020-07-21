@@ -501,7 +501,32 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 Padding(
                                   padding: EdgeInsets.only(left: 50),
                                   child: ListTile(
-                                    onTap: () => AuthServices().logout(),
+                                    onTap: () {
+                                      return showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Logout!'),
+                                              content: Text(
+                                                  'Are you sure want to log out'),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('No'),
+                                                ),
+                                                FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                    AuthServices().logout();
+                                                  },
+                                                  child: Text('Yes'),
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    },
                                     title: Text(
                                       'Logout',
                                       style: TextStyle(fontSize: 18),
