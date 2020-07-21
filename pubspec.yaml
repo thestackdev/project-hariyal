@@ -42,6 +42,7 @@ dependencies:
   image_picker:
   flutter_money_formatter:
   flutter_data_stream_builder:
+  flare_flutter:
 
   #Using Old version to avoid errors
   cached_network_image: ^2.0.0
@@ -52,6 +53,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/
 
 fonts:
   - family: Ubuntu

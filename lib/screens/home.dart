@@ -1,6 +1,8 @@
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -40,11 +42,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   Utils utils;
 
+  final FlareControls flareControls = FlareControls();
+
   TextEditingController _searchQueryController = new TextEditingController();
   bool _isSearching = false, heartVisibility = false;
-
-  AnimationController animation;
-  Animation<double> _fadeInFadeOut;
 
   int count = 30, heartIndex = 0;
   Color heartColor = Colors.red[800].withOpacity(0.7);
@@ -69,7 +70,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void dispose() {
     _scrollController.dispose();
     _searchQueryController.dispose();
-    animation.dispose();
     super.dispose();
   }
 
@@ -83,12 +83,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     getFilters();
     initFilters();
     _searchQueryController.addListener(_searchListener);
-    animation = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1),
-    );
-    _fadeInFadeOut = Tween<double>(begin: 0.0, end: 1).animate(animation);
-    animation.forward();
     super.initState();
   }
 
@@ -713,19 +707,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         ],
                       ),
                       heartIndex == index
-                          ? FadeTransition(
-                              opacity: _fadeInFadeOut,
-                              child: Visibility(
-                                visible: heartVisibility,
-                                child: Center(
-                                  child: Icon(
-                                    Icons.favorite,
-                                    color: heartColor,
-                                    size: 72,
-                                  ),
-                                ),
-                              ),
-                            )
+                          ? Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(24),
+                          child: FlareActor(
+                            'assets/instagram_like.flr',
+                            controller: flareControls,
+                            animation: 'idle',
+                            fit: BoxFit.contain,
+                            color: Colors.red[800],
+                          ),
+                        ),
+                      )
                           : Container()
                     ],
                   )));
@@ -913,11 +906,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       map = interestsnap.data['interested'];
       if (map.containsValue(productsnap.data.documents[index].documentID)) {
         count = count > 0 ? count - 1 : 0;
-        showHeart(false, count,
-            productsnap.data.documents[index].documentID.toString());
+        updateCount(
+            count, productsnap.data.documents[index].documentID.toString());
         var key = map.keys.firstWhere(
-            (element) =>
-                map[element] == productsnap.data.documents[index].documentID,
+                (element) =>
+            map[element] == productsnap.data.documents[index].documentID,
             orElse: () => null);
         if (key != null) {
           map.remove(key);
@@ -927,50 +920,32 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               bgColor: utils.randomGenerator());
         }
       } else {
+        flareControls.play("like");
         count = count + 1;
-        showHeart(true, count,
-            productsnap.data.documents[index].documentID.toString());
+        updateCount(
+            count, productsnap.data.documents[index].documentID.toString());
         map[Timestamp.now().toDate().toString()] =
             productsnap.data.documents[index].documentID.toString();
         interestsnap.data.reference.updateData({'interested': map});
       }
     } else {
+      flareControls.play("like");
       count = count + 1;
-      showHeart(
-          true, count, productsnap.data.documents[index].documentID.toString());
+      updateCount(
+          count, productsnap.data.documents[index].documentID.toString());
       interestsnap.data.reference.setData({
         'interested': {
           Timestamp.now().toDate().toString():
-              productsnap.data.documents[index].documentID
+          productsnap.data.documents[index].documentID
         }
       });
     }
   }
 
-  void showHeart(bool isRed, int count, String pid) {
+  void updateCount(int count, String pid) {
     firestore
         .collection('products')
         .document(pid)
         .updateData({'interested_count': count});
-
-    if (mounted) {
-      setState(() {
-        heartVisibility = true;
-        if (isRed) {
-          heartColor = Colors.red[800].withOpacity(0.7);
-        } else {
-          heartColor = Colors.grey.withOpacity(0.7);
-        }
-      });
-    }
-    if (animation.isCompleted) {
-      Future.delayed(Duration(seconds: 1)).then((value) {
-        if (mounted) {
-          setState(() {
-            heartVisibility = false;
-          });
-        }
-      });
-    }
   }
 }
