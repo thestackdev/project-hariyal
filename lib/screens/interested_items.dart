@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -31,7 +33,7 @@ class _InterestedItemsState extends State<InterestedItems> {
 
   _scrollListener() {
     if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+        _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         count += 30;
@@ -48,22 +50,18 @@ class _InterestedItemsState extends State<InterestedItems> {
       body: SafeArea(
         child: widget.interestedsnap.data['interested'].length == 0
             ? Center(
-                child: Text(
-                  'You don\'t have interests in any of our product :/',
-                  style: TextStyle(fontSize: 24),
-                  textAlign: TextAlign.center,
-                ),
-              )
+          child: Text(
+            'You don\'t have interests in any of our product :/',
+            style: TextStyle(fontSize: 24),
+            textAlign: TextAlign.center,
+          ),
+        )
             : StreamBuilder<QuerySnapshot>(
-                stream: fireStore
-                    .collection('products')
-                    .where(
-                      FieldPath.documentId,
-                      whereIn: widget.interestedsnap.data['interested'],
-                    )
-                    .limit(count)
-                    .snapshots(),
+                stream:
+                    fireStore.collection('products').limit(count).snapshots(),
                 builder: (context, snapshot) {
+                  Map map = new HashMap();
+                  map.values;
                   if (snapshot.hasData) {
                     return ListView.builder(
                         controller: _scrollController,
@@ -75,11 +73,11 @@ class _InterestedItemsState extends State<InterestedItems> {
                     return Center(
                       child: SpinKitWave(
                         color: Colors.orange,
-                        size: 50.0,
-                      ),
-                    );
-                  }
-                }),
+                    size: 50.0,
+                  ),
+                );
+              }
+            }),
       ),
     );
   }
@@ -104,10 +102,13 @@ class _InterestedItemsState extends State<InterestedItems> {
               borderRadius: BorderRadius.circular(12),
             ),
             elevation: 9,
-            margin: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            margin: EdgeInsets.only(top: 12, right: 24, left: 12, bottom: 12),
             child: Container(
               height: 120,
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               child: Row(
                 children: <Widget>[
                   ClipRRect(
@@ -132,6 +133,7 @@ class _InterestedItemsState extends State<InterestedItems> {
                           Text(
                             snapshot.data.documents[index]['title'],
                             textScaleFactor: 1.4,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -156,6 +158,26 @@ class _InterestedItemsState extends State<InterestedItems> {
             ),
           ),
         ),
+        Positioned(
+          top: 32,
+          right: 12,
+          child: GestureDetector(
+            onTap: () async {
+              setState(() {
+                //cartList.removeAt(index);
+              });
+              //await _databaseHelper.deleteItem(cartModel.foodId);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.red, borderRadius: BorderRadius.circular(6)),
+              child: Icon(
+                Icons.close,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        )
       ],
     );
   }

@@ -9,8 +9,17 @@ class _BookedItemsState extends State<BookedItems> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Booked Items'),
+      ),
       body: SafeArea(
-        child: Placeholder(),
+        child: Center(
+          child: Text(
+            'No Items Booked Yet',
+            textScaleFactor: 3,
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }

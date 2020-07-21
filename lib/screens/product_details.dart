@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -84,7 +86,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         ListTile(
                                           title: Text(
@@ -95,51 +97,62 @@ class _ProductDetailState extends State<ProductDetail> {
                                                 fontSize: 28.0),
                                           ),
                                           trailing: IconButton(
-                                            icon: snapshot.data['interested']
-                                                    .contains(widget
-                                                        .productSnap.documentID)
-                                                ? Icon(
-                                                    Icons.favorite,
-                                                    color: Colors.red[800],
+                                            icon: snapshot.data.data != null
+                                                ? snapshot.data['interested']
+                                                        .containsValue(
+                                                    widget
+                                                        .productSnap.documentID,
                                                   )
+                                                    ? Icon(
+                                                        Icons.favorite,
+                                                        color: Colors.red[800],
+                                                      )
+                                                    : Icon(
+                                                        Icons.favorite_border)
                                                 : Icon(Icons.favorite_border),
                                             onPressed: () {
-                                              if (snapshot.data != null) {
-                                                if (snapshot.data['interested']
-                                                    .contains(widget.productSnap
-                                                        .documentID)) {
+                                              if (snapshot.data.data != null ||
+                                                  snapshot.data['interested']
+                                                          .length >
+                                                      0 ||
+                                                  snapshot.data['interested'] !=
+                                                      null) {
+                                                Map map = new HashMap();
+                                                map =
+                                                    snapshot.data['interested'];
+                                                if (map.containsValue(widget
+                                                    .productSnap.documentID)) {
+                                                  var key = map.keys.firstWhere(
+                                                      (element) =>
+                                                          map[element] ==
+                                                          widget.productSnap
+                                                              .documentID,
+                                                      orElse: () => null);
+                                                  map.remove(key);
                                                   snapshot.data.reference
-                                                      .updateData({
-                                                    'interested':
-                                                        FieldValue.arrayRemove(
-                                                      [
-                                                        widget.productSnap
-                                                            .documentID
-                                                      ],
-                                                    )
-                                                  });
+                                                      .updateData(
+                                                          {'interested': map});
                                                 } else {
+                                                  map[Timestamp.now()
+                                                          .toDate()
+                                                          .toString()] =
+                                                      widget.productSnap
+                                                          .documentID
+                                                          .toString();
                                                   snapshot.data.reference
-                                                      .updateData({
-                                                    'interested':
-                                                        FieldValue.arrayUnion(
-                                                      [
-                                                        widget.productSnap
-                                                            .documentID
-                                                      ],
-                                                    )
-                                                  });
+                                                      .updateData(
+                                                          {'interested': map});
                                                 }
                                               } else {
                                                 snapshot.data.reference
                                                     .setData({
-                                                  'interested':
-                                                      FieldValue.arrayUnion(
-                                                    [
-                                                      widget.productSnap
-                                                          .documentID
-                                                    ],
-                                                  )
+                                                  'interested': {
+                                                    Timestamp.now()
+                                                        .toDate()
+                                                        .toString():
+                                                    widget.productSnap
+                                                        .documentID
+                                                  }
                                                 });
                                               }
                                             },
@@ -170,7 +183,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'Price ${widget.productSnap['price']}',
@@ -184,7 +197,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                             vertical: 8.0, horizontal: 16.0),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(10.0)),
+                                            BorderRadius.circular(10.0)),
                                         onPressed: () async {},
                                         color: Colors.orange,
                                         textColor: Colors.white,
@@ -200,7 +213,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                             const SizedBox(width: 20.0),
                                             Container(
                                               padding:
-                                                  const EdgeInsets.all(8.0),
+                                              const EdgeInsets.all(8.0),
                                               child: Icon(
                                                 Icons.arrow_forward_ios,
                                                 color: Colors.orange,
@@ -209,8 +222,8 @@ class _ProductDetailState extends State<ProductDetail> {
                                               decoration: BoxDecoration(
                                                   color: Colors.white,
                                                   borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0)),
+                                                  BorderRadius.circular(
+                                                      10.0)),
                                             ),
                                           ],
                                         ),

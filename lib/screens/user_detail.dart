@@ -55,7 +55,7 @@ class _UserDetailsState extends State<UserDetails> {
             .collection('customers')
             .document(widget.uid)
             .setData({
-          'name': _nameController.text,
+          'name': _nameController.text.toLowerCase(),
           'email': _emailController.text,
           'phone': phone,
           'isBlocked': false,

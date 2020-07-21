@@ -40,6 +40,8 @@ dependencies:
   otp_text_field:
   workmanager:
   image_picker:
+  flutter_money_formatter:
+  flutter_data_stream_builder:
 
   #Using Old version to avoid errors
   cached_network_image: ^2.0.0

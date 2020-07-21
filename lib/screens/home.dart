@@ -1,6 +1,10 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
@@ -563,11 +567,30 @@ class _HomeState extends State<Home> {
 
   buildItem(AsyncSnapshot<QuerySnapshot> productsnap,
       AsyncSnapshot<DocumentSnapshot> interestsnap) {
-    return ListView.builder(
+    return GridView.builder(
+        padding: EdgeInsets.all(12),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.6),
         controller: _scrollController,
         itemCount: productsnap.data.documents.length,
         itemBuilder: (context, index) {
+          FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
+            settings: MoneyFormatterSettings(
+              symbol: 'INR',
+              thousandSeparator: ",",
+              symbolAndNumberSeparator: " ",
+            ),
+            amount: double.parse(productsnap.data.documents[index]['price']
+                .toString()
+                .replaceAll(",", "")),
+          );
           return GestureDetector(
+            onDoubleTap: () {
+              setInterested(interestsnap, productsnap, index);
+            },
             onTap: () {
               FocusScope.of(context).unfocus();
               Navigator.push(context, MaterialPageRoute(builder: (_) {
@@ -578,98 +601,70 @@ class _HomeState extends State<Home> {
               }));
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               child: Card(
-                elevation: 6,
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Row(
+                  elevation: 6,
+                  child: Column(
                     children: [
-                      Container(
-                        height: 120,
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(6)),
-                          child: Hero(
-                            tag: productsnap.data.documents[index].documentID,
-                            child: PNetworkImage(
-                              productsnap.data.documents[index].data['images']
-                                  [0],
-                              fit: BoxFit.contain,
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: 120,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(6)),
+                            child: Hero(
+                              tag: productsnap.data.documents[index].documentID,
+                              child: PNetworkImage(
+                                productsnap.data.documents[index].data['images']
+                                    [0],
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListTile(
-                              title: Text(
-                                productsnap.data.documents[index]['title'],
-                                style: TextStyle(fontSize: 21),
-                              ),
-                              subtitle: Text(
-                                productsnap.data.documents[index]
-                                    ['description'],
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            title: Text(
+                              productsnap.data.documents[index]['title'],
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 18),
                             ),
-                            SizedBox(height: 10),
-                            Padding(
-                              padding: EdgeInsets.only(left: 20),
-                              child: Text(
-                                '${productsnap.data.documents[index]['price']} Rs',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            )
-                          ],
-                        ),
+                            subtitle: Text(
+                              productsnap.data.documents[index]['description'],
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          ListTile(
+                            trailing: IconButton(
+                              onPressed: () {
+                                setInterested(interestsnap, productsnap, index);
+                              },
+                              icon: interestsnap.data.data != null
+                                  ? interestsnap.data['interested']
+                                          .containsValue(
+                                      productsnap
+                                          .data.documents[index].documentID,
+                                    )
+                                      ? Icon(
+                                          Icons.favorite,
+                                          color: Colors.red[800],
+                                        )
+                                      : Icon(Icons.favorite_border)
+                                  : Icon(Icons.favorite_border),
+                            ),
+                            title: Text(
+                              '${fmf.output.compactSymbolOnRight.toString()}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () {
-                          if (interestsnap.data.data != null) {
-                            if (interestsnap.data['interested'].contains(
-                                productsnap.data.documents[index].documentID)) {
-                              interestsnap.data.reference.updateData({
-                                'interested': FieldValue.arrayRemove(
-                                  [
-                                    productsnap.data.documents[index].documentID
-                                  ],
-                                )
-                              });
-                            } else {
-                              interestsnap.data.reference.updateData({
-                                'interested': FieldValue.arrayUnion(
-                                  [
-                                    productsnap.data.documents[index].documentID
-                                  ],
-                                )
-                              });
-                            }
-                          } else {
-                            interestsnap.data.reference.setData({
-                              'interested': FieldValue.arrayUnion(
-                                [productsnap.data.documents[index].documentID],
-                              )
-                            });
-                          }
-                        },
-                        icon: interestsnap.data.data != null
-                            ? interestsnap.data['interested'].contains(
-                                productsnap.data.documents[index].documentID,
-                              )
-                                ? Icon(
-                                    Icons.favorite,
-                                    color: Colors.red[800],
-                                  )
-                                : Icon(Icons.favorite_border)
-                            : Icon(Icons.favorite_border),
-                      )
                     ],
-                  ),
-                ),
-              ),
+                  )),
             ),
           );
         });
@@ -838,5 +833,34 @@ class _HomeState extends State<Home> {
         icon: Icon(Icons.filter_list),
       )
     ];
+  }
+
+  void setInterested(AsyncSnapshot<DocumentSnapshot> interestsnap,
+      AsyncSnapshot<QuerySnapshot> productsnap, int index) {
+    if (interestsnap.data.data != null ||
+        interestsnap.data['interested'].length > 0 ||
+        interestsnap.data['interested'] != null) {
+      Map map = new HashMap();
+      map = interestsnap.data['interested'];
+      if (map.containsValue(productsnap.data.documents[index].documentID)) {
+        var key = map.keys.firstWhere(
+            (element) =>
+                map[element] == productsnap.data.documents[index].documentID,
+            orElse: () => null);
+        map.remove(key);
+        interestsnap.data.reference.updateData({'interested': map});
+      } else {
+        map[Timestamp.now().toDate().toString()] =
+            productsnap.data.documents[index].documentID.toString();
+        interestsnap.data.reference.updateData({'interested': map});
+      }
+    } else {
+      interestsnap.data.reference.setData({
+        'interested': {
+          Timestamp.now().toDate().toString():
+              productsnap.data.documents[index].documentID
+        }
+      });
+    }
   }
 }
