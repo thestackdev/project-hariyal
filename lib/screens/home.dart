@@ -8,8 +8,8 @@ import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
+import 'package:the_project_hariyal/utils.dart';
 
-import '../utils.dart';
 import 'booked_items.dart';
 import 'edit_profile.dart';
 import 'interested_items.dart';
@@ -37,6 +37,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   String state;
   String area;
   String category;
+
+  Utils utils;
 
   TextEditingController _searchQueryController = new TextEditingController();
   bool _isSearching = false, heartVisibility = false;
@@ -74,6 +76,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   void initState() {
     checkUserProfile();
+    utils = new Utils();
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     firestore = Firestore.instance;
@@ -393,7 +396,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   padding: EdgeInsets.only(left: 50),
                                   child: ListTile(
                                     title: Text(
-                                      customersnap.data['name'],
+                                      utils
+                                          .camelCase(customersnap.data['name']),
                                       textScaleFactor: 2,
                                     ),
                                   ),
@@ -644,7 +648,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             children: [
                               ListTile(
                                 title: Text(
-                                  productsnap.data.documents[index]['title'],
+                                  utils.camelCase(productsnap
+                                      .data.documents[index]['title']),
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 18),
                                 ),
@@ -894,8 +899,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           map.remove(key);
           interestsnap.data.reference.updateData({'interested': map});
         } else {
-          Utils().toast(context, 'Something went wrong',
-              bgColor: Utils().randomGenerator());
+          utils.toast(context, 'Something went wrong',
+              bgColor: utils.randomGenerator());
         }
       } else {
         count = count + 1;

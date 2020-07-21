@@ -99,11 +99,10 @@ class _InterestedItemsState extends State<InterestedItems> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      ProductDetail(
-                        productSnap: snapshot.data,
-                        uid: widget.uid,
-                      ),
+                  builder: (context) => ProductDetail(
+                    productSnap: snapshot.data,
+                    uid: widget.uid,
+                  ),
                 ),
               );
             },

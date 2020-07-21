@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:the_project_hariyal/utils.dart';
 
 class EditProfile extends StatefulWidget {
   final uid;
@@ -154,7 +155,7 @@ class _EditProfileState extends State<EditProfile> {
             children: <Widget>[
               avatar(usersnap),
               Text(
-                usersnap.data['name'],
+                Utils().camelCase(usersnap.data['name']),
                 style: Theme.of(context).textTheme.headline4,
               ),
             ],
