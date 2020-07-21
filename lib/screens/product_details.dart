@@ -109,142 +109,139 @@ class _ProductDetailState extends State<ProductDetail> {
                                           trailing: IconButton(
                                             icon: snapshot.data.data != null
                                                 ? snapshot.data['interested']
-                                                    .containsValue(
-                                                  widget
-                                                      .productSnap.documentID,
-                                                )
+                                                        .containsValue(
+                                                    widget
+                                                        .productSnap.documentID,
+                                                  )
                                                     ? Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.red[800],
-                                                )
+                                                        Icons.favorite,
+                                                        color: Colors.red[800],
+                                                      )
                                                     : Icon(
-                                                    Icons.favorite_border)
+                                                        Icons.favorite_border)
                                                 : Icon(Icons.favorite_border),
                                             onPressed: () {
                                               if (snapshot.data.data != null ||
                                                   snapshot.data['interested']
-                                                      .length >
+                                                          .length >
                                                       0 ||
                                                   snapshot.data['interested'] !=
                                                       null) {
                                                 Map map = new HashMap();
                                                 map =
-                                                snapshot.data['interested'];
+                                                    snapshot.data['interested'];
                                                 if (map.containsValue(widget
                                                     .productSnap.documentID)) {
                                                   var key = map.keys.firstWhere(
-                                                          (element) =>
-                                                      map[element] ==
+                                                      (element) =>
+                                                          map[element] ==
                                                           widget.productSnap
                                                               .documentID,
                                                       orElse: () => null);
                                                   map.remove(key);
                                                   snapshot.data.reference
                                                       .updateData(
-                                                      {'interested': map});
+                                                          {'interested': map});
                                                 } else {
                                                   map[Timestamp.now()
-                                                      .toDate()
-                                                      .toString()] =
+                                                          .toDate()
+                                                          .toString()] =
                                                       widget.productSnap
                                                           .documentID
                                                           .toString();
                                                   snapshot.data.reference
                                                       .updateData(
-                                                      {'interested': map});
+                                                          {'interested': map});
                                                 }
                                               } else {
                                                 snapshot.data.reference
                                                     .setData({
                                                   'interested': {
                                                     Timestamp.now()
-                                                        .toDate()
-                                                        .toString():
-                                                    widget.productSnap
-                                                        .documentID
+                                                            .toDate()
+                                                            .toString():
+                                                        widget.productSnap
+                                                            .documentID
                                                   }
                                                 });
                                               }
                                             },
-                                              )),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16.0,
-                                                vertical: 12.0),
-                                            child: Text(
-                                              widget.productSnap['description'],
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 18),
+                                          )),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 12.0),
+                                        child: Text(
+                                          widget.productSnap['description'],
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 18),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 24),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.0),
+                                      topRight: Radius.circular(20.0)),
+                                  color: Colors.grey.shade900,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Price ${widget.productSnap['price']}',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0),
+                                    ),
+                                    RaisedButton(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0, horizontal: 16.0),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                      onPressed: () async {},
+                                      color: Colors.orange,
+                                      textColor: Colors.white,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            "Book Now",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16.0),
+                                          ),
+                                          const SizedBox(width: 20.0),
+                                          Container(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: Colors.orange,
+                                              size: 16.0,
                                             ),
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0)),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12, horizontal: 24),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(20.0),
-                                          topRight: Radius.circular(20.0)),
-                                      color: Colors.grey.shade900,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Price ${widget
-                                              .productSnap['price']}',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0),
-                                        ),
-                                        RaisedButton(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 16.0),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                              BorderRadius.circular(10.0)),
-                                          onPressed: () async {},
-                                          color: Colors.orange,
-                                          textColor: Colors.white,
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Text(
-                                                "Book Now",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16.0),
-                                              ),
-                                              const SizedBox(width: 20.0),
-                                              Container(
-                                                padding: const EdgeInsets.all(
-                                                    8.0),
-                                                child: Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  color: Colors.orange,
-                                                  size: 16.0,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.0)),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            )),
+                            ],
+                          ),
+                        )),
                       ],
                     ),
                   ),

@@ -679,8 +679,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                       : Icon(Icons.favorite_border),
                                 ),
                                 title: Text(
-                                  '${fmf.output.compactSymbolOnRight
-                                      .toString()}',
+                                  '${fmf.output.compactSymbolOnRight.toString()}',
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               )
@@ -690,18 +689,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       ),
                       heartIndex == index
                           ? FadeTransition(
-                        opacity: _fadeInFadeOut,
-                        child: Visibility(
-                          visible: heartVisibility,
-                          child: Center(
-                            child: Icon(
-                              Icons.favorite,
-                              color: heartColor,
-                              size: 72,
-                            ),
-                          ),
-                        ),
-                      )
+                              opacity: _fadeInFadeOut,
+                              child: Visibility(
+                                visible: heartVisibility,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.favorite,
+                                    color: heartColor,
+                                    size: 72,
+                                  ),
+                                ),
+                              ),
+                            )
                           : Container()
                     ],
                   )));
@@ -892,8 +891,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         showHeart(false, count,
             productsnap.data.documents[index].documentID.toString());
         var key = map.keys.firstWhere(
-                (element) =>
-            map[element] == productsnap.data.documents[index].documentID,
+            (element) =>
+                map[element] == productsnap.data.documents[index].documentID,
             orElse: () => null);
         if (key != null) {
           map.remove(key);
@@ -917,7 +916,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       interestsnap.data.reference.setData({
         'interested': {
           Timestamp.now().toDate().toString():
-          productsnap.data.documents[index].documentID
+              productsnap.data.documents[index].documentID
         }
       });
     }

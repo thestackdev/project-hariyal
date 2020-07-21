@@ -168,7 +168,7 @@ class _InterestedItemsState extends State<InterestedItems> {
               map = widget.interestedsnap.data['interested'];
               count = count - 1;
               var key = map.keys.firstWhere(
-                      (element) => map[element] == snapshot.data.documentID,
+                  (element) => map[element] == snapshot.data.documentID,
                   orElse: () => null);
               if (key != null) {
                 setState(() {
