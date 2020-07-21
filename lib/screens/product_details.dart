@@ -213,7 +213,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                             const SizedBox(width: 20.0),
                                             Container(
                                               padding:
-                                              const EdgeInsets.all(8.0),
+                                                  const EdgeInsets.all(8.0),
                                               child: Icon(
                                                 Icons.arrow_forward_ios,
                                                 color: Colors.orange,
@@ -222,8 +222,8 @@ class _ProductDetailState extends State<ProductDetail> {
                                               decoration: BoxDecoration(
                                                   color: Colors.white,
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10.0)),
+                                                      BorderRadius.circular(
+                                                          10.0)),
                                             ),
                                           ],
                                         ),

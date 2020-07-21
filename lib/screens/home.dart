@@ -625,7 +625,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               height: 120,
                               child: ClipRRect(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(6)),
+                                    BorderRadius.all(Radius.circular(6)),
                                 child: Hero(
                                   tag: productsnap
                                       .data.documents[index].documentID,
@@ -872,13 +872,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     setState(() {
       heartIndex = index;
     });
+    int count = productsnap.data.documents[index].data['interested_count'];
+    if (count == null) {
+      count = 0;
+    }
     if (interestsnap.data.data != null ||
         interestsnap.data['interested'].length > 0 ||
         interestsnap.data['interested'] != null) {
       Map map = new HashMap();
       map = interestsnap.data['interested'];
       if (map.containsValue(productsnap.data.documents[index].documentID)) {
-        showHeart(false);
+        count = count > 0 ? count - 1 : 0;
+        showHeart(false, count,
+            productsnap.data.documents[index].documentID.toString());
         var key = map.keys.firstWhere(
                 (element) =>
             map[element] == productsnap.data.documents[index].documentID,
@@ -886,13 +892,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         map.remove(key);
         interestsnap.data.reference.updateData({'interested': map});
       } else {
-        showHeart(true);
+        count = count + 1;
+        showHeart(true, count,
+            productsnap.data.documents[index].documentID.toString());
         map[Timestamp.now().toDate().toString()] =
             productsnap.data.documents[index].documentID.toString();
         interestsnap.data.reference.updateData({'interested': map});
       }
     } else {
-      showHeart(true);
+      count = count + 1;
+      showHeart(
+          true, count, productsnap.data.documents[index].documentID.toString());
       interestsnap.data.reference.setData({
         'interested': {
           Timestamp.now().toDate().toString():
@@ -902,7 +912,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  void showHeart(bool isRed) {
+  void showHeart(bool isRed, int count, String pid) {
+    firestore
+        .collection('products')
+        .document(pid)
+        .updateData({'interested_count': count});
+
     if (mounted) {
       setState(() {
         heartVisibility = true;
