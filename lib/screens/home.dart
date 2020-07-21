@@ -24,7 +24,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with TickerProviderStateMixin {
   ScrollController _scrollController;
 
   List states = [];
@@ -38,9 +38,13 @@ class _HomeState extends State<Home> {
   String category;
 
   TextEditingController _searchQueryController = new TextEditingController();
-  bool _isSearching = false;
+  bool _isSearching = false, heartVisibility = false;
 
-  int count = 30;
+  AnimationController animation;
+  Animation<double> _fadeInFadeOut;
+
+  int count = 30, heartIndex = 0;
+  Color heartColor = Colors.red[800].withOpacity(0.7);
 
   _scrollListener() {
     if (_scrollController.offset >=
@@ -62,6 +66,7 @@ class _HomeState extends State<Home> {
   void dispose() {
     _scrollController.dispose();
     _searchQueryController.dispose();
+    animation.dispose();
     super.dispose();
   }
 
@@ -74,6 +79,12 @@ class _HomeState extends State<Home> {
     getFilters();
     initFilters();
     _searchQueryController.addListener(_searchListener);
+    animation = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    );
+    _fadeInFadeOut = Tween<double>(begin: 0.0, end: 1).animate(animation);
+    animation.forward();
     super.initState();
   }
 
@@ -588,85 +599,106 @@ class _HomeState extends State<Home> {
                 .replaceAll(",", "")),
           );
           return GestureDetector(
-            onDoubleTap: () {
-              setInterested(interestsnap, productsnap, index);
-            },
-            onTap: () {
-              FocusScope.of(context).unfocus();
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return ProductDetail(
-                  productSnap: productsnap.data.documents[index],
-                  uid: widget.uid,
-                );
-              }));
-            },
-            child: Container(
+              onDoubleTap: () {
+                setInterested(interestsnap, productsnap, index);
+              },
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                Navigator.push(context, MaterialPageRoute(builder: (_) {
+                  return ProductDetail(
+                    productSnap: productsnap.data.documents[index],
+                    uid: widget.uid,
+                  );
+                }));
+              },
               child: Card(
                   elevation: 6,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 120,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(6)),
-                            child: Hero(
-                              tag: productsnap.data.documents[index].documentID,
-                              child: PNetworkImage(
-                                productsnap.data.documents[index].data['images']
-                                    [0],
-                                fit: BoxFit.contain,
+                  child: Stack(
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 120,
+                              child: ClipRRect(
+                                borderRadius:
+                                BorderRadius.all(Radius.circular(6)),
+                                child: Hero(
+                                  tag: productsnap
+                                      .data.documents[index].documentID,
+                                  child: PNetworkImage(
+                                    productsnap.data.documents[index]
+                                        .data['images'][0],
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            title: Text(
-                              productsnap.data.documents[index]['title'],
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            subtitle: Text(
-                              productsnap.data.documents[index]['description'],
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          ListTile(
-                            trailing: IconButton(
-                              onPressed: () {
-                                setInterested(interestsnap, productsnap, index);
-                              },
-                              icon: interestsnap.data.data != null
-                                  ? interestsnap.data['interested']
-                                          .containsValue(
-                                      productsnap
-                                          .data.documents[index].documentID,
-                                    )
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                title: Text(
+                                  productsnap.data.documents[index]['title'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                subtitle: Text(
+                                  productsnap.data.documents[index]
+                                  ['description'],
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              ListTile(
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    setInterested(
+                                        interestsnap, productsnap, index);
+                                  },
+                                  icon: interestsnap.data.data != null
+                                      ? interestsnap.data['interested']
+                                      .containsValue(
+                                    productsnap
+                                        .data.documents[index].documentID,
+                                  )
                                       ? Icon(
-                                          Icons.favorite,
-                                          color: Colors.red[800],
-                                        )
+                                    Icons.favorite,
+                                    color: Colors.red[800],
+                                  )
                                       : Icon(Icons.favorite_border)
-                                  : Icon(Icons.favorite_border),
-                            ),
-                            title: Text(
-                              '${fmf.output.compactSymbolOnRight.toString()}',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
+                                      : Icon(Icons.favorite_border),
+                                ),
+                                title: Text(
+                                  '${fmf.output.compactSymbolOnRight
+                                      .toString()}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                            ],
+                          ),
                         ],
                       ),
+                      heartIndex == index
+                          ? FadeTransition(
+                        opacity: _fadeInFadeOut,
+                        child: Visibility(
+                          visible: heartVisibility,
+                          child: Center(
+                            child: Icon(
+                              Icons.favorite,
+                              color: heartColor,
+                              size: 72,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container()
                     ],
-                  )),
-            ),
-          );
+                  )));
         });
   }
 
@@ -837,28 +869,56 @@ class _HomeState extends State<Home> {
 
   void setInterested(AsyncSnapshot<DocumentSnapshot> interestsnap,
       AsyncSnapshot<QuerySnapshot> productsnap, int index) {
+    setState(() {
+      heartIndex = index;
+    });
     if (interestsnap.data.data != null ||
         interestsnap.data['interested'].length > 0 ||
         interestsnap.data['interested'] != null) {
       Map map = new HashMap();
       map = interestsnap.data['interested'];
       if (map.containsValue(productsnap.data.documents[index].documentID)) {
+        showHeart(false);
         var key = map.keys.firstWhere(
-            (element) =>
-                map[element] == productsnap.data.documents[index].documentID,
+                (element) =>
+            map[element] == productsnap.data.documents[index].documentID,
             orElse: () => null);
         map.remove(key);
         interestsnap.data.reference.updateData({'interested': map});
       } else {
+        showHeart(true);
         map[Timestamp.now().toDate().toString()] =
             productsnap.data.documents[index].documentID.toString();
         interestsnap.data.reference.updateData({'interested': map});
       }
     } else {
+      showHeart(true);
       interestsnap.data.reference.setData({
         'interested': {
           Timestamp.now().toDate().toString():
-              productsnap.data.documents[index].documentID
+          productsnap.data.documents[index].documentID
+        }
+      });
+    }
+  }
+
+  void showHeart(bool isRed) {
+    if (mounted) {
+      setState(() {
+        heartVisibility = true;
+        if (isRed) {
+          heartColor = Colors.red[800].withOpacity(0.7);
+        } else {
+          heartColor = Colors.grey.withOpacity(0.7);
+        }
+      });
+    }
+    if (animation.isCompleted) {
+      Future.delayed(Duration(seconds: 1)).then((value) {
+        if (mounted) {
+          setState(() {
+            heartVisibility = false;
+          });
         }
       });
     }

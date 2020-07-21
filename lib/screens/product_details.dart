@@ -183,7 +183,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'Price ${widget.productSnap['price']}',
@@ -197,7 +197,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                             vertical: 8.0, horizontal: 16.0),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(10.0)),
+                                                BorderRadius.circular(10.0)),
                                         onPressed: () async {},
                                         color: Colors.orange,
                                         textColor: Colors.white,
