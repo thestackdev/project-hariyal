@@ -623,9 +623,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 .replaceAll(",", "")),
           );
           return GestureDetector(
-              onDoubleTap: () {
-                setInterested(interestsnap, productsnap, index);
-              },
               onTap: () {
                 FocusScope.of(context).unfocus();
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
