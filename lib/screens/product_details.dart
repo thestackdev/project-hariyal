@@ -18,11 +18,8 @@ class ProductDetail extends StatefulWidget {
 }
 
 class _ProductDetailState extends State<ProductDetail> {
-  Utils utils;
-
   @override
   void initState() {
-    utils = new Utils();
     super.initState();
   }
 
@@ -99,7 +96,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                     children: [
                                       ListTile(
                                           title: Text(
-                                            utils.camelCase(
+                                            Utils().camelCase(
                                                 widget.productSnap['title']),
                                             style: TextStyle(
                                                 color: Colors.black,

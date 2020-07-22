@@ -49,7 +49,9 @@ class Utils {
 
     return text
         .split(' ')
-        .map((word) => word[0].toUpperCase() + word.substring(1))
+        .map((word) => word.isNotEmpty
+            ? word[0].toUpperCase() + word.substring(1)
+            : word.toUpperCase())
         .join(' ');
   }
 }

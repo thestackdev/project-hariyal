@@ -708,17 +708,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       ),
                       heartIndex == index
                           ? Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(24),
-                          child: FlareActor(
-                            'assets/instagram_like.flr',
-                            controller: flareControls,
-                            animation: 'idle',
-                            fit: BoxFit.contain,
-                            color: Colors.red[800],
-                          ),
-                        ),
-                      )
+                              child: Padding(
+                                padding: EdgeInsets.all(24),
+                                child: FlareActor(
+                                  'assets/instagram_like.flr',
+                                  controller: flareControls,
+                                  animation: 'idle',
+                                  fit: BoxFit.contain,
+                                  color: Colors.red[800],
+                                ),
+                              ),
+                            )
                           : Container()
                     ],
                   )));
@@ -909,8 +909,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         updateCount(
             count, productsnap.data.documents[index].documentID.toString());
         var key = map.keys.firstWhere(
-                (element) =>
-            map[element] == productsnap.data.documents[index].documentID,
+            (element) =>
+                map[element] == productsnap.data.documents[index].documentID,
             orElse: () => null);
         if (key != null) {
           map.remove(key);
@@ -936,7 +936,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       interestsnap.data.reference.setData({
         'interested': {
           Timestamp.now().toDate().toString():
-          productsnap.data.documents[index].documentID
+              productsnap.data.documents[index].documentID
         }
       });
     }
