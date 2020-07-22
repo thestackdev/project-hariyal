@@ -88,24 +88,24 @@ class _InterestedItemsState extends State<InterestedItems> {
   Widget buildItems(AsyncSnapshot<DocumentSnapshot> snapshot, int index) {
     return Stack(
       children: <Widget>[
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 9,
-          margin: EdgeInsets.only(top: 12, right: 24, left: 12, bottom: 12),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductDetail(
-                    productSnap: snapshot.data,
-                    uid: widget.uid,
-                  ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetail(
+                  productSnap: snapshot.data,
+                  uid: widget.uid,
                 ),
-              );
-            },
+              ),
+            );
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 9,
+            margin: EdgeInsets.only(top: 12, right: 24, left: 12, bottom: 12),
             child: Container(
               height: 120,
               width: MediaQuery.of(context).size.width,
