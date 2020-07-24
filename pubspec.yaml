@@ -43,9 +43,9 @@ dependencies:
   flutter_money_formatter:
   flutter_data_stream_builder:
   flare_flutter:
-
-  #Using Old version to avoid errors
-  cached_network_image: ^2.0.0
+  provider:
+  cached_network_image:
+  lazy_load_scrollview:
 
 dev_dependencies:
   flutter_test:

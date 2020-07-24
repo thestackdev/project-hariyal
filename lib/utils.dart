@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
@@ -49,9 +50,128 @@ class Utils {
 
     return text
         .split(' ')
-        .map((word) => word.isNotEmpty
-            ? word[0].toUpperCase() + word.substring(1)
-            : word.toUpperCase())
+        .map((word) =>
+    word.isNotEmpty
+        ? word[0].toUpperCase() + word.substring(1)
+        : word.toUpperCase())
         .join(' ');
+  }
+
+  Widget loadingIndicator() {
+    return Center(
+      child: SpinKitRing(
+        color: Colors.cyan,
+        lineWidth: 5,
+      ),
+    );
+  }
+
+  Widget errorWidget(String error) {
+    return Center(
+      child: Text(error),
+    );
+  }
+
+  Widget productInputDropDown({
+    String label,
+    List items,
+    Function onChanged,
+    String value,
+    bool isShowroom = false,
+    String Function(dynamic) validator,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+      child: DropdownButtonFormField(
+        validator: (value) => value == null ? 'Field can\'t be empty' : null,
+        value: value,
+        decoration: inputDecoration(label: label),
+        isExpanded: true,
+        iconEnabledColor: Colors.grey,
+        style: inputTextStyle(),
+        iconSize: 30,
+        elevation: 9,
+        onChanged: onChanged,
+        items: items.map((e) {
+          return DropdownMenuItem(
+            value: isShowroom ? e.data['name'] : e,
+            child: Text(isShowroom ? e.data['name'] : e),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  TextStyle inputTextStyle() {
+    return TextStyle(
+      fontWeight: FontWeight.normal,
+      fontSize: 18,
+      color: Colors.grey.shade700,
+    );
+  }
+
+  TextStyle textStyle({Color color, double fontSize}) {
+    return TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: fontSize,
+      letterSpacing: 1.0,
+      color: color,
+    );
+  }
+
+  InputDecoration inputDecoration({String label, IconData iconData}) {
+    return InputDecoration(
+      labelText: label,
+      isDense: true,
+      labelStyle: textStyle(color: Colors.red),
+      contentPadding: EdgeInsets.all(16),
+      border: InputBorder.none,
+      fillColor: Colors.grey.shade100,
+      filled: true,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.grey.shade100,
+        ),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.grey.shade100,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.grey.shade100,
+        ),
+      ),
+    );
+  }
+
+  nullWidget(String nullMesaage) {
+    return Center(
+      child: Text(
+        nullMesaage,
+        style: textStyle(
+          color: Colors.grey.shade700,
+          fontSize: 18,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget drawerTile({String label, Function onTap}) {
+    return ListTile(
+      title: Center(
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
+      onTap: onTap,
+      trailing: Icon(Icons.arrow_forward_ios, size: 18),
+    );
   }
 }

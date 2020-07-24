@@ -60,7 +60,7 @@ class _UserDetailsState extends State<UserDetails> {
           'phone': phone,
           'isBlocked': false,
           'image':
-              'https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg',
+          'https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg',
           'alternatePhoneNumber': 'default',
           'gender': 'default',
           'permanentAddress': 'default',
@@ -70,10 +70,8 @@ class _UserDetailsState extends State<UserDetails> {
             .collection('interested')
             .document(widget.uid)
             .setData({'interested': []});
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => Home(
-                  uid: widget.uid,
-                )));
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
       } else {
         setLoading(false);
         Utils().toast(context, 'E-mail already in use by another user');
