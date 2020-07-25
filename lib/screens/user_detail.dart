@@ -49,13 +49,14 @@ class _UserDetailsState extends State<UserDetails> {
         _loc['lat'] = _latitude != null ? _latitude : 'default';
         _loc['long'] = _longitude != null ? _longitude : 'default';
         _loc['pinCode'] = _pinCode != null ? _pinCode : 'default';
-        _loc['state'] = _state != null ? _state : 'default';
+        _loc['state'] = _state != null ? _state.toLowerCase() : 'default';
         _loc['cityDistrict'] =
-            _cityDistrict != null ? _cityDistrict : 'default';
+            _cityDistrict != null ? _cityDistrict.toLowerCase() : 'default';
         Map<String, dynamic> _search = new HashMap();
-        _search['area'] = _cityDistrict != null ? _cityDistrict : 'default';
+        _search['area'] =
+            _cityDistrict != null ? _cityDistrict.toLowerCase() : 'default';
         _search['category'] = 'default';
-        _search['state'] = _state != null ? _state : 'default';
+        _search['state'] = _state != null ? _state.toLowerCase() : 'default';
         _search['subCategory'] = 'default';
         Firestore.instance
             .collection('customers')
@@ -107,8 +108,9 @@ class _UserDetailsState extends State<UserDetails> {
         print(error);
         return;
       }
-      Utils().toast(context, error,
-          bgColor: Colors.red[800], textColor: Colors.white);
+      if (error != null)
+        Utils().toast(context, error,
+            bgColor: Colors.red[800], textColor: Colors.white);
       myLocation = null;
     } catch (e) {
       Utils().toast(context, e.toString(),
