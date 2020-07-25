@@ -20,7 +20,7 @@ void main() async {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: splash.SplashScreen(
-          seconds: 1,
+          seconds: 2,
           navigateAfterSeconds: AuthServices().handleAuth(),
           title: Text('Welcome In SplashScreen'),
           backgroundColor: Colors.white,

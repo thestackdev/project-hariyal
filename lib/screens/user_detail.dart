@@ -35,6 +35,7 @@ class _UserDetailsState extends State<UserDetails> {
   Location location = new Location();
 
   Future<void> uploadUserInfo() async {
+    setLoading(true);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String phone = await prefs.get("phone");
 
@@ -45,12 +46,17 @@ class _UserDetailsState extends State<UserDetails> {
         .then((value) {
       if (value.documents.length <= 0) {
         Map<String, dynamic> _loc = new HashMap();
-        _loc['lat'] = _latitude != null ? _latitude : "default";
-        _loc['long'] = _longitude != null ? _longitude : "default";
-        _loc['pinCode'] = _pinCode != null ? _pinCode : "default";
-        _loc['state'] = _state != null ? _state : "default";
+        _loc['lat'] = _latitude != null ? _latitude : 'default';
+        _loc['long'] = _longitude != null ? _longitude : 'default';
+        _loc['pinCode'] = _pinCode != null ? _pinCode : 'default';
+        _loc['state'] = _state != null ? _state : 'default';
         _loc['cityDistrict'] =
-            _cityDistrict != null ? _cityDistrict : "default";
+            _cityDistrict != null ? _cityDistrict : 'default';
+        Map<String, dynamic> _search = new HashMap();
+        _search['area'] = _cityDistrict != null ? _cityDistrict : 'default';
+        _search['category'] = 'default';
+        _search['state'] = _state != null ? _state : 'default';
+        _search['subCategory'] = 'default';
         Firestore.instance
             .collection('customers')
             .document(widget.uid)
@@ -60,11 +66,12 @@ class _UserDetailsState extends State<UserDetails> {
           'phone': phone,
           'isBlocked': false,
           'image':
-          'https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg',
+              'https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg',
           'alternatePhoneNumber': 'default',
           'gender': 'default',
           'permanentAddress': 'default',
-          'location': _loc
+          'location': _loc,
+          'search': _search
         });
         Firestore.instance
             .collection('interested')
@@ -93,21 +100,17 @@ class _UserDetailsState extends State<UserDetails> {
       if (e.code == 'PERMISSION_DENIED') {
         error = 'please grant permission';
         print(error);
-        setLoading(false);
         return;
       }
       if (e.code == 'PERMISSION_DENIED_NEVER_ASK') {
         error = 'permission denied, please enable it from app settings';
         print(error);
-        setLoading(false);
         return;
       }
-      setLoading(false);
       Utils().toast(context, error,
           bgColor: Colors.red[800], textColor: Colors.white);
       myLocation = null;
     } catch (e) {
-      setLoading(false);
       Utils().toast(context, e.toString(),
           bgColor: Colors.red[800], textColor: Colors.white);
       myLocation = null;
@@ -117,18 +120,17 @@ class _UserDetailsState extends State<UserDetails> {
   Future getLocationInfo(LocationData myLocation) async {
     currentLocation = myLocation;
     final coordinates =
-        new Coordinates(myLocation.latitude, myLocation.longitude);
+    new Coordinates(myLocation.latitude, myLocation.longitude);
     var addresses =
-        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var first = addresses.first;
-    setState(() {
-      _latitude = myLocation.latitude;
-      _longitude = myLocation.longitude;
-      _pinCode = first.postalCode;
-      _state = first.adminArea;
-      _cityDistrict =
-          first.locality == null ? first.subAdminArea : first.locality;
-    });
+    _latitude = myLocation.latitude;
+    _longitude = myLocation.longitude;
+    _pinCode = first.postalCode;
+    _state = first.adminArea;
+    _cityDistrict =
+    first.locality == null ? first.subAdminArea : first.locality;
+    handleSetState();
   }
 
   void fieldFocusChange(
@@ -143,7 +145,8 @@ class _UserDetailsState extends State<UserDetails> {
       return;
     }
     if (_emailController.text.isEmpty ||
-        !_emailController.text.endsWith('.com')) {
+        !_emailController.text.endsWith('.com') ||
+        !_emailController.text.contains('@')) {
       Utils().toast(context, 'Enter valid e-mail');
       return;
     }
@@ -152,11 +155,8 @@ class _UserDetailsState extends State<UserDetails> {
   }
 
   void setLoading(bool value) {
-    if (mounted) {
-      setState(() {
-        isLoading = value;
-      });
-    }
+    isLoading = value;
+    handleSetState();
   }
 
   @override
@@ -210,11 +210,11 @@ class _UserDetailsState extends State<UserDetails> {
       body: SafeArea(
         child: isLoading
             ? Center(
-                child: SpinKitWave(
-                  color: Colors.orange,
-                  size: 50.0,
-                ),
-              )
+          child: SpinKitRing(
+            color: Colors.cyan,
+            lineWidth: 5,
+          ),
+        )
             : Padding(
                 padding: EdgeInsets.all(24),
                 child: Column(
@@ -278,8 +278,10 @@ class _UserDetailsState extends State<UserDetails> {
                     ),
                   ],
                 ),
-              ),
+        ),
       ),
     );
   }
+
+  handleSetState() => (mounted) ? setState(() {}) : null;
 }

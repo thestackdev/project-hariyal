@@ -1,4 +1,5 @@
 import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
@@ -13,6 +14,7 @@ import 'package:the_project_hariyal/screens/filters.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
 import 'package:the_project_hariyal/utils.dart';
+
 import 'booked_items.dart';
 import 'edit_profile.dart';
 import 'interested_items.dart';
@@ -30,11 +32,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   final FlareControls flareControls = FlareControls();
 
   TextEditingController _searchQueryController = new TextEditingController();
-  bool _isSearching = false,
-      heartVisibility = false;
+  bool _isSearching = false, heartVisibility = false;
 
-  int count = 30,
-      heartIndex = 0;
+  int count = 30, heartIndex = 0;
   Color heartColor = Colors.red[800].withOpacity(0.7);
 
   _searchListener() {
@@ -206,13 +206,23 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               stream: firestore
                   .collection('products')
                   .where('category.category',
-                  isEqualTo: usersnap.data['search']['category'])
+                  isEqualTo:
+                  usersnap.data['search']['category'] == 'default'
+                      ? null
+                      : usersnap.data['search']['category'])
                   .where('category.subCategory',
-                  isEqualTo: usersnap.data['search']['subCategory'])
+                  isEqualTo:
+                  usersnap.data['search']['subCategory'] == 'default'
+                      ? null
+                      : usersnap.data['search']['subCategory'])
                   .where('location.state',
-                  isEqualTo: usersnap.data['search']['state'])
+                  isEqualTo: usersnap.data['search']['state'] == 'default'
+                      ? null
+                      : usersnap.data['search']['state'])
                   .where('location.area',
-                  isEqualTo: usersnap.data['search']['area'])
+                  isEqualTo: usersnap.data['search']['area'] == 'default'
+                      ? null
+                      : usersnap.data['search']['area'])
                   .snapshots(),
               builder: (context, productsnap) {
                 if (productsnap.documents.length == 0) {
