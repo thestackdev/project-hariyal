@@ -30,12 +30,10 @@ dependencies:
   catcher:
   image:
   geocoder:
-  font_awesome_flutter:
   email_validator:
   flutter_spinkit:
   rxdart:
   photo_view:
-  intl:
   splashscreen:
   otp_text_field:
   workmanager:
