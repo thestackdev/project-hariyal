@@ -50,10 +50,9 @@ class Utils {
 
     return text
         .split(' ')
-        .map((word) =>
-    word.isNotEmpty
-        ? word[0].toUpperCase() + word.substring(1)
-        : word.toUpperCase())
+        .map((word) => word.isNotEmpty
+            ? word[0].toUpperCase() + word.substring(1)
+            : word.toUpperCase())
         .join(' ');
   }
 
@@ -163,15 +162,18 @@ class Utils {
   }
 
   Widget drawerTile({String label, Function onTap}) {
-    return ListTile(
-      title: Center(
-        child: Text(
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(left: 48),
+      child: ListTile(
+        title: Text(
           label,
           style: TextStyle(fontSize: 18),
+          textAlign: TextAlign.start,
         ),
+        onTap: onTap,
+        trailing: Icon(Icons.arrow_forward_ios, size: 18),
       ),
-      onTap: onTap,
-      trailing: Icon(Icons.arrow_forward_ios, size: 18),
     );
   }
 }
