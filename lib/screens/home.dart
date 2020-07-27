@@ -132,10 +132,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>
-                        EditProfile(
-                          uid: usersnap.documentID,
-                        ),
+                    builder: (_) => EditProfile(
+                      uid: usersnap.documentID,
+                    ),
                   ),
                 );
               },
@@ -153,13 +152,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             ),
             utils.drawerTile(
               label: 'Interested Items',
-              onTap: () =>
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => InterestedItems(),
-                    ),
-                  ),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => InterestedItems(),
+                ),
+              ),
             ),
             utils.drawerTile(label: 'Refer a Friend', onTap: () {}),
             utils.drawerTile(
@@ -199,21 +197,21 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         stream: firestore
             .collection('products')
             .where('category.category',
-            isEqualTo: usersnap.data['search']['category'] == 'default'
-                ? null
-                : usersnap.data['search']['category'])
+                isEqualTo: usersnap.data['search']['category'] == 'default'
+                    ? null
+                    : usersnap.data['search']['category'])
             .where('category.subCategory',
-            isEqualTo: usersnap.data['search']['subCategory'] == 'default'
-                ? null
-                : usersnap.data['search']['subCategory'])
+                isEqualTo: usersnap.data['search']['subCategory'] == 'default'
+                    ? null
+                    : usersnap.data['search']['subCategory'])
             .where('location.state',
-            isEqualTo: usersnap.data['search']['state'] == 'default'
-                ? null
-                : usersnap.data['search']['state'])
+                isEqualTo: usersnap.data['search']['state'] == 'default'
+                    ? null
+                    : usersnap.data['search']['state'])
             .where('location.area',
-            isEqualTo: usersnap.data['search']['area'] == 'default'
-                ? null
-                : usersnap.data['search']['area'])
+                isEqualTo: usersnap.data['search']['area'] == 'default'
+                    ? null
+                    : usersnap.data['search']['area'])
             .snapshots(),
         builder: (context, productsnap) {
           if (productsnap.documents.length == 0) {
@@ -250,11 +248,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           FocusScope.of(context).unfocus();
                           Navigator.push(context,
                               MaterialPageRoute(builder: (_) {
-                                return ProductDetail(
-                                  docId: productsnap.documents[index]
-                                      .documentID,
-                                );
-                              }));
+                            return ProductDetail(
+                              docId: productsnap.documents[index].documentID,
+                            );
+                          }));
                         },
                         child: Card(
                             elevation: 6,
@@ -285,7 +282,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                     ),
                                     Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         ListTile(
                                           title: Text(
@@ -296,7 +293,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                           ),
                                           subtitle: Text(
                                             productsnap.documents[index]
-                                            ['description'],
+                                                ['description'],
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -307,18 +304,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                                     .documents[index]);
                                               },
                                               icon: interestSet.contains(
-                                                  productsnap
-                                                      .documents[index]
-                                                      .documentID)
+                                                      productsnap
+                                                          .documents[index]
+                                                          .documentID)
                                                   ? Icon(
-                                                Icons.favorite,
-                                                color: Colors.red[800],
-                                              )
+                                                      Icons.favorite,
+                                                      color: Colors.red[800],
+                                                    )
                                                   : Icon(
-                                                  Icons.favorite_border)),
+                                                      Icons.favorite_border)),
                                           title: Text(
-                                            '${fmf.output.compactSymbolOnRight
-                                                .toString()}',
+                                            '${fmf.output.compactSymbolOnRight.toString()}',
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         )
@@ -328,17 +324,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 ),
                                 heartIndex == index
                                     ? Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(24),
-                                    child: FlareActor(
-                                      'assets/instagram_like.flr',
-                                      controller: flareControls,
-                                      animation: 'idle',
-                                      fit: BoxFit.contain,
-                                      color: Colors.red[800],
-                                    ),
-                                  ),
-                                )
+                                        child: Padding(
+                                          padding: EdgeInsets.all(24),
+                                          child: FlareActor(
+                                            'assets/instagram_like.flr',
+                                            controller: flareControls,
+                                            animation: 'idle',
+                                            fit: BoxFit.contain,
+                                            color: Colors.red[800],
+                                          ),
+                                        ),
+                                      )
                                     : Container()
                               ],
                             )));
@@ -362,9 +358,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       }
     } else {
       firestore.collection('interests').document().setData({
-        'timestamp': DateTime
-            .now()
-            .millisecondsSinceEpoch,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
         'productId': snapshot.documentID,
         'author': usersnap.documentID,
       });
