@@ -10,6 +10,7 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:the_project_hariyal/screens/filters.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
@@ -160,7 +161,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-                  utils.drawerTile(label: 'Refer a Friend', onTap: () {}),
+                  utils.drawerTile(
+                      label: 'Refer a Friend',
+                      onTap: () {
+                        RenderBox box = context.findRenderObject();
+                        Share.share('TODO APP LINK & Description',
+                            subject: 'Share to friend',
+                            sharePositionOrigin:
+                                box.globalToLocal(Offset.zero) & box.size);
+                      }),
                   utils.drawerTile(
                     label: 'Logout',
                     onTap: () {
