@@ -10,7 +10,6 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:provider/provider.dart';
-import 'package:share/share.dart';
 import 'package:the_project_hariyal/screens/filters.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
@@ -31,6 +30,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Firestore firestore = Firestore.instance;
   Utils utils = Utils();
   final FlareControls flareControls = FlareControls();
+  Set interestSet = {};
+  QuerySnapshot interests;
+  DocumentSnapshot usersnap;
 
   TextEditingController _searchQueryController = new TextEditingController();
   bool _isSearching = false, heartVisibility = false;
@@ -76,307 +78,299 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final DocumentSnapshot usersnap = context.watch<DocumentSnapshot>();
+    usersnap = context.watch<DocumentSnapshot>();
+    interests = context.watch<QuerySnapshot>();
 
-    if (usersnap == null)
+    if (usersnap == null || interests == null)
       return Container(
         color: Colors.white,
         child: utils.loadingIndicator(),
       );
+
     checkUserProfile(usersnap.documentID);
 
-    return DataStreamBuilder<DocumentSnapshot>(
+    interestSet.clear();
+    interests.documents.forEach((element) {
+      interestSet.add(element.data['productId']);
+    });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: _isSearching ? _buildSearchField() : Text('Home'),
+        actions: _buildActions(),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.only(left: 50),
+              child: ListTile(
+                title: Text(
+                  utils.camelCase(usersnap.data['name']),
+                  textScaleFactor: 2,
+                ),
+              ),
+            ),
+            SizedBox(height: 30),
+            utils.drawerTile(
+              label: 'Edit Profile',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        EditProfile(
+                          uid: usersnap.documentID,
+                        ),
+                  ),
+                );
+              },
+            ),
+            utils.drawerTile(
+              label: 'Booked Items',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BookedItems(),
+                  ),
+                );
+              },
+            ),
+            utils.drawerTile(
+              label: 'Interested Items',
+              onTap: () =>
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => InterestedItems(),
+                    ),
+                  ),
+            ),
+            utils.drawerTile(label: 'Refer a Friend', onTap: () {}),
+            utils.drawerTile(
+              label: 'Logout',
+              onTap: () {
+                return showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Logout!'),
+                        content: Text('Are you sure want to log out'),
+                        actions: <Widget>[
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('No'),
+                          ),
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              AuthServices().logout();
+                            },
+                            child: Text('Yes'),
+                          )
+                        ],
+                      );
+                    });
+              },
+            ),
+          ],
+        ),
+      ),
+      body: DataStreamBuilder<QuerySnapshot>(
         errorBuilder: (context, error) => utils.errorWidget(error.toString()),
         loadingBuilder: (context) => utils.loadingIndicator(),
         stream: firestore
-            .collection('interested')
-            .document(usersnap.documentID)
+            .collection('products')
+            .where('category.category',
+            isEqualTo: usersnap.data['search']['category'] == 'default'
+                ? null
+                : usersnap.data['search']['category'])
+            .where('category.subCategory',
+            isEqualTo: usersnap.data['search']['subCategory'] == 'default'
+                ? null
+                : usersnap.data['search']['subCategory'])
+            .where('location.state',
+            isEqualTo: usersnap.data['search']['state'] == 'default'
+                ? null
+                : usersnap.data['search']['state'])
+            .where('location.area',
+            isEqualTo: usersnap.data['search']['area'] == 'default'
+                ? null
+                : usersnap.data['search']['area'])
             .snapshots(),
-        builder: (context, interestedsnap) {
-          return Scaffold(
-            appBar: AppBar(
-              title: _isSearching ? _buildSearchField() : Text('Home'),
-              actions: _buildActions(),
-            ),
-            drawer: Drawer(
-              child: ListView(
-                children: [
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          Navigator.of(context).pop();
+        builder: (context, productsnap) {
+          if (productsnap.documents.length == 0) {
+            return utils.nullWidget(
+              'No products found with the search criteria',
+            );
+          } else {
+            return LazyLoadScrollView(
+              onEndOfPage: () {
+                count += 30;
+                handleState();
+              },
+              child: GridView.builder(
+                  itemCount: productsnap.documents.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.6,
+                  ),
+                  itemBuilder: (context, index) {
+                    FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
+                      settings: MoneyFormatterSettings(
+                        symbol: 'INR',
+                        thousandSeparator: ",",
+                        symbolAndNumberSeparator: " ",
+                      ),
+                      amount: double.parse(productsnap.documents[index]['price']
+                          .toString()
+                          .replaceAll(",", "")),
+                    );
+                    return GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) {
+                                return ProductDetail(
+                                  docId: productsnap.documents[index]
+                                      .documentID,
+                                );
+                              }));
                         },
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: EdgeInsets.only(left: 50),
-                    child: ListTile(
-                      title: Text(
-                        utils.camelCase(usersnap.data['name']),
-                        textScaleFactor: 2,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  utils.drawerTile(
-                    label: 'Edit Profile',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditProfile(
-                            uid: usersnap.documentID,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  utils.drawerTile(
-                    label: 'Booked Items',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BookedItems(),
-                        ),
-                      );
-                    },
-                  ),
-                  utils.drawerTile(
-                    label: 'Interested Items',
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => InterestedItems(
-                          interestedsnap: interestedsnap,
-                          uid: usersnap.documentID,
-                        ),
-                      ),
-                    ),
-                  ),
-                  utils.drawerTile(
-                      label: 'Refer a Friend',
-                      onTap: () {
-                        RenderBox box = context.findRenderObject();
-                        Share.share('TODO APP LINK & Description',
-                            subject: 'Share to friend',
-                            sharePositionOrigin:
-                                box.globalToLocal(Offset.zero) & box.size);
-                      }),
-                  utils.drawerTile(
-                    label: 'Logout',
-                    onTap: () {
-                      return showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Logout!'),
-                              content: Text('Are you sure want to log out'),
-                              actions: <Widget>[
-                                FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('No'),
-                                ),
-                                FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    AuthServices().logout();
-                                  },
-                                  child: Text('Yes'),
-                                )
-                              ],
-                            );
-                          });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            body: DataStreamBuilder<QuerySnapshot>(
-              errorBuilder: (context, error) =>
-                  utils.errorWidget(error.toString()),
-              loadingBuilder: (context) => utils.loadingIndicator(),
-              stream: firestore
-                  .collection('products')
-                  .where('category.category',
-                      isEqualTo:
-                          usersnap.data['search']['category'] == 'default'
-                              ? null
-                              : usersnap.data['search']['category'])
-                  .where('category.subCategory',
-                      isEqualTo:
-                          usersnap.data['search']['subCategory'] == 'default'
-                              ? null
-                              : usersnap.data['search']['subCategory'])
-                  .where('location.state',
-                      isEqualTo: usersnap.data['search']['state'] == 'default'
-                          ? null
-                          : usersnap.data['search']['state'])
-                  .where('location.area',
-                      isEqualTo: usersnap.data['search']['area'] == 'default'
-                          ? null
-                          : usersnap.data['search']['area'])
-                  .snapshots(),
-              builder: (context, productsnap) {
-                if (productsnap.documents.length == 0) {
-                  return utils.nullWidget(
-                    'No products found with the search criteria',
-                  );
-                } else {
-                  return LazyLoadScrollView(
-                    onEndOfPage: () {
-                      count += 30;
-                      handleState();
-                    },
-                    child: GridView.builder(
-                        itemCount: productsnap.documents.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 0.6,
-                        ),
-                        itemBuilder: (context, index) {
-                          FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
-                            settings: MoneyFormatterSettings(
-                              symbol: 'INR',
-                              thousandSeparator: ",",
-                              symbolAndNumberSeparator: " ",
-                            ),
-                            amount: double.parse(productsnap.documents[index]
-                                    ['price']
-                                .toString()
-                                .replaceAll(",", "")),
-                          );
-                          return GestureDetector(
-                              onTap: () {
-                                FocusScope.of(context).unfocus();
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) {
-                                  return ProductDetail(
-                                    productSnap: productsnap.documents[index],
-                                    uid: usersnap.documentID,
-                                  );
-                                }));
-                              },
-                              child: Card(
-                                  elevation: 6,
-                                  child: Stack(
-                                    children: <Widget>[
-                                      Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Expanded(
-                                            child: Container(
-                                              height: 120,
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(6)),
-                                                child: Hero(
-                                                  tag: productsnap
-                                                      .documents[index]
-                                                      .documentID,
-                                                  child: PNetworkImage(
-                                                    productsnap.documents[index]
-                                                        .data['images'][0],
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                              ),
+                        child: Card(
+                            elevation: 6,
+                            child: Stack(
+                              children: <Widget>[
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        height: 120,
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(6)),
+                                          child: Hero(
+                                            tag: productsnap
+                                                .documents[index].documentID,
+                                            child: PNetworkImage(
+                                              productsnap.documents[index]
+                                                  .data['images'][0],
+                                              fit: BoxFit.contain,
                                             ),
                                           ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ListTile(
-                                                title: Text(
-                                                  utils.camelCase(productsnap
-                                                          .documents[index]
-                                                      ['title']),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style:
-                                                      TextStyle(fontSize: 18),
-                                                ),
-                                                subtitle: Text(
-                                                  productsnap.documents[index]
-                                                      ['description'],
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              /*  ListTile(
-                                                trailing: IconButton(
-                                                  onPressed: () {
-                                                    setInterested(
-                                                        interestedsnap,
-                                                        productsnap,
-                                                        index);
-                                                  },
-                                                  icon: interestedsnap.data !=
-                                                          null
-                                                      ? interestedsnap.data[
-                                                                  'interested']
-                                                              .containsValue(
-                                                          productsnap
-                                                              .documents[index]
-                                                              .documentID,
-                                                        )
-                                                          ? Icon(
-                                                              Icons.favorite,
-                                                              color: Colors
-                                                                  .red[800],
-                                                            )
-                                                          : Icon(Icons
-                                                              .favorite_border)
-                                                      : Icon(Icons
-                                                          .favorite_border),
-                                                ),
-                                                title: Text(
-                                                  '${fmf.output.compactSymbolOnRight.toString()}',
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ) */
-                                            ],
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                      heartIndex == index
-                                          ? Center(
-                                              child: Padding(
-                                                padding: EdgeInsets.all(24),
-                                                child: FlareActor(
-                                                  'assets/instagram_like.flr',
-                                                  controller: flareControls,
-                                                  animation: 'idle',
-                                                  fit: BoxFit.contain,
-                                                  color: Colors.red[800],
-                                                ),
-                                              ),
-                                            )
-                                          : Container()
-                                    ],
-                                  )));
-                        }),
-                  );
-                }
-              },
-            ),
-          );
-        });
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        ListTile(
+                                          title: Text(
+                                            utils.camelCase(productsnap
+                                                .documents[index]['title']),
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                          subtitle: Text(
+                                            productsnap.documents[index]
+                                            ['description'],
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        ListTile(
+                                          trailing: IconButton(
+                                              onPressed: () {
+                                                handleInterests(productsnap
+                                                    .documents[index]);
+                                              },
+                                              icon: interestSet.contains(
+                                                  productsnap
+                                                      .documents[index]
+                                                      .documentID)
+                                                  ? Icon(
+                                                Icons.favorite,
+                                                color: Colors.red[800],
+                                              )
+                                                  : Icon(
+                                                  Icons.favorite_border)),
+                                          title: Text(
+                                            '${fmf.output.compactSymbolOnRight
+                                                .toString()}',
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                heartIndex == index
+                                    ? Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(24),
+                                    child: FlareActor(
+                                      'assets/instagram_like.flr',
+                                      controller: flareControls,
+                                      animation: 'idle',
+                                      fit: BoxFit.contain,
+                                      color: Colors.red[800],
+                                    ),
+                                  ),
+                                )
+                                    : Container()
+                              ],
+                            )));
+                  }),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  handleInterests(DocumentSnapshot snapshot) {
+    if (interestSet.contains(snapshot.documentID)) {
+      for (var element in interests.documents) {
+        if (element.data['productId'] == snapshot.documentID) {
+          element.reference.delete();
+          snapshot.reference.updateData(
+              {'interested_count': --snapshot.data['interested_count']});
+          break;
+        }
+      }
+    } else {
+      firestore.collection('interests').document().setData({
+        'timestamp': DateTime
+            .now()
+            .millisecondsSinceEpoch,
+        'productId': snapshot.documentID,
+        'author': usersnap.documentID,
+      });
+      snapshot.reference.updateData(
+          {'interested_count': ++snapshot.data['interested_count']});
+    }
   }
 
   Widget _buildSearchField() {
@@ -384,7 +378,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       controller: _searchQueryController,
       autofocus: true,
       decoration: InputDecoration(
-        hintText: "Search products by name",
+        hintText: "Search by name",
         border: InputBorder.none,
         hintStyle: TextStyle(color: Colors.white70),
       ),
@@ -431,7 +425,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     ];
   }
 
-  void setInterested(
+  /* void setInterested(
       DocumentSnapshot interestsnap, QuerySnapshot productsnap, int index) {
     setState(() {
       heartIndex = index;
@@ -478,14 +472,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         }
       });
     }
-  }
+  } */
 
-  void updateCount(int count, String pid) {
+  /*  void updateCount(int count, String pid) {
     firestore
         .collection('products')
         .document(pid)
         .updateData({'interested_count': count});
   }
-
+ */
   handleState() => (mounted) ? setState(() => null) : null;
 }

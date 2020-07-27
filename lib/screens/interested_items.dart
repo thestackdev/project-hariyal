@@ -1,91 +1,61 @@
-import 'dart:collection';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
+import 'package:provider/provider.dart';
 import 'package:the_project_hariyal/utils.dart';
 
 import 'product_details.dart';
 import 'widgets/network_image.dart';
 
 class InterestedItems extends StatefulWidget {
-  final DocumentSnapshot interestedsnap;
-  final uid;
-
-  const InterestedItems({Key key, this.interestedsnap, this.uid})
-      : super(key: key);
-
   @override
   _InterestedItemsState createState() => _InterestedItemsState();
 }
 
 class _InterestedItemsState extends State<InterestedItems> {
-  Firestore fireStore;
-  int count = 30;
-  ScrollController _scrollController;
-
-  List productIds = new List();
-
-  @override
-  void initState() {
-    productIds = widget.interestedsnap.data['interested'].values.toList();
-    fireStore = Firestore.instance;
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
-    super.initState();
-  }
-
-  _scrollListener() {
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
-        !_scrollController.position.outOfRange) {
-      setState(() {
-        count += 30;
-      });
-    }
-  }
+  Firestore fireStore = Firestore.instance;
+  Utils utils = Utils();
+  QuerySnapshot interests;
 
   @override
   Widget build(BuildContext context) {
+    interests = context.watch<QuerySnapshot>();
+
+    if (interests == null) {
+      return Container(
+        child: utils.loadingIndicator(),
+      );
+    } else if (interests.documents.length == 0) {
+      Container(
+        child: Center(
+          child: Text('You don\'t have interests in any of our product :/',
+              style: TextStyle(fontSize: 24), textAlign: TextAlign.center),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Interested Items'),
       ),
-      body: SafeArea(
-        child: productIds.length == 0
-            ? Center(
-                child: Text(
-                  'You don\'t have interests in any of our product :/',
-                  style: TextStyle(fontSize: 24),
-                  textAlign: TextAlign.center,
-                ),
-              )
-            : ListView.builder(
-                controller: _scrollController,
-                itemCount: productIds.length,
-                itemBuilder: (context, index) {
-                  return StreamBuilder(
-                    stream: fireStore
-                        .collection('products')
-                        .document(productIds[index])
-                        .snapshots(),
-                    builder: (context, productSnap) {
-                      return productSnap.hasData
-                          ? buildItems(productSnap, index)
-                          : Center(
-                              child: SpinKitWave(
-                                color: Colors.orange,
-                                size: 50.0,
-                              ),
-                            );
-                    },
-                  );
-                }),
-      ),
+      body: ListView.builder(
+          itemCount: interests.documents.length,
+          itemBuilder: (context, index) {
+            return DataStreamBuilder<DocumentSnapshot>(
+              loadingBuilder: (context) => utils.loadingIndicator(),
+              stream: fireStore
+                  .collection('products')
+                  .document(interests.documents[index]['productId'])
+                  .snapshots(),
+              builder: (context, productsnap) {
+                return buildItems(productsnap, index);
+              },
+            );
+          }),
     );
   }
 
-  Widget buildItems(AsyncSnapshot<DocumentSnapshot> snapshot, int index) {
+  Widget buildItems(DocumentSnapshot snapshot, int index) {
     return Stack(
       children: <Widget>[
         GestureDetector(
@@ -93,10 +63,7 @@ class _InterestedItemsState extends State<InterestedItems> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetail(
-                  productSnap: snapshot.data,
-                  uid: widget.uid,
-                ),
+                builder: (context) => ProductDetail(docId: snapshot.documentID),
               ),
             );
           },
@@ -117,7 +84,7 @@ class _InterestedItemsState extends State<InterestedItems> {
                       bottomLeft: Radius.circular(12.0),
                     ),
                     child: PNetworkImage(
-                      snapshot.data.data['images'][0],
+                      snapshot.data['images'][0],
                       height: 120,
                       width: 160,
                       fit: BoxFit.fitHeight,
@@ -131,7 +98,7 @@ class _InterestedItemsState extends State<InterestedItems> {
                         children: <Widget>[
                           Spacer(),
                           Text(
-                            snapshot.data.data['title'],
+                            snapshot.data['title'],
                             textScaleFactor: 1.4,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -141,7 +108,7 @@ class _InterestedItemsState extends State<InterestedItems> {
                           ),
                           Spacer(),
                           Text(
-                            '₹ ${snapshot.data.data['price']}',
+                            '₹ ${snapshot.data['price']}',
                             textScaleFactor: 1.2,
                             style: TextStyle(
                                 fontStyle: FontStyle.italic,
@@ -163,24 +130,11 @@ class _InterestedItemsState extends State<InterestedItems> {
           right: 12,
           child: GestureDetector(
             onTap: () {
-              int count = snapshot.data.data['interested_count'];
-              Map map = new HashMap();
-              map = widget.interestedsnap.data['interested'];
-              count = count - 1;
-              var key = map.keys.firstWhere(
-                  (element) => map[element] == snapshot.data.documentID,
-                  orElse: () => null);
-              if (key != null) {
-                setState(() {
-                  productIds.remove(snapshot.data.documentID);
-                });
-                map.remove(key);
-                widget.interestedsnap.reference.updateData({'interested': map});
-                snapshot.data.reference.updateData({'interested_count': count});
-              } else {
-                Utils().toast(context, 'Something went wrong',
-                    bgColor: Utils().randomGenerator());
-              }
+              interests.documents.forEach((element) {
+                if (element.data['productId'] == snapshot.documentID) {
+                  element.reference.delete();
+                }
+              });
             },
             child: Container(
               decoration: BoxDecoration(
