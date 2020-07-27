@@ -35,7 +35,10 @@ class AuthServices {
               ),
               StreamProvider<QuerySnapshot>.value(
                 initialData: null,
-                value: firestore.collection('extras').snapshots(),
+                value: firestore
+                    .collection('interests')
+                    .where('author', isEqualTo: snapshot.data.uid)
+                    .snapshots(),
               ),
             ],
             child: MaterialApp(
