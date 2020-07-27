@@ -45,6 +45,7 @@ dependencies:
   cached_network_image:
   lazy_load_scrollview:
   share:
+  image_cropper:
 
 dev_dependencies:
   flutter_test:
