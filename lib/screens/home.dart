@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
@@ -253,6 +251,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           .replaceAll(",", "")),
                     );
                     return GestureDetector(
+                        behavior: HitTestBehavior.translucent,
                         onTap: () {
                           FocusScope.of(context).unfocus();
                           Navigator.push(
@@ -292,7 +291,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                     ),
                                     Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         ListTile(
                                           title: Text(
@@ -303,7 +302,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                           ),
                                           subtitle: Text(
                                             productsnap.documents[index]
-                                                ['description'],
+                                            ['description'],
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -312,17 +311,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                               onPressed: () {
                                                 handleInterests(productsnap
                                                     .documents[index]);
+                                                heartIndex = index;
+                                                handleState();
                                               },
                                               icon: interestSet.contains(
-                                                      productsnap
-                                                          .documents[index]
-                                                          .documentID)
+                                                  productsnap
+                                                      .documents[index]
+                                                      .documentID)
                                                   ? Icon(
-                                                      Icons.favorite,
-                                                      color: Colors.red[800],
-                                                    )
+                                                Icons.favorite,
+                                                color: Colors.red[800],
+                                              )
                                                   : Icon(
-                                                      Icons.favorite_border)),
+                                                  Icons.favorite_border)),
                                           title: Text(
                                             '${fmf.output.compactSymbolOnRight.toString()}',
                                             overflow: TextOverflow.ellipsis,
@@ -334,17 +335,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 ),
                                 heartIndex == index
                                     ? Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(24),
-                                          child: FlareActor(
-                                            'assets/instagram_like.flr',
-                                            controller: flareControls,
-                                            animation: 'idle',
-                                            fit: BoxFit.contain,
-                                            color: Colors.red[800],
-                                          ),
-                                        ),
-                                      )
+                                  child: Padding(
+                                    padding: EdgeInsets.all(24),
+                                    child: FlareActor(
+                                      'assets/instagram_like.flr',
+                                      controller: flareControls,
+                                      animation: 'idle',
+                                      fit: BoxFit.contain,
+                                      color: Colors.red[800],
+                                    ),
+                                  ),
+                                )
                                     : Container()
                               ],
                             )));
@@ -367,8 +368,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         }
       }
     } else {
+      flareControls.play("like");
       firestore.collection('interests').document().setData({
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'timestamp': DateTime
+            .now()
+            .millisecondsSinceEpoch,
         'productId': snapshot.documentID,
         'author': usersnap.documentID,
       });
