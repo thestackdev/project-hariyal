@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:provider/provider.dart';
-import '../utils.dart';
-import 'full_screen.dart';
-import 'widgets/image_slider.dart';
+import 'package:the_project_hariyal/screens/widgets/slider.dart';
+import 'package:the_project_hariyal/utils.dart';
 
 class ProductDetail extends StatefulWidget {
   final String docId;
@@ -48,23 +48,12 @@ class _ProductDetailState extends State<ProductDetail> {
                 Container(
                     height: MediaQuery.of(context).size.height / 1.5,
                     width: MediaQuery.of(context).size.width,
-                    child: ImageSliderWidget(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration: Duration(milliseconds: 500),
-                            pageBuilder: (_, __, ___) => FullScreenView(
-                              snapshot['images'],
-                              snapshot.documentID,
-                            ),
-                          ),
-                        );
-                      },
-                      isZoomable: false,
-                      fit: BoxFit.contain,
-                      imageHeight: MediaQuery.of(context).size.height / 1.5,
+                    child: SliderImage(
                       imageUrls: snapshot['images'],
+                      tap: true,
+                      imageHeight: 300,
+                      dotAlignment: Alignment.topCenter,
+                      type: SwiperLayout.STACK,
                     )),
                 SafeArea(
                   child: Column(

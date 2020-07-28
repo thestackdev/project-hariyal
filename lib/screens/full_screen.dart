@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
-import 'widgets/image_slider.dart';
+import 'widgets/slider.dart';
 
-class FullScreenView extends StatefulWidget {
-  final images;
-  final tag;
+class FullScreen extends StatelessWidget {
+  final images, index;
 
-  FullScreenView(this.images, this.tag);
+  FullScreen({this.images, this.index});
 
-  @override
-  _FullScreenViewState createState() => _FullScreenViewState();
-}
-
-class _FullScreenViewState extends State<FullScreenView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ImageSliderWidget(
-        imageHeight: MediaQuery.of(context).size.height,
-        imageUrls: widget.images,
-        isZoomable: true,
+      backgroundColor: Colors.black45,
+      body: SliderImage(
+        dotAlignment: Alignment.bottomCenter,
+        imageUrls: images,
+        tap: false,
+        imageHeight: double.infinity,
+        type: SwiperLayout.DEFAULT,
+        index: index,
       ),
     );
   }

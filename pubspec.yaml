@@ -46,6 +46,7 @@ dependencies:
   lazy_load_scrollview:
   share:
   image_cropper:
+  flutter_swiper:
 
 dev_dependencies:
   flutter_test:
