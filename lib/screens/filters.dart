@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
-import 'package:the_project_hariyal/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:the_project_hariyal/utils.dart';
 
 class Filters extends StatefulWidget {
   @override
@@ -35,8 +35,10 @@ class _FiltersState extends State<Filters> {
           builder: (context, snapshot) {
             for (var map in snapshot.documents) {
               if (map.documentID == 'category') {
+                categoryMap['All'] = ['All'];
                 categoryMap.addAll(map.data);
               } else if (map.documentID == 'locations') {
+                locationsMap['All'] = ['All'];
                 locationsMap.addAll(map.data);
               }
             }
@@ -136,10 +138,17 @@ class _FiltersState extends State<Filters> {
                           onPressed: () {
                             usersnap.reference.updateData({
                               'search': {
-                                'category': selectedCategory,
-                                'subCategory': selectedSubCategory,
-                                'state': selectedState,
-                                'area': selectedArea,
+                                'category': selectedCategory == 'All'
+                                    ? null
+                                    : selectedCategory,
+                                'subCategory': selectedSubCategory == 'All'
+                                    ? null
+                                    : selectedSubCategory,
+                                'state': selectedState == 'All'
+                                    ? null
+                                    : selectedState,
+                                'area':
+                                    selectedArea == 'All' ? null : selectedArea,
                               }
                             });
                             Navigator.pop(context);
