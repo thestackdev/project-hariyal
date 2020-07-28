@@ -50,6 +50,7 @@ class _ProductDetailState extends State<ProductDetail> {
                     width: MediaQuery.of(context).size.width,
                     child: SliderImage(
                       imageUrls: snapshot['images'],
+                      sliderBg: Colors.grey.shade800,
                       tap: true,
                       imageHeight: 300,
                       dotAlignment: Alignment.topCenter,

@@ -6,7 +6,7 @@ import 'network_image.dart';
 
 class SliderImage extends StatelessWidget {
   final List<dynamic> imageUrls;
-  final dotAlignment, tap, type, index;
+  final dotAlignment, tap, type, index, sliderBg;
   final double imageHeight;
 
   const SliderImage(
@@ -15,13 +15,14 @@ class SliderImage extends StatelessWidget {
       this.tap,
       this.dotAlignment,
       this.type,
-      this.index});
+      this.index,
+      this.sliderBg});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: imageHeight,
-      color: Colors.grey.shade800,
+      color: sliderBg,
       padding: EdgeInsets.all(16.0),
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
