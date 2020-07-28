@@ -113,6 +113,14 @@ class _FiltersState extends State<Filters> {
                             ),
                           ),
                           onPressed: () {
+                            usersnap.reference.updateData({
+                              'search': {
+                                'category': null,
+                                'subCategory': null,
+                                'state': null,
+                                'area': null,
+                              }
+                            });
                             Navigator.pop(context);
                           },
                         ),
