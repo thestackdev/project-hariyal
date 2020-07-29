@@ -54,10 +54,10 @@ class _UserDetailsState extends State<UserDetails> {
             _cityDistrict != null ? _cityDistrict.toLowerCase() : 'default';
         Map<String, dynamic> _search = new HashMap();
         _search['area'] =
-            _cityDistrict != null ? _cityDistrict.toLowerCase() : 'default';
-        _search['category'] = 'default';
-        _search['state'] = _state != null ? _state.toLowerCase() : 'default';
-        _search['subCategory'] = 'default';
+            _cityDistrict != null ? _cityDistrict.toLowerCase() : null;
+        _search['category'] = null;
+        _search['state'] = _state != null ? _state.toLowerCase() : null;
+        _search['subCategory'] = null;
         Firestore.instance
             .collection('customers')
             .document(widget.uid)

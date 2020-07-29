@@ -291,7 +291,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                     ),
                                     Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         ListTile(
                                           title: Text(
@@ -302,7 +302,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                           ),
                                           subtitle: Text(
                                             productsnap.documents[index]
-                                            ['description'],
+                                                ['description'],
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -325,7 +325,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                                   : Icon(
                                                   Icons.favorite_border)),
                                           title: Text(
-                                            '${fmf.output.compactSymbolOnRight.toString()}',
+                                            '${fmf.output.compactSymbolOnRight
+                                                .toString()}',
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         )
