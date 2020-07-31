@@ -30,7 +30,7 @@ class SliderImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
             child: PNetworkImage(
               imageUrls[index],
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           );
         },

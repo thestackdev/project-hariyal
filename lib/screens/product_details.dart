@@ -54,7 +54,7 @@ class _ProductDetailState extends State<ProductDetail> {
                       tap: true,
                       imageHeight: 300,
                       dotAlignment: Alignment.topCenter,
-                      type: SwiperLayout.STACK,
+                      type: SwiperLayout.DEFAULT,
                     )),
                 SafeArea(
                   child: Column(

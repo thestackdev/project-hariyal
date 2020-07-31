@@ -315,18 +315,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                                 handleState();
                                               },
                                               icon: interestSet.contains(
-                                                  productsnap
-                                                      .documents[index]
-                                                      .documentID)
+                                                      productsnap
+                                                          .documents[index]
+                                                          .documentID)
                                                   ? Icon(
-                                                Icons.favorite,
-                                                color: Colors.red[800],
-                                              )
+                                                      Icons.favorite,
+                                                      color: Colors.red[800],
+                                                    )
                                                   : Icon(
-                                                  Icons.favorite_border)),
+                                                      Icons.favorite_border)),
                                           title: Text(
-                                            '${fmf.output.compactSymbolOnRight
-                                                .toString()}',
+                                            '${fmf.output.compactSymbolOnRight.toString()}',
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         )
