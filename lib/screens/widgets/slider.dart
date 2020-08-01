@@ -45,14 +45,12 @@ class SliderImage extends StatelessWidget {
         pagination: new SwiperPagination(
           builder: new SwiperCustomPagination(
               builder: (BuildContext context, SwiperPluginConfig config) {
-                return new ConstrainedBox(
-                  child: Align(
-                    alignment: dotAlignment,
-                    child: new DotSwiperPaginationBuilder(
+            return new ConstrainedBox(
+              child: Align(
+                alignment: dotAlignment,
+                child: new DotSwiperPaginationBuilder(
                         color: Colors.grey,
-                        activeColor: Theme
-                            .of(context)
-                            .accentColor,
+                        activeColor: Theme.of(context).accentColor,
                         size: 10.0,
                         activeSize: 20.0)
                     .build(context, config),

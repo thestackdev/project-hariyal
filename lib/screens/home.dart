@@ -235,8 +235,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) =>
-                            ProductDetail(
+                        builder: (_) => ProductDetail(
                               docId: productsnap.documentID,
                             )));
               },
