@@ -315,9 +315,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       }
     } else {
       firestore.collection('interests').document().setData({
-        'timestamp': DateTime
-            .now()
-            .millisecondsSinceEpoch,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
         'productId': snapshot.documentID,
         'author': userSnap.documentID,
       });
