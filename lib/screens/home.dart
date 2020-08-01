@@ -71,6 +71,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     });
   }
 
+  void changeScreen(screen) {
+    Navigator.of(context).pop();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => screen,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     userSnap = context.watch<DocumentSnapshot>();
@@ -123,36 +133,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             SizedBox(height: 30),
             utils.drawerTile(
               label: 'Edit Profile',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => EditProfile(
-                      uid: userSnap.documentID,
-                    ),
-                  ),
-                );
-              },
+              onTap: () =>
+                  changeScreen(EditProfile(
+                    uid: userSnap.documentID,
+                  )),
             ),
             utils.drawerTile(
               label: 'Booked Items',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BookedItems(),
-                  ),
-                );
-              },
+              onTap: () => changeScreen(BookedItems()),
             ),
             utils.drawerTile(
               label: 'Interested Items',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => InterestedItems(),
-                ),
-              ),
+              onTap: () => changeScreen(InterestedItems()),
             ),
             utils.drawerTile(
                 label: 'Refer a Friend',
