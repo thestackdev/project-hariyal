@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:paginate_firestore/paginate_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:the_project_hariyal/screens/filters.dart';
@@ -28,10 +25,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   Firestore firestore = Firestore.instance;
   Utils utils = Utils();
-  final FlareControls flareControls = FlareControls();
   Set interestSet = {};
   QuerySnapshot interests;
-  DocumentSnapshot usersnap;
+  DocumentSnapshot userSnap;
 
   TextEditingController _searchQueryController = new TextEditingController();
   bool _isSearching = false, heartVisibility = false;
@@ -77,16 +73,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    usersnap = context.watch<DocumentSnapshot>();
+    userSnap = context.watch<DocumentSnapshot>();
     interests = context.watch<QuerySnapshot>();
 
-    if (usersnap == null || interests == null)
+    if (userSnap == null || interests == null)
       return Container(
         color: Colors.white,
         child: utils.loadingIndicator(),
       );
 
-    checkUserProfile(usersnap.documentID);
+    checkUserProfile(userSnap.documentID);
 
     interestSet.clear();
     interests.documents.forEach((element) {
@@ -119,7 +115,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               padding: EdgeInsets.only(left: 50),
               child: ListTile(
                 title: Text(
-                  utils.camelCase(usersnap.data['name']),
+                  utils.camelCase(userSnap.data['name']),
                   textScaleFactor: 2,
                 ),
               ),
@@ -132,7 +128,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   context,
                   MaterialPageRoute(
                     builder: (_) => EditProfile(
-                      uid: usersnap.documentID,
+                      uid: userSnap.documentID,
                     ),
                   ),
                 );
@@ -198,160 +194,119 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ],
         ),
       ),
-      body: DataStreamBuilder<QuerySnapshot>(
-        errorBuilder: (context, error) => utils.errorWidget(error.toString()),
-        loadingBuilder: (context) => utils.loadingIndicator(),
-        stream: firestore
+      body: PaginateFirestore(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 0.6,
+        ),
+        itemBuilderType: PaginateBuilderType.GridView,
+        query: firestore
             .collection('products')
+            .orderBy('title')
             .where('category.category',
-                isEqualTo: usersnap.data['search']['category'] == 'default'
-                    ? null
-                    : usersnap.data['search']['category'])
+            isEqualTo: userSnap.data['search']['category'] == 'default'
+                ? null
+                : userSnap.data['search']['category'])
             .where('category.subCategory',
-                isEqualTo: usersnap.data['search']['subCategory'] == 'default'
-                    ? null
-                    : usersnap.data['search']['subCategory'])
+            isEqualTo: userSnap.data['search']['subCategory'] == 'default'
+                ? null
+                : userSnap.data['search']['subCategory'])
             .where('location.state',
-                isEqualTo: usersnap.data['search']['state'] == 'default'
-                    ? null
-                    : usersnap.data['search']['state'])
+            isEqualTo: userSnap.data['search']['state'] == 'default'
+                ? null
+                : userSnap.data['search']['state'])
             .where('location.area',
-                isEqualTo: usersnap.data['search']['area'] == 'default'
-                    ? null
-                    : usersnap.data['search']['area'])
-            .snapshots(),
-        builder: (context, productsnap) {
-          if (productsnap.documents.length == 0) {
+            isEqualTo: userSnap.data['search']['area'] == 'default'
+                ? null
+                : userSnap.data['search']['area']),
+        itemBuilder: (index, context, productsnap) {
+          if (productsnap.data == null) {
             return utils.nullWidget(
               'No products found with the search criteria',
             );
-          } else {
-            return LazyLoadScrollView(
-              onEndOfPage: () {
-                count += 30;
-                handleState();
-              },
-              child: GridView.builder(
-                  itemCount: productsnap.documents.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 0.6,
-                  ),
-                  itemBuilder: (context, index) {
-                    FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
-                      settings: MoneyFormatterSettings(
-                        symbol: 'INR',
-                        thousandSeparator: ",",
-                        symbolAndNumberSeparator: " ",
-                      ),
-                      amount: double.parse(productsnap.documents[index]['price']
-                          .toString()
-                          .replaceAll(",", "")),
-                    );
-                    return GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ProductDetail(
-                                        docId: productsnap
-                                            .documents[index].documentID,
-                                      )));
-                        },
-                        child: Card(
-                            elevation: 6,
-                            child: Stack(
-                              children: <Widget>[
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        height: 120,
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(6)),
-                                          child: Hero(
-                                            tag: productsnap
-                                                .documents[index].documentID,
-                                            child: PNetworkImage(
-                                              productsnap.documents[index]
-                                                  .data['images'][0],
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ListTile(
-                                          title: Text(
-                                            utils.camelCase(productsnap
-                                                .documents[index]['title']),
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                          subtitle: Text(
-                                            productsnap.documents[index]
-                                                ['description'],
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        ListTile(
-                                          trailing: IconButton(
-                                              onPressed: () {
-                                                handleInterests(productsnap
-                                                    .documents[index]);
-                                                heartIndex = index;
-                                                handleState();
-                                              },
-                                              icon: interestSet.contains(
-                                                      productsnap
-                                                          .documents[index]
-                                                          .documentID)
-                                                  ? Icon(
-                                                      Icons.favorite,
-                                                      color: Colors.red[800],
-                                                    )
-                                                  : Icon(
-                                                      Icons.favorite_border)),
-                                          title: Text(
-                                            '${fmf.output.compactSymbolOnRight.toString()}',
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                heartIndex == index
-                                    ? Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(24),
-                                          child: FlareActor(
-                                            'assets/instagram_like.flr',
-                                            controller: flareControls,
-                                            animation: 'idle',
-                                            fit: BoxFit.contain,
-                                            color: Colors.red[800],
-                                          ),
-                                        ),
-                                      )
-                                    : Container()
-                              ],
-                            )));
-                  }),
-            );
           }
+          FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
+            settings: MoneyFormatterSettings(
+              symbol: 'INR',
+              thousandSeparator: ",",
+              symbolAndNumberSeparator: " ",
+            ),
+            amount: double.parse(
+                productsnap.data['price'].toString().replaceAll(",", "")),
+          );
+          return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            ProductDetail(
+                              docId: productsnap.documentID,
+                            )));
+              },
+              child: Card(
+                  elevation: 6,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: 120,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(6)),
+                            child: Hero(
+                              tag: productsnap.documentID,
+                              child: PNetworkImage(
+                                productsnap.data['images'][0],
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            title: Text(
+                              utils.camelCase(productsnap.data['title']),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            subtitle: Text(
+                              productsnap.data['description'],
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          ListTile(
+                            trailing: IconButton(
+                                onPressed: () {
+                                  handleInterests(productsnap);
+                                  heartIndex = index;
+                                  handleState();
+                                },
+                                icon:
+                                interestSet.contains(productsnap.documentID)
+                                    ? Icon(
+                                  Icons.favorite,
+                                  color: Colors.red[800],
+                                )
+                                    : Icon(Icons.favorite_border)),
+                            title: Text(
+                              '${fmf.output.compactSymbolOnRight.toString()}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  )));
         },
       ),
     );
@@ -368,11 +323,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         }
       }
     } else {
-      flareControls.play("like");
       firestore.collection('interests').document().setData({
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'timestamp': DateTime
+            .now()
+            .millisecondsSinceEpoch,
         'productId': snapshot.documentID,
-        'author': usersnap.documentID,
+        'author': userSnap.documentID,
       });
       snapshot.reference.updateData(
           {'interested_count': ++snapshot.data['interested_count']});
@@ -431,61 +387,5 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     ];
   }
 
-  /* void setInterested(
-      DocumentSnapshot interestsnap, QuerySnapshot productsnap, int index) {
-    setState(() {
-      heartIndex = index;
-    });
-    int count = productsnap.documents[index].data['interested_count'];
-    if (count == null) {
-      count = 0;
-    }
-    if (interestsnap.data != null ||
-        interestsnap.data['interested'].length > 0 ||
-        interestsnap.data['interested'] != null) {
-      Map map = new HashMap();
-      map = interestsnap.data['interested'];
-      if (map.containsValue(productsnap.documents[index].documentID)) {
-        count = count > 0 ? count - 1 : 0;
-        updateCount(count, productsnap.documents[index].documentID.toString());
-        var key = map.keys.firstWhere(
-            (element) =>
-                map[element] == productsnap.documents[index].documentID,
-            orElse: () => null);
-        if (key != null) {
-          map.remove(key);
-          interestsnap.reference.updateData({'interested': map});
-        } else {
-          utils.toast(context, 'Something went wrong',
-              bgColor: utils.randomGenerator());
-        }
-      } else {
-        flareControls.play("like");
-        count = count + 1;
-        updateCount(count, productsnap.documents[index].documentID.toString());
-        map[Timestamp.now().toDate().toString()] =
-            productsnap.documents[index].documentID.toString();
-        interestsnap.reference.updateData({'interested': map});
-      }
-    } else {
-      flareControls.play("like");
-      count = count + 1;
-      updateCount(count, productsnap.documents[index].documentID.toString());
-      interestsnap.reference.setData({
-        'interested': {
-          Timestamp.now().toDate().toString():
-              productsnap.documents[index].documentID
-        }
-      });
-    }
-  } */
-
-  /*  void updateCount(int count, String pid) {
-    firestore
-        .collection('products')
-        .document(pid)
-        .updateData({'interested_count': count});
-  }
- */
   handleState() => (mounted) ? setState(() => null) : null;
 }

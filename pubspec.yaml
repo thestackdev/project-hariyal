@@ -40,13 +40,12 @@ dependencies:
   image_picker:
   flutter_money_formatter:
   flutter_data_stream_builder:
-  flare_flutter:
   provider:
   cached_network_image:
-  lazy_load_scrollview:
   share:
   image_cropper:
   flutter_swiper:
+  paginate_firestore:
 
 dev_dependencies:
   flutter_test:
