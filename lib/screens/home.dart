@@ -335,17 +335,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 ),
                                 heartIndex == index
                                     ? Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(24),
-                                    child: FlareActor(
-                                      'assets/instagram_like.flr',
-                                      controller: flareControls,
-                                      animation: 'idle',
-                                      fit: BoxFit.contain,
-                                      color: Colors.red[800],
-                                    ),
-                                  ),
-                                )
+                                        child: Padding(
+                                          padding: EdgeInsets.all(24),
+                                          child: FlareActor(
+                                            'assets/instagram_like.flr',
+                                            controller: flareControls,
+                                            animation: 'idle',
+                                            fit: BoxFit.contain,
+                                            color: Colors.red[800],
+                                          ),
+                                        ),
+                                      )
                                     : Container()
                               ],
                             )));
