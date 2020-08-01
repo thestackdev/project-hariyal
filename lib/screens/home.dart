@@ -186,6 +186,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ),
       ),
       body: PaginateFirestore(
+        emptyDisplay: utils.nullWidget('No products found !'),
+        itemsPerPage: 10,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 12,
@@ -197,21 +199,21 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             .collection('products')
             .orderBy('title')
             .where('category.category',
-            isEqualTo: userSnap.data['search']['category'] == 'default'
-                ? null
-                : userSnap.data['search']['category'])
+                isEqualTo: userSnap.data['search']['category'] == 'default'
+                    ? null
+                    : userSnap.data['search']['category'])
             .where('category.subCategory',
-            isEqualTo: userSnap.data['search']['subCategory'] == 'default'
-                ? null
-                : userSnap.data['search']['subCategory'])
+                isEqualTo: userSnap.data['search']['subCategory'] == 'default'
+                    ? null
+                    : userSnap.data['search']['subCategory'])
             .where('location.state',
-            isEqualTo: userSnap.data['search']['state'] == 'default'
-                ? null
-                : userSnap.data['search']['state'])
+                isEqualTo: userSnap.data['search']['state'] == 'default'
+                    ? null
+                    : userSnap.data['search']['state'])
             .where('location.area',
-            isEqualTo: userSnap.data['search']['area'] == 'default'
-                ? null
-                : userSnap.data['search']['area']),
+                isEqualTo: userSnap.data['search']['area'] == 'default'
+                    ? null
+                    : userSnap.data['search']['area']),
         itemBuilder: (index, context, productsnap) {
           if (productsnap.data == null) {
             return utils.nullWidget(

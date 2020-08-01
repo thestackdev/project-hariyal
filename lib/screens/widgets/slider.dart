@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:the_project_hariyal/screens/full_screen.dart';
 
 import 'network_image.dart';
 
@@ -8,6 +7,7 @@ class SliderImage extends StatelessWidget {
   final List<dynamic> imageUrls;
   final dotAlignment, tap, type, index, sliderBg;
   final double imageHeight;
+  final Function(int) onTap;
 
   const SliderImage(
       {this.imageUrls,
@@ -16,7 +16,8 @@ class SliderImage extends StatelessWidget {
       this.dotAlignment,
       this.type,
       this.index,
-      this.sliderBg});
+      this.sliderBg,
+      this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -40,25 +41,18 @@ class SliderImage extends StatelessWidget {
         itemCount: imageUrls.length,
         layout: type,
         loop: false,
-        onTap: (value) {
-          if (tap) {
-            Navigator.of(context).push(PageRouteBuilder(
-                opaque: false,
-                pageBuilder: (BuildContext context, _, __) => FullScreen(
-                      images: imageUrls,
-                      index: value,
-                    )));
-          }
-        },
+        onTap: (value) => onTap(value),
         pagination: new SwiperPagination(
           builder: new SwiperCustomPagination(
               builder: (BuildContext context, SwiperPluginConfig config) {
-            return new ConstrainedBox(
-              child: Align(
-                alignment: dotAlignment,
-                child: new DotSwiperPaginationBuilder(
+                return new ConstrainedBox(
+                  child: Align(
+                    alignment: dotAlignment,
+                    child: new DotSwiperPaginationBuilder(
                         color: Colors.grey,
-                        activeColor: Theme.of(context).accentColor,
+                        activeColor: Theme
+                            .of(context)
+                            .accentColor,
                         size: 10.0,
                         activeSize: 20.0)
                     .build(context, config),

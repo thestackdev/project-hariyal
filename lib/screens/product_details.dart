@@ -7,6 +7,8 @@ import 'package:the_project_hariyal/screens/checkout.dart';
 import 'package:the_project_hariyal/screens/widgets/slider.dart';
 import 'package:the_project_hariyal/utils.dart';
 
+import 'full_screen.dart';
+
 class ProductDetail extends StatefulWidget {
   final String docId;
 
@@ -22,6 +24,7 @@ class _ProductDetailState extends State<ProductDetail> {
   Firestore firestore = Firestore.instance;
   Utils utils = Utils();
   Set interestSet = {};
+  int sliderIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +52,25 @@ class _ProductDetailState extends State<ProductDetail> {
                 Container(
                     height: MediaQuery.of(context).size.height / 1.5,
                     width: MediaQuery.of(context).size.width,
-                    child: SliderImage(
-                      imageUrls: snapshot['images'],
-                      sliderBg: Colors.grey.shade800,
-                      tap: true,
-                      imageHeight: 300,
-                      dotAlignment: Alignment.topCenter,
-                      type: SwiperLayout.DEFAULT,
+                    child: Hero(
+                      tag: 04,
+                      child: SliderImage(
+                        onTap: (value) {
+                          Navigator.of(context).push(PageRouteBuilder(
+                              pageBuilder: (BuildContext context, _, __) =>
+                                  FullScreen(
+                                    images: snapshot['images'],
+                                    index: value,
+                                  )));
+                        },
+                        index: sliderIndex,
+                        imageUrls: snapshot['images'],
+                        sliderBg: Colors.grey.shade800,
+                        tap: true,
+                        imageHeight: 300,
+                        dotAlignment: Alignment.topCenter,
+                        type: SwiperLayout.DEFAULT,
+                      ),
                     )),
                 SafeArea(
                   child: Column(

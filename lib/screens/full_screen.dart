@@ -11,16 +11,19 @@ class FullScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black45,
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: SliderImage(
-          dotAlignment: Alignment.bottomCenter,
-          imageUrls: images,
-          sliderBg: Colors.transparent,
-          tap: false,
-          imageHeight: double.infinity,
-          type: SwiperLayout.DEFAULT,
-          index: index,
+        child: Hero(
+          tag: 04,
+          child: SliderImage(
+            dotAlignment: Alignment.bottomCenter,
+            imageUrls: images,
+            sliderBg: Colors.transparent,
+            tap: false,
+            imageHeight: double.infinity,
+            type: SwiperLayout.DEFAULT,
+            index: index,
+          ),
         ),
       ),
     );
