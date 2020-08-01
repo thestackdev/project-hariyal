@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:provider/provider.dart';
+import 'package:the_project_hariyal/screens/checkout.dart';
 import 'package:the_project_hariyal/screens/widgets/slider.dart';
 import 'package:the_project_hariyal/utils.dart';
 
@@ -152,7 +153,15 @@ class _ProductDetailState extends State<ProductDetail> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(10.0)),
-                                    onPressed: () async {},
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (_) => CheckOut(
+                                          pid: widget.docId,
+                                          uid: usersnap.documentID,
+                                        ),
+                                      ));
+                                    },
                                     color: Colors.orange,
                                     textColor: Colors.white,
                                     child: Row(
