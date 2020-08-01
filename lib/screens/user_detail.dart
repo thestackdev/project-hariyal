@@ -72,7 +72,8 @@ class _UserDetailsState extends State<UserDetails> {
           'gender': 'default',
           'permanentAddress': 'default',
           'location': _loc,
-          'search': _search
+          'search': _search,
+          'createdDate': DateTime.now().millisecondsSinceEpoch.toString()
         });
         Firestore.instance
             .collection('interested')
