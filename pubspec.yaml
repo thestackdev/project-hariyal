@@ -34,7 +34,6 @@ dependencies:
   flutter_spinkit:
   rxdart:
   photo_view:
-  splashscreen:
   otp_text_field:
   workmanager:
   image_picker:
