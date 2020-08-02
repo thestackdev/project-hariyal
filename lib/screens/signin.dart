@@ -167,17 +167,7 @@ class _SigninState extends State<Signin> {
   Widget buildLoginUI() {
     return Column(
       children: [
-        Text(
-          'TODO LOGO',
-          textScaleFactor: 2,
-        ),
-        SizedBox(
-          height: 40,
-        ),
-        Text(
-          'Hariyal',
-          textScaleFactor: 1.5,
-        ),
+        Image.asset('assets/hariyal.png'),
         Expanded(
           child: Align(
               alignment: FractionalOffset.bottomCenter,
