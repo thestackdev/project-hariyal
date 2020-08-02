@@ -23,7 +23,10 @@ class SliderImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: imageHeight,
-      color: sliderBg,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        color: sliderBg,
+      ),
       padding: EdgeInsets.all(16.0),
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
@@ -36,7 +39,6 @@ class SliderImage extends StatelessWidget {
           );
         },
         index: index == null ? 0 : index,
-        itemWidth: 300,
         itemHeight: imageHeight,
         itemCount: imageUrls.length,
         layout: type,
@@ -50,9 +52,9 @@ class SliderImage extends StatelessWidget {
                 alignment: dotAlignment,
                 child: new DotSwiperPaginationBuilder(
                         color: Colors.grey,
-                        activeColor: Theme.of(context).accentColor,
+                        activeColor: Colors.lightBlue,
                         size: 10.0,
-                        activeSize: 20.0)
+                        activeSize: 15.0)
                     .build(context, config),
               ),
               constraints: new BoxConstraints.expand(height: 50.0),
