@@ -165,84 +165,89 @@ class _SigninState extends State<Signin> {
   }
 
   Widget buildLoginUI() {
-    return Column(
-      children: [
-        Image.asset('assets/hariyal.png'),
-        Expanded(
-          child: Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: TextField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    WhitelistingTextInputFormatter.digitsOnly
-                  ],
-                  decoration: Utils().textFieldDecoration(
-                      hint: "Phone Number",
-                      label: "Phone Number",
-                      prefixIcon: Icon(
-                        Icons.phone,
-                        color: Colors.blueAccent,
-                      ),
-                      suffixIcon: Icon(
-                        Icons.check_circle,
-                        color: suffixColor,
-                      ),
-                      prefixText: "+91  "))),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Checkbox(
-              onChanged: (bool value) {
-                setState(() {
-                  acceptTermsAndConditions = value;
-                });
-              },
-              value: acceptTermsAndConditions,
+    return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Image.asset('assets/hariyal.png'),
+            Align(
+                alignment: FractionalOffset.bottomCenter,
+                child: TextField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    decoration: Utils().textFieldDecoration(
+                        hint: "Phone Number",
+                        label: "Phone Number",
+                        prefixIcon: Icon(
+                          Icons.phone,
+                          color: Colors.blueAccent,
+                        ),
+                        suffixIcon: Icon(
+                          Icons.check_circle,
+                          color: suffixColor,
+                        ),
+                        prefixText: "+91  "))),
+            SizedBox(
+              height: 10,
             ),
-            Text(
-              'I Agree To ',
-              style: TextStyle(fontSize: 18),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Checkbox(
+                  onChanged: (bool value) {
+                    setState(() {
+                      acceptTermsAndConditions = value;
+                    });
+                  },
+                  value: acceptTermsAndConditions,
+                ),
+                Text(
+                  'I Agree To ',
+                  style: TextStyle(fontSize: 18),
+                ),
+                FlatButton(
+                  padding: EdgeInsets.all(0),
+                  onPressed: () {},
+                  child: Text(
+                    'Terms & Conditions',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
             ),
-            FlatButton(
-              padding: EdgeInsets.all(0),
-              onPressed: () {},
-              child: Text(
-                'Terms & Conditions',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: RaisedButton(
+                padding: EdgeInsets.symmetric(vertical: 12.0),
+                color: Colors.blueAccent[400],
+                onPressed: () {
+                  login();
+                },
+                elevation: 12,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(40.0),
+                  ),
+                ),
+                child: Text(
+                  'Request Otp',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
               ),
-            )
+            ),
           ],
         ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          child: RaisedButton(
-            padding: EdgeInsets.symmetric(vertical: 12.0),
-            color: Colors.blueAccent[400],
-            onPressed: () {
-              login();
-            },
-            elevation: 12,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(40.0),
-              ),
-            ),
-            child: Text(
-              'Request Otp',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -286,7 +291,7 @@ class _SigninState extends State<Signin> {
           fieldWidth: 40,
           style: TextStyle(fontSize: 18),
           textFieldAlignment: MainAxisAlignment.spaceAround,
-          fieldStyle: FieldStyle.box,
+          fieldStyle: FieldStyle.underline,
           keyboardType: TextInputType.number,
           onCompleted: (pin) {
             if (pin.length != 6) {
@@ -320,7 +325,7 @@ class _SigninState extends State<Signin> {
                   ),
                 ),
                 child: Text(
-                  'Resend Otp',
+                  'Verify',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
