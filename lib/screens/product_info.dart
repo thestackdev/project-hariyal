@@ -191,6 +191,8 @@ class _ProductInfoState extends State<ProductInfo> {
                                         builder: (_) => CheckOut(
                                           pid: widget.docId,
                                           uid: usersnap.documentID,
+                                          name: usersnap.data['name'],
+                                          phone: usersnap.data['phone'],
                                         ),
                                       ));
                                     },
