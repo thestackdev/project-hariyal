@@ -14,7 +14,7 @@ import 'package:the_project_hariyal/utils.dart';
 import 'booked_items.dart';
 import 'edit_profile.dart';
 import 'interested_items.dart';
-import 'product_details.dart';
+import 'product_info.dart';
 import 'widgets/network_image.dart';
 
 class Home extends StatefulWidget {
@@ -235,7 +235,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => ProductDetail(
+                        builder: (_) => ProductInfo(
                               docId: productsnap.documentID,
                             )));
               },

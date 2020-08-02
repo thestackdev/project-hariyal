@@ -46,6 +46,7 @@ dependencies:
   image_cropper:
   flutter_swiper:
   paginate_firestore:
+  map_launcher:
 
 dev_dependencies:
   flutter_test:

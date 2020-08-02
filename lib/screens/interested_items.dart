@@ -4,7 +4,7 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:the_project_hariyal/utils.dart';
 
-import 'product_details.dart';
+import 'product_info.dart';
 import 'widgets/network_image.dart';
 
 class InterestedItems extends StatefulWidget {
@@ -63,7 +63,7 @@ class _InterestedItemsState extends State<InterestedItems> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetail(docId: snapshot.documentID),
+                builder: (context) => ProductInfo(docId: snapshot.documentID),
               ),
             );
           },
