@@ -22,13 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.1"
-  bloc:
-    dependency: transitive
-    description:
-      name: bloc
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -106,13 +99,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
-  cubit:
-    dependency: transitive
-    description:
-      name: cubit
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -230,13 +216,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.6"
-  flutter_bloc:
-    dependency: transitive
-    description:
-      name: flutter_bloc
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.1"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -244,13 +223,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.1"
-  flutter_cubit:
-    dependency: transitive
-    description:
-      name: flutter_cubit
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
   flutter_data_stream_builder:
     dependency: "direct main"
     description:
@@ -408,6 +380,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.2"
+  lazy_load_scrollview:
+    dependency: "direct main"
+    description:
+      name: lazy_load_scrollview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   location:
     dependency: "direct main"
     description:
@@ -513,13 +492,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.1"
-  paginate_firestore:
-    dependency: "direct main"
-    description:
-      name: paginate_firestore
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1+1"
   path:
     dependency: transitive
     description:

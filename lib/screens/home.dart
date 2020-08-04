@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
-import 'package:paginate_firestore/paginate_firestore.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:the_project_hariyal/screens/filters.dart';
@@ -185,19 +186,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ],
         ),
       ),
-      body: PaginateFirestore(
-        emptyDisplay: utils.nullWidget('No products found !'),
-        itemsPerPage: 10,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.6,
-        ),
-        itemBuilderType: PaginateBuilderType.GridView,
-        query: firestore
+      body: DataStreamBuilder<QuerySnapshot>(
+        errorBuilder: (context, error) => utils.errorWidget(error.toString()),
+        loadingBuilder: (context) => utils.loadingIndicator(),
+        stream: firestore
             .collection('products')
-            .orderBy('title')
             .where('category.category',
                 isEqualTo: userSnap.data['search']['category'] == 'default'
                     ? null
@@ -213,91 +206,118 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             .where('location.area',
                 isEqualTo: userSnap.data['search']['area'] == 'default'
                     ? null
-                    : userSnap.data['search']['area']),
-        itemBuilder: (index, context, productsnap) {
-          if (productsnap.data == null) {
+                    : userSnap.data['search']['area'])
+            .snapshots(),
+        builder: (context, productsnap) {
+          if (productsnap.documents.length == 0) {
             return utils.nullWidget(
               'No products found with the search criteria',
             );
-          }
-          FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
-            settings: MoneyFormatterSettings(
-              symbol: 'INR',
-              thousandSeparator: ",",
-              symbolAndNumberSeparator: " ",
-            ),
-            amount: double.parse(
-                productsnap.data['price'].toString().replaceAll(",", "")),
-          );
-          return GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ProductInfo(
-                              docId: productsnap.documentID,
-                            )));
+          } else {
+            return LazyLoadScrollView(
+              onEndOfPage: () {
+                count += 30;
+                handleState();
               },
-              child: Card(
-                  elevation: 6,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 10,
+              child: GridView.builder(
+                  itemCount: productsnap.documents.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.6,
+                  ),
+                  itemBuilder: (context, index) {
+                    FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
+                      settings: MoneyFormatterSettings(
+                        symbol: 'INR',
+                        thousandSeparator: ",",
+                        symbolAndNumberSeparator: " ",
                       ),
-                      Expanded(
-                        child: Container(
-                          height: 120,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(6)),
-                            child: Hero(
-                              tag: productsnap.documentID,
-                              child: PNetworkImage(
-                                productsnap.data['images'][0],
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            title: Text(
-                              utils.camelCase(productsnap.data['title']),
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            subtitle: Text(
-                              productsnap.data['description'],
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          ListTile(
-                            trailing: IconButton(
-                                onPressed: () {
-                                  handleInterests(productsnap);
-                                  heartIndex = index;
-                                  handleState();
-                                },
-                                icon:
-                                    interestSet.contains(productsnap.documentID)
-                                        ? Icon(
-                                            Icons.favorite,
-                                            color: Colors.red[800],
-                                          )
-                                        : Icon(Icons.favorite_border)),
-                            title: Text(
-                              '${fmf.output.compactSymbolOnRight.toString()}',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  )));
+                      amount: double.parse(productsnap.documents[index]['price']
+                          .toString()
+                          .replaceAll(",", "")),
+                    );
+                    return GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ProductInfo(
+                                        docId: productsnap
+                                            .documents[index].documentID,
+                                      )));
+                        },
+                        child: Card(
+                            elevation: 6,
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 120,
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(6)),
+                                      child: Hero(
+                                        tag: productsnap
+                                            .documents[index].documentID,
+                                        child: PNetworkImage(
+                                          productsnap.documents[index]
+                                              .data['images'][0],
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListTile(
+                                      title: Text(
+                                        utils.camelCase(productsnap
+                                            .documents[index]['title']),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      subtitle: Text(
+                                        productsnap.documents[index]
+                                            ['description'],
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    ListTile(
+                                      trailing: IconButton(
+                                          onPressed: () {
+                                            handleInterests(
+                                                productsnap.documents[index]);
+                                            heartIndex = index;
+                                            handleState();
+                                          },
+                                          icon: interestSet.contains(productsnap
+                                                  .documents[index].documentID)
+                                              ? Icon(
+                                                  Icons.favorite,
+                                                  color: Colors.red[800],
+                                                )
+                                              : Icon(Icons.favorite_border)),
+                                      title: Text(
+                                        '${fmf.output.compactSymbolOnRight.toString()}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            )));
+                  }),
+            );
+          }
         },
       ),
     );

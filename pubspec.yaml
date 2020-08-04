@@ -44,7 +44,7 @@ dependencies:
   share:
   image_cropper:
   flutter_swiper:
-  paginate_firestore:
+  lazy_load_scrollview:
   map_launcher:
 
 dev_dependencies:
