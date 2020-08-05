@@ -29,11 +29,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Set interestSet = {};
   QuerySnapshot interests;
   DocumentSnapshot userSnap;
+  bool loading = true;
 
   TextEditingController _searchQueryController = new TextEditingController();
   bool _isSearching = false, heartVisibility = false;
 
-  int count = 30, heartIndex = 0;
+  int count = 4, heartIndex = 0;
   Color heartColor = Colors.red[800].withOpacity(0.7);
 
   _searchListener() {
@@ -84,243 +85,259 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    userSnap = context.watch<DocumentSnapshot>();
-    interests = context.watch<QuerySnapshot>();
+    try {
+      userSnap = context.watch<DocumentSnapshot>();
+      interests = context.watch<QuerySnapshot>();
 
-    if (userSnap == null || interests == null)
-      return Container(
-        color: Colors.white,
-        child: utils.loadingIndicator(),
-      );
+      if (userSnap == null || interests == null)
+        return Container(
+          color: Colors.white,
+          child: utils.loadingIndicator(),
+        );
 
-    checkUserProfile(userSnap.documentID);
+      checkUserProfile(userSnap.documentID);
 
-    interestSet.clear();
-    interests.documents.forEach((element) {
-      interestSet.add(element.data['productId']);
-    });
+      interestSet.clear();
+      interests.documents.forEach((element) {
+        interestSet.add(element.data['productId']);
+      });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: _isSearching ? _buildSearchField() : Text('Home'),
-        actions: _buildActions(),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.only(left: 50),
-              child: ListTile(
-                title: Text(
-                  utils.camelCase(userSnap.data['name']),
-                  textScaleFactor: 2,
-                ),
-              ),
-            ),
-            SizedBox(height: 30),
-            utils.drawerTile(
-              label: 'Edit Profile',
-              onTap: () => changeScreen(EditProfile(
-                uid: userSnap.documentID,
-              )),
-            ),
-            utils.drawerTile(
-              label: 'Booked Items',
-              onTap: () => changeScreen(BookedItems()),
-            ),
-            utils.drawerTile(
-              label: 'Interested Items',
-              onTap: () => changeScreen(InterestedItems()),
-            ),
-            utils.drawerTile(
-                label: 'Refer a Friend',
-                onTap: () {
-                  RenderBox box = context.findRenderObject();
-                  Share.share('TODO APP LINK & Description',
-                      subject: 'Share to friend',
-                      sharePositionOrigin:
-                          box.globalToLocal(Offset.zero) & box.size);
-                }),
-            utils.drawerTile(
-              label: 'Logout',
-              onTap: () {
-                return showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text('Logout!'),
-                        content: Text('Are you sure want to log out'),
-                        actions: <Widget>[
-                          FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('No'),
-                          ),
-                          FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              AuthServices().logout();
-                            },
-                            child: Text('Yes'),
-                          )
-                        ],
-                      );
-                    });
-              },
-            ),
-          ],
+      return Scaffold(
+        appBar: AppBar(
+          title: _isSearching ? _buildSearchField() : Text('Home'),
+          actions: _buildActions(),
         ),
-      ),
-      body: DataStreamBuilder<QuerySnapshot>(
-        errorBuilder: (context, error) => utils.errorWidget(error.toString()),
-        loadingBuilder: (context) => utils.loadingIndicator(),
-        stream: firestore
-            .collection('products')
-            .where('category.category',
-                isEqualTo: userSnap.data['search']['category'] == 'default'
-                    ? null
-                    : userSnap.data['search']['category'])
-            .where('category.subCategory',
-                isEqualTo: userSnap.data['search']['subCategory'] == 'default'
-                    ? null
-                    : userSnap.data['search']['subCategory'])
-            .where('location.state',
-                isEqualTo: userSnap.data['search']['state'] == 'default'
-                    ? null
-                    : userSnap.data['search']['state'])
-            .where('location.area',
-                isEqualTo: userSnap.data['search']['area'] == 'default'
-                    ? null
-                    : userSnap.data['search']['area'])
-            .snapshots(),
-        builder: (context, productsnap) {
-          if (productsnap.documents.length == 0) {
-            return utils.nullWidget(
-              'No products found with the search criteria',
-            );
-          } else {
-            return LazyLoadScrollView(
-              onEndOfPage: () {
-                count += 30;
-                handleState();
-              },
-              child: GridView.builder(
-                  itemCount: productsnap.documents.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 0.6,
+        drawer: Drawer(
+          child: ListView(
+            children: [
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.only(left: 20),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
-                      settings: MoneyFormatterSettings(
-                        symbol: 'INR',
-                        thousandSeparator: ",",
-                        symbolAndNumberSeparator: " ",
-                      ),
-                      amount: double.parse(productsnap.documents[index]['price']
-                          .toString()
-                          .replaceAll(",", "")),
-                    );
-                    return GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ProductInfo(
-                                        docId: productsnap
-                                            .documents[index].documentID,
-                                      )));
-                        },
-                        child: Card(
-                            elevation: 6,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 120,
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(6)),
-                                      child: Hero(
-                                        tag: productsnap
-                                            .documents[index].documentID,
-                                        child: PNetworkImage(
-                                          productsnap.documents[index]
-                                              .data['images'][0],
-                                          fit: BoxFit.contain,
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.only(left: 50),
+                child: ListTile(
+                  title: Text(
+                    utils.camelCase(userSnap.data['name']),
+                    textScaleFactor: 2,
+                  ),
+                ),
+              ),
+              SizedBox(height: 30),
+              utils.drawerTile(
+                label: 'Edit Profile',
+                onTap: () =>
+                    changeScreen(EditProfile(
+                      uid: userSnap.documentID,
+                    )),
+              ),
+              utils.drawerTile(
+                label: 'Booked Items',
+                onTap: () => changeScreen(BookedItems()),
+              ),
+              utils.drawerTile(
+                label: 'Interested Items',
+                onTap: () => changeScreen(InterestedItems()),
+              ),
+              utils.drawerTile(
+                  label: 'Refer a Friend',
+                  onTap: () {
+                    RenderBox box = context.findRenderObject();
+                    Share.share('TODO APP LINK & Description',
+                        subject: 'Share to friend',
+                        sharePositionOrigin:
+                        box.globalToLocal(Offset.zero) & box.size);
+                  }),
+              utils.drawerTile(
+                label: 'Logout',
+                onTap: () {
+                  return showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Logout!'),
+                          content: Text('Are you sure want to log out'),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('No'),
+                            ),
+                            FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                AuthServices().logout();
+                              },
+                              child: Text('Yes'),
+                            )
+                          ],
+                        );
+                      });
+                },
+              ),
+            ],
+          ),
+        ),
+        body: DataStreamBuilder<QuerySnapshot>(
+          errorBuilder: (context, error) => utils.errorWidget(error.toString()),
+          loadingBuilder: (context) => utils.loadingIndicator(),
+          stream: firestore
+              .collection('products')
+              .where('category.category',
+              isEqualTo: userSnap.data['search']['category'] == 'default'
+                  ? null
+                  : userSnap.data['search']['category'])
+              .where('category.subCategory',
+              isEqualTo: userSnap.data['search']['subCategory'] == 'default'
+                  ? null
+                  : userSnap.data['search']['subCategory'])
+              .where('location.state',
+              isEqualTo: userSnap.data['search']['state'] == 'default'
+                  ? null
+                  : userSnap.data['search']['state'])
+              .where('location.area',
+              isEqualTo: userSnap.data['search']['area'] == 'default'
+                  ? null
+                  : userSnap.data['search']['area'])
+              .snapshots(),
+          builder: (context, productsnap) {
+            if (productsnap.documents.length == 0) {
+              return utils.nullWidget(
+                'No products found with the search criteria',
+              );
+            } else {
+              loading = false;
+              return LazyLoadScrollView(
+                isLoading: loading,
+                onEndOfPage: () {
+                  count += 4;
+                  handleState();
+                },
+                child: GridView.builder(
+                    itemCount: productsnap.documents.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.6,
+                    ),
+                    itemBuilder: (context, index) {
+                      FlutterMoneyFormatter fmf = new FlutterMoneyFormatter(
+                        settings: MoneyFormatterSettings(
+                          symbol: 'INR',
+                          thousandSeparator: ",",
+                          symbolAndNumberSeparator: " ",
+                        ),
+                        amount: double.parse(productsnap.documents[index]
+                        ['price']
+                            .toString()
+                            .replaceAll(",", "")),
+                      );
+                      return GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () {
+                            loading = true;
+                            handleState();
+                            FocusScope.of(context).unfocus();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        ProductInfo(
+                                          docId: productsnap
+                                              .documents[index].documentID,
+                                        )));
+                          },
+                          child: Card(
+                              elevation: 6,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      height: 120,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(6)),
+                                        child: Hero(
+                                          tag: productsnap
+                                              .documents[index].documentID,
+                                          child: PNetworkImage(
+                                            productsnap.documents[index]
+                                                .data['images'][0],
+                                            fit: BoxFit.contain,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ListTile(
-                                      title: Text(
-                                        utils.camelCase(productsnap
-                                            .documents[index]['title']),
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 18),
+                                  Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      ListTile(
+                                        title: Text(
+                                          utils.camelCase(productsnap
+                                              .documents[index]['title']),
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                        subtitle: Text(
+                                          productsnap.documents[index]
+                                          ['description'],
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                      subtitle: Text(
-                                        productsnap.documents[index]
-                                            ['description'],
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    ListTile(
-                                      trailing: IconButton(
-                                          onPressed: () {
-                                            handleInterests(
-                                                productsnap.documents[index]);
-                                            heartIndex = index;
-                                            handleState();
-                                          },
-                                          icon: interestSet.contains(productsnap
-                                                  .documents[index].documentID)
-                                              ? Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.red[800],
-                                                )
-                                              : Icon(Icons.favorite_border)),
-                                      title: Text(
-                                        '${fmf.output.compactSymbolOnRight.toString()}',
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            )));
-                  }),
-            );
-          }
-        },
-      ),
-    );
+                                      ListTile(
+                                        trailing: IconButton(
+                                            onPressed: () {
+                                              handleInterests(
+                                                  productsnap.documents[index]);
+                                              heartIndex = index;
+                                              handleState();
+                                            },
+                                            icon: interestSet.contains(
+                                                productsnap.documents[index]
+                                                    .documentID)
+                                                ? Icon(
+                                              Icons.favorite,
+                                              color: Colors.red[800],
+                                            )
+                                                : Icon(Icons.favorite_border)),
+                                        title: Text(
+                                          '${fmf.output.compactSymbolOnRight
+                                              .toString()}',
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              )));
+                    }),
+              );
+            }
+          },
+        ),
+      );
+    } catch (e) {
+      return Scaffold(
+        body: utils.errorWidget(e.toString()),
+      );
+    }
   }
 
   handleInterests(DocumentSnapshot snapshot) {

@@ -209,81 +209,85 @@ class _UserDetailsState extends State<UserDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: isLoading
-            ? Center(
-                child: SpinKitRing(
-                  color: Colors.cyan,
-                  lineWidth: 5,
-                ),
-              )
-            : Padding(
-                padding: EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'Profile',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 32),
-                    ),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    TextFormField(
-                      focusNode: _nameFocusNode,
-                      controller: _nameController,
-                      onFieldSubmitted: (_) {
-                        fieldFocusChange(
-                            context, _nameFocusNode, _emailFocusNode);
-                      },
-                      keyboardType: TextInputType.text,
-                      decoration: Utils()
-                          .textFieldDecoration(label: 'Name', hint: "Name"),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      focusNode: _emailFocusNode,
-                      controller: _emailController,
-                      onFieldSubmitted: (_) {
-                        next();
-                      },
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: Utils()
-                          .textFieldDecoration(label: 'E-mail', hint: "E-mail"),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: RaisedButton(
-                        padding: EdgeInsets.symmetric(vertical: 12.0),
-                        color: Colors.blueAccent[400],
-                        onPressed: next,
-                        elevation: 12,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(40.0),
+    try {
+      return Scaffold(
+        body: SafeArea(
+          child: isLoading
+              ? Center(
+                  child: SpinKitRing(
+                    color: Colors.cyan,
+                    lineWidth: 5,
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Profile',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 32),
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      TextFormField(
+                        focusNode: _nameFocusNode,
+                        controller: _nameController,
+                        onFieldSubmitted: (_) {
+                          fieldFocusChange(
+                              context, _nameFocusNode, _emailFocusNode);
+                        },
+                        keyboardType: TextInputType.text,
+                        decoration: Utils()
+                            .textFieldDecoration(label: 'Name', hint: "Name"),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        focusNode: _emailFocusNode,
+                        controller: _emailController,
+                        onFieldSubmitted: (_) {
+                          next();
+                        },
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: Utils().textFieldDecoration(
+                            label: 'E-mail', hint: "E-mail"),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: RaisedButton(
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          color: Colors.blueAccent[400],
+                          onPressed: next,
+                          elevation: 12,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(40.0),
+                            ),
+                          ),
+                          child: Text(
+                            'Continue',
+                            style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                         ),
-                        child: Text(
-                          'Continue',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 40,
-                    ),
-                  ],
+                      SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-      ),
-    );
+        ),
+      );
+    } catch (e) {
+      Utils().errorWidget(e.toString());
+    }
   }
 
   handleSetState() => (mounted) ? setState(() {}) : null;

@@ -89,55 +89,59 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  CircularProgressIndicator(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text('Uploading Image', style: TextStyle(fontSize: 21))
-                ],
+    try {
+      return Scaffold(
+        backgroundColor: Colors.grey.shade100,
+        extendBodyBehindAppBar: true,
+        extendBody: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('Uploading Image', style: TextStyle(fontSize: 21))
+                  ],
+                ),
+              )
+            : StreamBuilder<DocumentSnapshot>(
+                stream: firestore
+                    .collection('customers')
+                    .document(widget.uid)
+                    .snapshots(),
+                builder: (context, usersnap) {
+                  return usersnap != null &&
+                          usersnap.hasData &&
+                          usersnap.data != null
+                      ? SingleChildScrollView(
+                          child: Column(
+                          children: <Widget>[
+                            profileHeader(usersnap.data),
+                            const SizedBox(height: 10.0),
+                            userInfo(usersnap.data)
+                            //UserInfo(),
+                          ],
+                        ))
+                      : Center(
+                          child: Text(
+                            'Something went wrong',
+                            style: TextStyle(fontSize: 22),
+                          ),
+                        );
+                },
               ),
-            )
-          : StreamBuilder<DocumentSnapshot>(
-              stream: firestore
-                  .collection('customers')
-                  .document(widget.uid)
-                  .snapshots(),
-              builder: (context, usersnap) {
-                return usersnap != null &&
-                        usersnap.hasData &&
-                        usersnap.data != null
-                    ? SingleChildScrollView(
-                        child: Column(
-                        children: <Widget>[
-                          profileHeader(usersnap.data),
-                          const SizedBox(height: 10.0),
-                          userInfo(usersnap.data)
-                          //UserInfo(),
-                        ],
-                      ))
-                    : Center(
-                        child: Text(
-                          'Something went wrong',
-                          style: TextStyle(fontSize: 22),
-                        ),
-                      );
-              },
-            ),
-    );
+      );
+    } catch (e) {
+      Utils().errorWidget(e.toString());
+    }
   }
 
   Widget profileHeader(DocumentSnapshot usersnap) {

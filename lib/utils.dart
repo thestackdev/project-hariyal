@@ -66,6 +66,11 @@ class Utils {
   }
 
   Widget errorWidget(String error) {
+    if (error == null)
+      error = 'Something wen\'t wrong, try restarting app or contact developer';
+    else
+      error =
+          '$error\nSomething wen\'t wrong, try restarting app or contact developer';
     return Center(
       child: Text(error),
     );
@@ -148,10 +153,11 @@ class Utils {
     );
   }
 
-  nullWidget(String nullMesaage) {
+  nullWidget(String nullMessage) {
+    if (nullMessage == null) nullMessage = 'Something wen\'t wrong, Empty';
     return Center(
       child: Text(
-        nullMesaage,
+        nullMessage,
         style: textStyle(
           color: Colors.grey.shade700,
           fontSize: 18,

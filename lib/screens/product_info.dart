@@ -29,213 +29,221 @@ class _ProductInfoState extends State<ProductInfo> {
 
   @override
   Widget build(BuildContext context) {
-    interests = context.watch<QuerySnapshot>();
-    usersnap = context.watch<DocumentSnapshot>();
+    try {
+      interests = context.watch<QuerySnapshot>();
+      usersnap = context.watch<DocumentSnapshot>();
 
-    if (interests == null) {
-      return Container(
-        child: utils.loadingIndicator(),
-      );
-    }
-    interestSet.clear();
-    interests.documents.forEach((element) {
-      interestSet.add(element.data['productId']);
-    });
-    return Scaffold(
-      body: DataStreamBuilder<DocumentSnapshot>(
-          stream: firestore
-              .collection('products')
-              .document(widget.docId)
-              .snapshots(),
-          builder: (context, snapshot) {
-            return Stack(
-              children: [
-                Container(
-                    height: MediaQuery.of(context).size.height / 1.5,
-                    width: MediaQuery.of(context).size.width,
-                    child: Hero(
-                      tag: 04,
-                      child: SliderImage(
-                        onTap: (value) {
-                          Navigator.of(context).push(PageRouteBuilder(
-                              pageBuilder: (BuildContext context, _, __) =>
-                                  FullScreen(
-                                    images: snapshot['images'],
-                                    index: value,
-                                  )));
-                        },
-                        index: sliderIndex,
-                        imageUrls: snapshot['images'],
-                        sliderBg: Colors.black87,
-                        tap: true,
-                        imageHeight: 300,
-                        dotAlignment: Alignment.topCenter,
-                        type: SwiperLayout.DEFAULT,
-                      ),
-                    )),
-                SafeArea(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            MaterialButton(
-                              padding: const EdgeInsets.all(8.0),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0)),
-                              child: Icon(Icons.arrow_back_ios),
-                              color: Colors.white,
-                              textColor: Colors.black,
-                              minWidth: 0,
-                              height: 40,
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ],
+      if (interests == null) {
+        return Container(
+          child: utils.loadingIndicator(),
+        );
+      }
+      interestSet.clear();
+      interests.documents.forEach((element) {
+        interestSet.add(element.data['productId']);
+      });
+      return Scaffold(
+        body: DataStreamBuilder<DocumentSnapshot>(
+            stream: firestore
+                .collection('products')
+                .document(widget.docId)
+                .snapshots(),
+            builder: (context, snapshot) {
+              return Stack(
+                children: [
+                  Container(
+                      height: MediaQuery.of(context).size.height / 1.5,
+                      width: MediaQuery.of(context).size.width,
+                      child: Hero(
+                        tag: 04,
+                        child: SliderImage(
+                          onTap: (value) {
+                            Navigator.of(context).push(PageRouteBuilder(
+                                pageBuilder: (BuildContext context, _, __) =>
+                                    FullScreen(
+                                      images: snapshot['images'],
+                                      index: value,
+                                    )));
+                          },
+                          index: sliderIndex,
+                          imageUrls: snapshot['images'],
+                          sliderBg: Colors.black87,
+                          tap: true,
+                          imageHeight: 300,
+                          dotAlignment: Alignment.topCenter,
+                          type: SwiperLayout.DEFAULT,
                         ),
-                      ),
-                      Spacer(),
-                      Expanded(
-                          child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(32.0),
-                            color: Colors.white),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 30.0),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                physics: BouncingScrollPhysics(),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ListTile(
-                                        title: Text(
-                                          Utils().camelCase(snapshot['title']),
+                      )),
+                  SafeArea(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              MaterialButton(
+                                padding: const EdgeInsets.all(8.0),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                child: Icon(Icons.arrow_back_ios),
+                                color: Colors.white,
+                                textColor: Colors.black,
+                                minWidth: 0,
+                                height: 40,
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Spacer(),
+                        Expanded(
+                            child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(32.0),
+                              color: Colors.white),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 30.0),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  physics: BouncingScrollPhysics(),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ListTile(
+                                          title: Text(
+                                            Utils()
+                                                .camelCase(snapshot['title']),
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 28.0),
+                                          ),
+                                          trailing: IconButton(
+                                            icon: interestSet.contains(
+                                                    snapshot.documentID)
+                                                ? Icon(
+                                                    Icons.favorite,
+                                                    color: Colors.red[800],
+                                                  )
+                                                : Icon(Icons.favorite_border),
+                                            onPressed: () {
+                                              handleInterests(snapshot);
+                                            },
+                                          )),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 12.0),
+                                        child: Text(
+                                          snapshot['description'],
                                           style: TextStyle(
                                               color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 28.0),
+                                              fontSize: 18),
                                         ),
-                                        trailing: IconButton(
-                                          icon: interestSet
-                                                  .contains(snapshot.documentID)
-                                              ? Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.red[800],
-                                                )
-                                              : Icon(Icons.favorite_border),
-                                          onPressed: () {
-                                            handleInterests(snapshot);
-                                          },
-                                        )),
-                                    Padding(
+                                      ),
+                                      Divider(
+                                        height: 10,
+                                      ),
+                                      ListTile(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(builder: (_) {
+                                            return ProductDetails(widget.docId);
+                                          }));
+                                        },
+                                        title: Text(
+                                          'All Details',
+                                          style: TextStyle(fontSize: 19),
+                                        ),
+                                        trailing: Icon(Icons.arrow_forward_ios),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 24),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.0),
+                                      topRight: Radius.circular(20.0)),
+                                  color: Colors.grey.shade900,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Price ${snapshot['price']}',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0),
+                                    ),
+                                    RaisedButton(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0, vertical: 12.0),
-                                      child: Text(
-                                        snapshot['description'],
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 18),
-                                      ),
-                                    ),
-                                    Divider(
-                                      height: 10,
-                                    ),
-                                    ListTile(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (_) {
-                                          return ProductDetails(widget.docId);
-                                        }));
+                                          vertical: 8.0, horizontal: 16.0),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (_) => CheckOut(
+                                            pid: widget.docId,
+                                            uid: usersnap.documentID,
+                                            name: usersnap.data['name'],
+                                            phone: usersnap.data['phone'],
+                                          ),
+                                        ));
                                       },
-                                      title: Text(
-                                        'All Details',
-                                        style: TextStyle(fontSize: 19),
+                                      color: Colors.orange,
+                                      textColor: Colors.white,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            "Book Now",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16.0),
+                                          ),
+                                          const SizedBox(width: 20.0),
+                                          Container(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: Colors.orange,
+                                              size: 16.0,
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0)),
+                                          ),
+                                        ],
                                       ),
-                                      trailing: Icon(Icons.arrow_forward_ios),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 24),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20.0),
-                                    topRight: Radius.circular(20.0)),
-                                color: Colors.grey.shade900,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Price ${snapshot['price']}',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.0),
-                                  ),
-                                  RaisedButton(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 16.0),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (_) => CheckOut(
-                                          pid: widget.docId,
-                                          uid: usersnap.documentID,
-                                          name: usersnap.data['name'],
-                                          phone: usersnap.data['phone'],
-                                        ),
-                                      ));
-                                    },
-                                    color: Colors.orange,
-                                    textColor: Colors.white,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Text(
-                                          "Book Now",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16.0),
-                                        ),
-                                        const SizedBox(width: 20.0),
-                                        Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: Colors.orange,
-                                            size: 16.0,
-                                          ),
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                    ],
+                            ],
+                          ),
+                        )),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          }),
-    );
+                ],
+              );
+            }),
+      );
+    } catch (e) {
+      utils.errorWidget(e.toString());
+    }
   }
 
   handleInterests(DocumentSnapshot snapshot) {

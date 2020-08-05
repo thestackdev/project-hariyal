@@ -37,28 +37,35 @@ class _CheckOutState extends State<CheckOut> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: StreamBuilder<DocumentSnapshot>(
-        stream:
-            firestore.collection('customers').document(widget.uid).snapshots(),
-        builder: (context, userSnap) {
-          return userSnap != null && userSnap.data != null
-              ? StreamBuilder<DocumentSnapshot>(
-                  stream: firestore
-                      .collection('products')
-                      .document(widget.pid)
-                      .snapshots(),
-                  builder: (context, productSnap) {
-                    return productSnap != null && productSnap.data != null
-                        ? buildUI(productSnap: productSnap, userSnap: userSnap)
-                        : utils.loadingIndicator();
-                  },
-                )
-              : utils.loadingIndicator();
-        },
-      ),
-    );
+    try {
+      return Scaffold(
+        appBar: AppBar(),
+        body: StreamBuilder<DocumentSnapshot>(
+          stream: firestore
+              .collection('customers')
+              .document(widget.uid)
+              .snapshots(),
+          builder: (context, userSnap) {
+            return userSnap != null && userSnap.data != null
+                ? StreamBuilder<DocumentSnapshot>(
+                    stream: firestore
+                        .collection('products')
+                        .document(widget.pid)
+                        .snapshots(),
+                    builder: (context, productSnap) {
+                      return productSnap != null && productSnap.data != null
+                          ? buildUI(
+                              productSnap: productSnap, userSnap: userSnap)
+                          : utils.loadingIndicator();
+                    },
+                  )
+                : utils.loadingIndicator();
+          },
+        ),
+      );
+    } catch (e) {
+      utils.errorWidget(e.toString());
+    }
   }
 
   Widget buildUI({AsyncSnapshot<DocumentSnapshot> productSnap, userSnap}) {

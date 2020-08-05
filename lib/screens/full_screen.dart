@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:the_project_hariyal/utils.dart';
 
 import 'widgets/slider.dart';
 
@@ -10,21 +11,25 @@ class FullScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white10,
-      body: SafeArea(
-        child: Hero(
-          tag: 04,
-          child: SliderImage(
-            dotAlignment: Alignment.bottomCenter,
-            imageUrls: images,
-            sliderBg: Colors.transparent,
-            tap: false,
-            type: SwiperLayout.DEFAULT,
-            index: index,
+    try {
+      return Scaffold(
+        backgroundColor: Colors.white10,
+        body: SafeArea(
+          child: Hero(
+            tag: 04,
+            child: SliderImage(
+              dotAlignment: Alignment.bottomCenter,
+              imageUrls: images,
+              sliderBg: Colors.transparent,
+              tap: false,
+              type: SwiperLayout.DEFAULT,
+              index: index,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      Utils().errorWidget(e.toString());
+    }
   }
 }

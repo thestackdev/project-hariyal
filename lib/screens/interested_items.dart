@@ -19,40 +19,44 @@ class _InterestedItemsState extends State<InterestedItems> {
 
   @override
   Widget build(BuildContext context) {
-    interests = context.watch<QuerySnapshot>();
+    try {
+      interests = context.watch<QuerySnapshot>();
 
-    if (interests == null) {
-      return Container(
-        child: utils.loadingIndicator(),
-      );
-    } else if (interests.documents.length == 0) {
-      Container(
-        child: Center(
-          child: Text('You don\'t have interests in any of our product :/',
-              style: TextStyle(fontSize: 24), textAlign: TextAlign.center),
+      if (interests == null) {
+        return Container(
+          child: utils.loadingIndicator(),
+        );
+      } else if (interests.documents.length == 0) {
+        Container(
+          child: Center(
+            child: Text('You don\'t have interests in any of our product :/',
+                style: TextStyle(fontSize: 24), textAlign: TextAlign.center),
+          ),
+        );
+      }
+
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Interested Items'),
         ),
+        body: ListView.builder(
+            itemCount: interests.documents.length,
+            itemBuilder: (context, index) {
+              return DataStreamBuilder<DocumentSnapshot>(
+                loadingBuilder: (context) => utils.loadingIndicator(),
+                stream: fireStore
+                    .collection('products')
+                    .document(interests.documents[index]['productId'])
+                    .snapshots(),
+                builder: (context, productsnap) {
+                  return buildItems(productsnap, index);
+                },
+              );
+            }),
       );
+    } catch (e) {
+      utils.errorWidget(e.toString());
     }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Interested Items'),
-      ),
-      body: ListView.builder(
-          itemCount: interests.documents.length,
-          itemBuilder: (context, index) {
-            return DataStreamBuilder<DocumentSnapshot>(
-              loadingBuilder: (context) => utils.loadingIndicator(),
-              stream: fireStore
-                  .collection('products')
-                  .document(interests.documents[index]['productId'])
-                  .snapshots(),
-              builder: (context, productsnap) {
-                return buildItems(productsnap, index);
-              },
-            );
-          }),
-    );
   }
 
   Widget buildItems(DocumentSnapshot snapshot, int index) {

@@ -40,50 +40,56 @@ class _ProductDetailsState extends State<ProductDetails>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Product Details'),
-      ),
-      body: DataStreamBuilder<DocumentSnapshot>(
-          stream:
-              firestore.collection('products').document(widget.pid).snapshots(),
-          builder: (context, snapshot) {
-            return Column(
-              children: <Widget>[
-                ListTile(
-                  leading: PNetworkImage(snapshot['images'][0]),
-                  title: Text(
-                    utils.camelCase(snapshot['title']),
-                    style: TextStyle(fontSize: 18),
+    try {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Product Details'),
+        ),
+        body: DataStreamBuilder<DocumentSnapshot>(
+            stream: firestore
+                .collection('products')
+                .document(widget.pid)
+                .snapshots(),
+            builder: (context, snapshot) {
+              return Column(
+                children: <Widget>[
+                  ListTile(
+                    leading: PNetworkImage(snapshot['images'][0]),
+                    title: Text(
+                      utils.camelCase(snapshot['title']),
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      snapshot['price'].toString(),
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ),
-                  subtitle: Text(
-                    snapshot['price'].toString(),
-                    style: TextStyle(fontSize: 18),
+                  new Container(
+                    child: new TabBar(
+                        controller: _tabController,
+                        indicatorColor: Colors.blueAccent[700],
+                        labelColor: Colors.blueAccent[700],
+                        isScrollable: true,
+                        labelStyle: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        tabs: tabList),
                   ),
-                ),
-                new Container(
-                  child: new TabBar(
+                  Expanded(
+                    child: TabBarView(
                       controller: _tabController,
-                      indicatorColor: Colors.blueAccent[700],
-                      labelColor: Colors.blueAccent[700],
-                      isScrollable: true,
-                      labelStyle:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      tabs: tabList),
-                ),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: tabList
-                        .map((Tab tab) => _getPage(tab, snapshot))
-                        .toList(),
-                  ),
-                )
-              ],
-            );
-          }),
-    );
+                      children: tabList
+                          .map((Tab tab) => _getPage(tab, snapshot))
+                          .toList(),
+                    ),
+                  )
+                ],
+              );
+            }),
+      );
+    } catch (e) {
+      utils.errorWidget(e.toString());
+    }
   }
 
   Widget _getPage(Tab tab, DocumentSnapshot snapshot) {

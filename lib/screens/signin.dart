@@ -128,40 +128,44 @@ class _SigninState extends State<Signin> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade200,
-      key: _scaffoldKey,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Stack(
-            children: <Widget>[
-              isLoading
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                          Center(
-                            child: SpinKitWave(
-                              color: Colors.blueAccent,
-                              size: 50.0,
+    try {
+      return Scaffold(
+        backgroundColor: Colors.grey.shade200,
+        key: _scaffoldKey,
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Stack(
+              children: <Widget>[
+                isLoading
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                            Center(
+                              child: SpinKitWave(
+                                color: Colors.blueAccent,
+                                size: 50.0,
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            loadingText,
-                            textAlign: TextAlign.center,
-                            textScaleFactor: 1.2,
-                          )
-                        ])
-                  : showOtp ? buildOtpView() : buildLoginUI()
-            ],
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              loadingText,
+                              textAlign: TextAlign.center,
+                              textScaleFactor: 1.2,
+                            )
+                          ])
+                    : showOtp ? buildOtpView() : buildLoginUI()
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      Utils().errorWidget(e.toString());
+    }
   }
 
   Widget buildLoginUI() {
