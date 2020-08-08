@@ -67,7 +67,7 @@ class _UserDetailsState extends State<UserDetails> {
           'phone': phone,
           'isBlocked': false,
           'image':
-              'https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg',
+              'https://firebasestorage.googleapis.com/v0/b/the-hariyal.appspot.com/o/customer_profile_pics%2Fgreen_pigeon_image.jpg?alt=media&token=74088da5-fabd-4107-80ad-1a6c8ce63946',
           'alternatePhoneNumber': 'default',
           'gender': 'default',
           'permanentAddress': 'default',
