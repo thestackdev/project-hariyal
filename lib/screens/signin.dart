@@ -276,14 +276,8 @@ class _SigninState extends State<Signin> {
 
   Widget buildOtpView() {
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
       child: Stack(
         children: <Widget>[
           Column(
@@ -299,8 +293,7 @@ class _SigninState extends State<Signin> {
                 height: 20,
               ),
               Text(
-                'We have sent a one time verification code to your phone number ${_phoneController
-                    .text}',
+                'We have sent a one time verification code to your phone number ${_phoneController.text}',
                 textScaleFactor: 1.5,
                 textAlign: TextAlign.center,
               ),
@@ -322,10 +315,7 @@ class _SigninState extends State<Signin> {
               ),
               OTPTextField(
                 length: 6,
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width - 48,
+                width: MediaQuery.of(context).size.width - 48,
                 fieldWidth: 40,
                 style: TextStyle(fontSize: 18),
                 textFieldAlignment: MainAxisAlignment.spaceAround,
@@ -348,17 +338,11 @@ class _SigninState extends State<Signin> {
             ],
           ),
           Positioned(
-            top: MediaQuery
-                .of(context)
-                .size
-                .height - 150,
+            top: MediaQuery.of(context).size.height - 150,
             right: 0,
             left: 0,
             child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               child: RaisedButton(
                 padding: EdgeInsets.symmetric(vertical: 12.0),
                 color: Colors.blueAccent[400],
