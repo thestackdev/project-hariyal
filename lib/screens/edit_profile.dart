@@ -9,6 +9,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:the_project_hariyal/utils.dart';
 
+import 'widgets/network_image.dart';
+
 class EditProfile extends StatefulWidget {
   final uid;
 
@@ -26,7 +28,7 @@ class _EditProfileState extends State<EditProfile> {
   final picker = ImagePicker();
 
   String img =
-      "https://i.pinimg.com/originals/f6/65/32/f66532b96256ccd192361c6bb5e15360.jpg";
+      'https://firebasestorage.googleapis.com/v0/b/the-hariyal.appspot.com/o/customer_profile_pics%2Fgreen_pigeon_image.jpg?alt=media&token=74088da5-fabd-4107-80ad-1a6c8ce63946';
 
   @override
   void initState() {
@@ -140,7 +142,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
       );
     } catch (e) {
-      Utils().errorWidget(e.toString());
+      return Utils().errorWidget(e.toString());
     }
   }
 
@@ -209,15 +211,20 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Widget avatar(DocumentSnapshot userSnap) {
-    return CircleAvatar(
-      radius: 80 + 6.0,
-      backgroundColor: Colors.grey.shade300,
+    return GestureDetector(
+      onTap: () {
+        _showImageDialog(context, userSnap.data['image']);
+      },
       child: CircleAvatar(
-        radius: 80,
+        radius: 80 + 6.0,
         backgroundColor: Colors.grey.shade300,
         child: CircleAvatar(
-          radius: 80 - 6.0,
-          backgroundImage: NetworkImage(userSnap.data['image']),
+          radius: 80,
+          backgroundColor: Colors.grey.shade300,
+          child: CircleAvatar(
+            radius: 80 - 6.0,
+            backgroundImage: NetworkImage(userSnap.data['image']),
+          ),
         ),
       ),
     );
@@ -699,6 +706,38 @@ class _EditProfileState extends State<EditProfile> {
             },
           );
         });
+  }
+
+  _showImageDialog(BuildContext dialogContext, String image) {
+    showDialog(
+      context: dialogContext,
+      builder: (_) => Dialog(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                child: PNetworkImage(
+                  image,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            Center(
+              child: IconButton(
+                color: Colors.white,
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop('dialog');
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   handleSetState() => (mounted) ? setState(() {}) : null;
