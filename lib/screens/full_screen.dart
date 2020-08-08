@@ -29,7 +29,7 @@ class FullScreen extends StatelessWidget {
         ),
       );
     } catch (e) {
-      Utils().errorWidget(e.toString());
+      return Utils().errorWidget(e.toString());
     }
   }
 }

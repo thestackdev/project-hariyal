@@ -55,7 +55,7 @@ class _InterestedItemsState extends State<InterestedItems> {
             }),
       );
     } catch (e) {
-      utils.errorWidget(e.toString());
+      return utils.errorWidget(e.toString());
     }
   }
 

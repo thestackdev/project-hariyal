@@ -72,7 +72,10 @@ class Utils {
       error =
           '$error\nSomething wen\'t wrong, try restarting app or contact developer';
     return Center(
-      child: Text(error),
+      child: Container(
+        color: Colors.white,
+        child: Text(error),
+      ),
     );
   }
 

@@ -242,7 +242,7 @@ class _ProductInfoState extends State<ProductInfo> {
             }),
       );
     } catch (e) {
-      utils.errorWidget(e.toString());
+      return utils.errorWidget(e.toString());
     }
   }
 

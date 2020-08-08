@@ -64,7 +64,7 @@ class _CheckOutState extends State<CheckOut> {
         ),
       );
     } catch (e) {
-      utils.errorWidget(e.toString());
+      return utils.errorWidget(e.toString());
     }
   }
 

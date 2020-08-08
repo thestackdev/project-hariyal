@@ -146,7 +146,7 @@ class _SigninState extends State<Signin> {
         ),
       );
     } catch (e) {
-      Utils().errorWidget(e.toString());
+      return Utils().errorWidget(e.toString());
     }
   }
 
