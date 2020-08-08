@@ -136,10 +136,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               SizedBox(height: 30),
               utils.drawerTile(
                 label: 'Edit Profile',
-                onTap: () =>
-                    changeScreen(EditProfile(
-                      uid: userSnap.documentID,
-                    )),
+                onTap: () => changeScreen(EditProfile(
+                  uid: userSnap.documentID,
+                )),
               ),
               utils.drawerTile(
                 label: 'Booked Items',

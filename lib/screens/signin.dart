@@ -135,31 +135,13 @@ class _SigninState extends State<Signin> {
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(24),
-            child: Stack(
-              children: <Widget>[
-                isLoading
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                            Center(
-                              child: SpinKitWave(
-                                color: Colors.blueAccent,
-                                size: 50.0,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              loadingText,
-                              textAlign: TextAlign.center,
-                              textScaleFactor: 1.2,
-                            )
-                          ])
-                    : showOtp ? buildOtpView() : buildLoginUI()
-              ],
-            ),
+            child: isLoading
+                ? loadingUI()
+                : ListView(
+                    shrinkWrap: true,
+                    physics: BouncingScrollPhysics(),
+                    children: [showOtp ? buildOtpView() : buildLoginUI()],
+                  ),
           ),
         ),
       );
@@ -168,18 +150,52 @@ class _SigninState extends State<Signin> {
     }
   }
 
+  Widget loadingUI() {
+    return Container(
+      alignment: Alignment.center,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: SpinKitWave(
+                color: Colors.blueAccent,
+                size: 50.0,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              loadingText,
+              textAlign: TextAlign.center,
+              textScaleFactor: 1.2,
+            )
+          ]),
+    );
+  }
+
   Widget buildLoginUI() {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Image.asset('assets/hariyal.png'),
-            Align(
-                alignment: FractionalOffset.bottomCenter,
-                child: TextField(
+    return Container(
+      alignment: Alignment.center,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: [
+          Image.asset(
+            'assets/hariyal.png',
+            fit: BoxFit.cover,
+            height: MediaQuery.of(context).size.height / 1.6,
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                TextField(
                     controller: _phoneController,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
@@ -196,147 +212,174 @@ class _SigninState extends State<Signin> {
                           Icons.check_circle,
                           color: suffixColor,
                         ),
-                        prefixText: "+91  "))),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Checkbox(
-                  onChanged: (bool value) {
-                    setState(() {
-                      acceptTermsAndConditions = value;
-                    });
-                  },
-                  value: acceptTermsAndConditions,
+                        prefixText: "+91  ")),
+                SizedBox(
+                  height: 10,
                 ),
-                Text(
-                  'I Agree To ',
-                  style: TextStyle(fontSize: 18),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Checkbox(
+                      onChanged: (bool value) {
+                        setState(() {
+                          acceptTermsAndConditions = value;
+                        });
+                      },
+                      value: acceptTermsAndConditions,
+                    ),
+                    Text(
+                      'I Agree To ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.all(0),
+                      onPressed: () {},
+                      child: Text(
+                        'Terms & Conditions',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    )
+                  ],
                 ),
-                FlatButton(
-                  padding: EdgeInsets.all(0),
-                  onPressed: () {},
-                  child: Text(
-                    'Terms & Conditions',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: RaisedButton(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                    color: Colors.blueAccent[400],
+                    onPressed: () {
+                      login();
+                    },
+                    elevation: 12,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(40.0),
+                      ),
+                    ),
+                    child: Text(
+                      'Request Otp',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
                   ),
-                )
+                ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child: RaisedButton(
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                color: Colors.blueAccent[400],
-                onPressed: () {
-                  login();
-                },
-                elevation: 12,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(40.0),
-                  ),
-                ),
-                child: Text(
-                  'Request Otp',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget buildOtpView() {
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: 40,
-        ),
-        Text(
-          'ENTER OTP',
-          textScaleFactor: 1.5,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          'We have sent a one time verification code to your phone number ${_phoneController.text}',
-          textScaleFactor: 1.5,
-          textAlign: TextAlign.center,
-        ),
-        FlatButton(
-          onPressed: () {
-            setState(() {
-              showOtp = false;
-            });
-          },
-          textColor: Colors.blueAccent,
-          child: Text(
-            'Change Number',
-            textScaleFactor: 1.5,
-            textAlign: TextAlign.center,
+    return Container(
+      height: MediaQuery
+          .of(context)
+          .size
+          .height,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      child: Stack(
+        children: <Widget>[
+          Column(
+            children: [
+              SizedBox(
+                height: 40,
+              ),
+              Text(
+                'ENTER OTP',
+                textScaleFactor: 1.5,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'We have sent a one time verification code to your phone number ${_phoneController
+                    .text}',
+                textScaleFactor: 1.5,
+                textAlign: TextAlign.center,
+              ),
+              FlatButton(
+                onPressed: () {
+                  setState(() {
+                    showOtp = false;
+                  });
+                },
+                textColor: Colors.blueAccent,
+                child: Text(
+                  'Change Number',
+                  textScaleFactor: 1.5,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              OTPTextField(
+                length: 6,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width - 48,
+                fieldWidth: 40,
+                style: TextStyle(fontSize: 18),
+                textFieldAlignment: MainAxisAlignment.spaceAround,
+                fieldStyle: FieldStyle.underline,
+                keyboardType: TextInputType.number,
+                onCompleted: (pin) {
+                  if (pin.length != 6) {
+                    Utils().toast(
+                      _scaffoldKey.currentContext,
+                      'Enter valid code',
+                    );
+                    return;
+                  }
+                  setState(() {
+                    otp = pin;
+                  });
+                  login();
+                },
+              )
+            ],
           ),
-        ),
-        SizedBox(
-          height: 40,
-        ),
-        OTPTextField(
-          length: 6,
-          width: MediaQuery.of(context).size.width - 48,
-          fieldWidth: 40,
-          style: TextStyle(fontSize: 18),
-          textFieldAlignment: MainAxisAlignment.spaceAround,
-          fieldStyle: FieldStyle.underline,
-          keyboardType: TextInputType.number,
-          onCompleted: (pin) {
-            if (pin.length != 6) {
-              Utils().toast(
-                _scaffoldKey.currentContext,
-                'Enter valid code',
-              );
-              return;
-            }
-            setState(() {
-              otp = pin;
-            });
-            login();
-          },
-        ),
-        Expanded(
-          child: Align(
-            alignment: Alignment.bottomCenter,
+          Positioned(
+            top: MediaQuery
+                .of(context)
+                .size
+                .height - 150,
+            right: 0,
+            left: 0,
             child: Container(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               child: RaisedButton(
                 padding: EdgeInsets.symmetric(vertical: 12.0),
                 color: Colors.blueAccent[400],
                 onPressed: () {
                   login();
                 },
-                elevation: 12,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(40.0),
                   ),
                 ),
+                elevation: 6,
                 child: Text(
                   'Verify',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }
