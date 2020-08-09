@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -75,6 +76,7 @@ class _UserDetailsState extends State<UserDetails> {
           'search': _search,
           'timestamp': DateTime.now().millisecondsSinceEpoch.toString()
         });
+        FirebaseMessaging().subscribeToTopic(widget.uid);
         Firestore.instance
             .collection('interested')
             .document(widget.uid)

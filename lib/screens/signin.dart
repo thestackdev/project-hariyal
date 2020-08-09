@@ -94,6 +94,7 @@ class _SigninState extends State<Signin> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("phone", _phoneController.text);
+      await prefs.setBool("subscribed", false);
       await FirebaseAuth.instance.signInWithCredential(credential);
       setLoading(false);
     } catch (e) {

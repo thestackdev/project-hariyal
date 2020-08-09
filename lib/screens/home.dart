@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_project_hariyal/screens/filters.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
@@ -83,6 +85,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
+  Future<void> checkSubscription(uid) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (!prefs.getBool("subscribed")) {
+        FirebaseMessaging().subscribeToTopic(uid);
+        await prefs.setBool("subscribed", true);
+      }
+    } catch (e) {
+      print("Something Went Wrong, SharedPreferences is null");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     try {
@@ -96,6 +110,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         );
 
       checkUserProfile(userSnap.documentID);
+      checkSubscription(userSnap.documentID);
 
       interestSet.clear();
       interests.documents.forEach((element) {
@@ -174,7 +189,21 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               child: Text('No'),
                             ),
                             FlatButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                loading = true;
+                                handleState();
+                                try {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  if (!prefs.getBool("subscribed")) {
+                                    FirebaseMessaging().unsubscribeFromTopic(
+                                        userSnap.documentID);
+                                    await prefs.setBool("subscribed", false);
+                                  }
+                                } catch (e) {
+                                  print(
+                                      "Something Went Wrong, SharedPreferences is null");
+                                }
                                 Navigator.of(context).pop();
                                 AuthServices().logout();
                               },
