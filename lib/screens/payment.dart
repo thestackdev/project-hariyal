@@ -29,7 +29,8 @@ class _PaymentState extends State<Payment> {
           .updateData({
         'isSold': true,
         'soldReason': 'Sold to ${widget.order['name']}',
-        'soldTo': widget.order['uid']
+        'soldTo': widget.order['uid'],
+        'sold_timestamp': widget.order['timeStamp']
       }).then((value) {
         isLoading = false;
         handleState();
