@@ -24,7 +24,6 @@ class CheckOut extends StatefulWidget {
 
 class _CheckOutState extends State<CheckOut> {
   Firestore firestore;
-  bool isLoading = false;
   Utils utils;
   dynamic name, phone, uid, pid, address;
   Razorpay razorpay;
@@ -48,7 +47,7 @@ class _CheckOutState extends State<CheckOut> {
     razorpay.clear();
   }
 
-  details(String status, dynamic response) {
+  details(String status, {paymentId, errorReason}) {
     return {
       'pid': pid,
       'uid': uid,
@@ -57,20 +56,20 @@ class _CheckOutState extends State<CheckOut> {
       'email': widget.info['email'],
       'address': address,
       'status': status,
-      'response': response,
-      'timeStamp': DateTime
-          .now()
-          .millisecondsSinceEpoch
-          .toString()
+      'reason': errorReason,
+      'payment_id': paymentId,
+      'timeStamp': DateTime.now().millisecondsSinceEpoch.toString()
     };
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    changeScreen(Payment(details('SUCCESS', response)));
+    changeScreen(Payment(details('SUCCESS',
+        paymentId: response.paymentId, errorReason: 'default')));
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    changeScreen(Payment(details('ERROR', response)));
+    changeScreen(Payment(
+        details('ERROR', errorReason: response.message, paymentId: 'default')));
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
@@ -84,11 +83,6 @@ class _CheckOutState extends State<CheckOut> {
         builder: (_) => screen,
       ),
     );
-  }
-
-  void setLoading(bool value) {
-    isLoading = value;
-    handleState();
   }
 
   @override
@@ -261,16 +255,16 @@ class _CheckOutState extends State<CheckOut> {
                             style: TextStyle(fontSize: 20),
                           ),
                         ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    edit(context, EditType.Address);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              edit(context, EditType.Address);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(0),
                                             topRight: Radius.circular(0),
                                             bottomLeft: Radius.circular(12),
@@ -541,7 +535,7 @@ class _CheckOutState extends State<CheckOut> {
                                 _addressController.text
                                     .trim()
                                     .length >= 10) {
-                              address = _addressController.text;
+                              address = _addressController.text.toLowerCase();
                             }
                           }
                           if (editType == EditType.UserInfo) {
@@ -555,7 +549,7 @@ class _CheckOutState extends State<CheckOut> {
                                 _nameController.text
                                     .trim()
                                     .length >= 3) {
-                              name = _nameController.text;
+                              name = _nameController.text.toLowerCase();
                             }
                           }
                           handleState();
