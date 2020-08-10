@@ -74,13 +74,11 @@ class _UserDetailsState extends State<UserDetails> {
           'permanentAddress': 'default',
           'location': _loc,
           'search': _search,
+          'nameSearchList':
+              getNameSearchList(_nameController.text.toLowerCase()),
           'timestamp': DateTime.now().millisecondsSinceEpoch.toString()
         });
         FirebaseMessaging().subscribeToTopic(widget.uid);
-        Firestore.instance
-            .collection('interested')
-            .document(widget.uid)
-            .setData({'interested': []});
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
       } else {
@@ -88,6 +86,16 @@ class _UserDetailsState extends State<UserDetails> {
         Utils().toast(context, 'E-mail already in use by another user');
       }
     });
+  }
+
+  getNameSearchList(String name) {
+    List<String> nameSearchList = List();
+    String temp = "";
+    for (int i = 0; i < name.length; i++) {
+      temp = temp + name[i];
+      nameSearchList.add(temp);
+    }
+    return nameSearchList;
   }
 
   getUserLocation() async {
