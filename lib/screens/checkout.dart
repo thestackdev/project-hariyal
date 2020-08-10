@@ -106,23 +106,14 @@ class _CheckOutState extends State<CheckOut> {
 
   Widget buildUI(AsyncSnapshot<DocumentSnapshot> productSnap) {
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.all(12),
       child: Stack(
         children: <Widget>[
           SingleChildScrollView(
             child: Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height - 50,
+              height: MediaQuery.of(context).size.height - 50,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -243,38 +234,35 @@ class _CheckOutState extends State<CheckOut> {
                     ),
                     child: address != 'default'
                         ? Stack(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.all(12),
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width / 1.2,
-                          child: Text(
-                            '$name, $address',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              edit(context, EditType.Address);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(0),
-                                      topRight: Radius.circular(0),
-                                      bottomLeft: Radius.circular(12),
-                                      bottomRight: Radius.circular(0)),
-                                  color: Colors.black26),
-                              child: Icon(
-                                Icons.edit,
-                                color: Colors.black87,
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(12),
+                                width: MediaQuery.of(context).size.width / 1.2,
+                                child: Text(
+                                  '$name, $address',
+                                  style: TextStyle(fontSize: 20),
+                                ),
                               ),
-                            ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    edit(context, EditType.Address);
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(0),
+                                            topRight: Radius.circular(0),
+                                            bottomLeft: Radius.circular(12),
+                                            bottomRight: Radius.circular(0)),
+                                        color: Colors.black26),
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
                                 ),
                               )
                             ],
@@ -346,8 +334,7 @@ class _CheckOutState extends State<CheckOut> {
                             ),
                             Spacer(),
                             Text(
-                              '${productSnap.data.data['price']
-                                  .toString()} Rs.',
+                              '${productSnap.data.data['price'].toString()} Rs.',
                               style: TextStyle(fontSize: 18),
                               textAlign: TextAlign.end,
                             ),
@@ -365,8 +352,7 @@ class _CheckOutState extends State<CheckOut> {
                             ),
                             Spacer(),
                             Text(
-                              '${productSnap.data.data['price']
-                                  .toString()} Rs.',
+                              '${productSnap.data.data['price'].toString()} Rs.',
                               style: TextStyle(fontSize: 18),
                               textAlign: TextAlign.end,
                             ),
@@ -390,11 +376,11 @@ class _CheckOutState extends State<CheckOut> {
                   var options = {
                     'key': 'rzp_test_xRqW3eFH7qCf8l',
                     'amount':
-                    num.parse(productSnap.data.data['price'].toString()) *
-                        100,
+                        num.parse(productSnap.data.data['price'].toString()) *
+                            100,
                     'name': utils.camelCase(name),
                     'description':
-                    utils.camelCase(productSnap.data.data['title']),
+                        utils.camelCase(productSnap.data.data['title']),
                     'prefill': {'contact': phone, 'email': widget.info['email']}
                   };
 
@@ -454,7 +440,7 @@ class _CheckOutState extends State<CheckOut> {
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
@@ -532,23 +518,17 @@ class _CheckOutState extends State<CheckOut> {
                         onPressed: () async {
                           if (editType == EditType.Address) {
                             if (_addressController.text.trim() != address &&
-                                _addressController.text
-                                    .trim()
-                                    .length >= 10) {
+                                _addressController.text.trim().length >= 10) {
                               address = _addressController.text.toLowerCase();
                             }
                           }
                           if (editType == EditType.UserInfo) {
                             if (_phoneController.text.trim() != phone &&
-                                _phoneController.text
-                                    .trim()
-                                    .length == 10) {
+                                _phoneController.text.trim().length == 10) {
                               phone = _phoneController.text;
                             }
                             if (_nameController.text != name &&
-                                _nameController.text
-                                    .trim()
-                                    .length >= 3) {
+                                _nameController.text.trim().length >= 3) {
                               name = _nameController.text.toLowerCase();
                             }
                           }
