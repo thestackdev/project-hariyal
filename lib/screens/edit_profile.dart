@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:the_project_hariyal/utils.dart';
@@ -504,6 +505,8 @@ class _EditProfileState extends State<EditProfile> {
     final _alternatePhoneController = TextEditingController();
     final _nameController = TextEditingController();
 
+    bool loading = false;
+
     showModalBottomSheet(
         isDismissible: false,
         context: context,
@@ -514,195 +517,238 @@ class _EditProfileState extends State<EditProfile> {
         builder: (BuildContext context) {
           return StatefulBuilder(
             builder: (context, state) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                padding: MediaQuery.of(context).viewInsets,
-                child: Wrap(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 24),
-                      child: TextFormField(
-                        controller: _nameController..text = usersnap['name'],
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                        decoration: new InputDecoration(
-                          prefixIcon: Icon(Icons.person),
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                          filled: true,
-                          contentPadding: EdgeInsets.only(
-                              bottom: 10.0, left: 10.0, right: 10.0),
-                          labelText: 'Name',
-                        ),
-                      ),
-                    ),
-                    if (usersnap['permanentAddress'] != 'default')
-                      Container(
-                        margin: EdgeInsets.only(top: 24),
-                        child: TextFormField(
-                          controller: _addressController
-                            ..text = usersnap['permanentAddress'],
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                          decoration: new InputDecoration(
-                            prefixIcon: Icon(Icons.pin_drop),
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                            filled: true,
-                            contentPadding: EdgeInsets.only(
-                                bottom: 10.0, left: 10.0, right: 10.0),
-                            labelText: 'Address',
-                          ),
-                        ),
-                      ),
-                    if (usersnap['alternatePhoneNumber'] != 'default')
-                      Container(
-                        margin: EdgeInsets.only(top: 24),
-                        child: TextFormField(
-                          controller: _alternatePhoneController
-                            ..text = usersnap['alternatePhoneNumber'],
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: <TextInputFormatter>[
-                            WhitelistingTextInputFormatter.digitsOnly
-                          ],
-                          maxLength: 10,
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                          decoration: new InputDecoration(
-                            prefixIcon: Icon(Icons.phone),
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                            filled: true,
-                            contentPadding: EdgeInsets.only(
-                                bottom: 10.0, left: 10.0, right: 10.0),
-                            labelText: 'Alternate Phone',
-                          ),
-                        ),
-                      ),
-                    if (usersnap['gender'] != 'default')
-                      Container(
-                        margin: EdgeInsets.only(top: 24, bottom: 24),
-                        child: DropdownButtonFormField(
-                            value: usersnap['gender'],
-                            decoration: InputDecoration(
-                              labelText: 'Gender',
-                              isDense: true,
-                              labelStyle: TextStyle(
-                                color: Colors.blueAccent,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                letterSpacing: 1.0,
-                              ),
-                              fillColor: Colors.grey.shade200,
-                              filled: true,
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                            ),
-                            isExpanded: true,
-                            iconEnabledColor: Colors.grey,
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                            iconSize: 30,
-                            elevation: 0,
-                            onChanged: (newValue) {
-                              setState(() {
-                                genderValue = newValue;
-                              });
-                            },
-                            items: <String>['Male', 'Female', 'default']
-                                .map<DropdownMenuItem<String>>((e) {
-                              return DropdownMenuItem<String>(
-                                  value: e,
-                                  child: Text(
-                                    e.toString(),
-                                    style: TextStyle(color: Colors.black),
-                                  ));
-                            }).toList()),
-                      ),
-                    Container(
-                      width: MediaQuery.of(context).size.width - 32,
-                      child: RaisedButton(
-                        color: Colors.blueAccent,
-                        onPressed: () {
-                          if (_alternatePhoneController.text.isNotEmpty &&
-                              _alternatePhoneController.text.length == 10 &&
-                              _alternatePhoneController.text !=
-                                  usersnap['alternatePhoneNumber']) {
-                            firestore
-                                .collection('customers')
-                                .document(widget.uid)
-                                .updateData({
-                              "alternatePhoneNumber":
-                                  _alternatePhoneController.text
-                            });
-                          }
-
-                          if (_addressController.text.isNotEmpty &&
-                              _addressController.text !=
-                                  usersnap['permanentAdress']) {
-                            firestore
-                                .collection('customers')
-                                .document(widget.uid)
-                                .updateData({
-                              "permanentAddress": _addressController.text
-                            });
-                          }
-
-                          if (_addressController.text != usersnap['gender']) {
-                            firestore
-                                .collection('customers')
-                                .document(widget.uid)
-                                .updateData({"gender": genderValue});
-                          }
-
-                          if (_nameController.text.isNotEmpty &&
-                              _nameController.text != usersnap['name']) {
-                            firestore
-                                .collection('customers')
-                                .document(widget.uid)
-                                .updateData({
-                              "name": _nameController.text.toLowerCase()
-                            });
-                          }
-
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          'Done',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
-                      ),
+              return loading
+                  ? SpinKitRing(
+                      color: Theme.of(context).accentColor,
                     )
-                  ],
-                ),
-              );
+                  : Container(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: MediaQuery.of(context).viewInsets,
+                      child: Wrap(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 24),
+                            child: TextFormField(
+                              controller: _nameController
+                                ..text = usersnap['name'],
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                              decoration: new InputDecoration(
+                                prefixIcon: Icon(Icons.person),
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                filled: true,
+                                contentPadding: EdgeInsets.only(
+                                    bottom: 10.0, left: 10.0, right: 10.0),
+                                labelText: 'Name',
+                              ),
+                            ),
+                          ),
+                          if (usersnap['permanentAddress'] != 'default')
+                            Container(
+                              margin: EdgeInsets.only(top: 24),
+                              child: TextFormField(
+                                controller: _addressController
+                                  ..text = usersnap['permanentAddress'],
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16),
+                                decoration: new InputDecoration(
+                                  prefixIcon: Icon(Icons.pin_drop),
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(5.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(5.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  filled: true,
+                                  contentPadding: EdgeInsets.only(
+                                      bottom: 10.0, left: 10.0, right: 10.0),
+                                  labelText: 'Address',
+                                ),
+                              ),
+                            ),
+                          if (usersnap['alternatePhoneNumber'] != 'default')
+                            Container(
+                              margin: EdgeInsets.only(top: 24),
+                              child: TextFormField(
+                                controller: _alternatePhoneController
+                                  ..text = usersnap['alternatePhoneNumber'],
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: <TextInputFormatter>[
+                                  WhitelistingTextInputFormatter.digitsOnly
+                                ],
+                                maxLength: 10,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16),
+                                decoration: new InputDecoration(
+                                  prefixIcon: Icon(Icons.phone),
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(5.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(5.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  filled: true,
+                                  contentPadding: EdgeInsets.only(
+                                      bottom: 10.0, left: 10.0, right: 10.0),
+                                  labelText: 'Alternate Phone',
+                                ),
+                              ),
+                            ),
+                          if (usersnap['gender'] != 'default')
+                            Container(
+                              margin: EdgeInsets.only(top: 24, bottom: 24),
+                              child: DropdownButtonFormField(
+                                  value: usersnap['gender'],
+                                  decoration: InputDecoration(
+                                    labelText: 'Gender',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      color: Colors.blueAccent,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      letterSpacing: 1.0,
+                                    ),
+                                    fillColor: Colors.grey.shade200,
+                                    filled: true,
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  isExpanded: true,
+                                  iconEnabledColor: Colors.grey,
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 16),
+                                  iconSize: 30,
+                                  elevation: 0,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      genderValue = newValue;
+                                    });
+                                  },
+                                  items: <String>['Male', 'Female', 'default']
+                                      .map<DropdownMenuItem<String>>((e) {
+                                    return DropdownMenuItem<String>(
+                                        value: e,
+                                        child: Text(
+                                          e.toString(),
+                                          style: TextStyle(color: Colors.black),
+                                        ));
+                                  }).toList()),
+                            ),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 32,
+                            child: RaisedButton(
+                              color: Colors.blueAccent,
+                              onPressed: () async {
+                                if (mounted) {
+                                  state(() {
+                                    loading = true;
+                                  });
+                                }
+                                if (_alternatePhoneController.text.isNotEmpty &&
+                                    _alternatePhoneController.text.length ==
+                                        10 &&
+                                    _alternatePhoneController.text !=
+                                        usersnap['alternatePhoneNumber']) {
+                                  await firestore
+                                      .collection('customers')
+                                      .document(widget.uid)
+                                      .updateData({
+                                    "alternatePhoneNumber":
+                                        _alternatePhoneController.text
+                                  });
+                                }
+
+                                if (_addressController.text.isNotEmpty &&
+                                    _addressController.text !=
+                                        usersnap['permanentAdress']) {
+                                  await firestore
+                                      .collection('customers')
+                                      .document(widget.uid)
+                                      .updateData({
+                                    "permanentAddress": _addressController.text
+                                  });
+                                }
+
+                                if (_addressController.text !=
+                                    usersnap['gender']) {
+                                  await firestore
+                                      .collection('customers')
+                                      .document(widget.uid)
+                                      .updateData({"gender": genderValue});
+                                }
+
+                                if (_nameController.text.isNotEmpty &&
+                                    _nameController.text != usersnap['name']) {
+                                  await firestore
+                                      .collection('customers')
+                                      .document(widget.uid)
+                                      .updateData({
+                                    "name": _nameController.text.toLowerCase()
+                                  });
+                                  await firestore
+                                      .collection('customers')
+                                      .document(widget.uid)
+                                      .updateData(
+                                          {"search_list": FieldValue.delete()});
+                                  await firestore
+                                      .collection('customers')
+                                      .document(widget.uid)
+                                      .updateData({
+                                    "search_list": getNameSearchList(
+                                        _nameController.text
+                                            .trim()
+                                            .toLowerCase())
+                                  });
+                                }
+                                if (mounted) {
+                                  state(() {
+                                    loading = false;
+                                  });
+                                }
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Done',
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
             },
           );
         });
@@ -738,6 +784,16 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
     );
+  }
+
+  getNameSearchList(String name) {
+    List<String> nameSearchList = List();
+    String temp = "";
+    for (int i = 0; i < name.length; i++) {
+      temp = temp + name[i];
+      nameSearchList.add(temp);
+    }
+    return nameSearchList;
   }
 
   handleSetState() => (mounted) ? setState(() {}) : null;

@@ -74,8 +74,7 @@ class _UserDetailsState extends State<UserDetails> {
           'permanentAddress': 'default',
           'location': _loc,
           'search': _search,
-          'nameSearchList':
-              getNameSearchList(_nameController.text.toLowerCase()),
+          'search_list': getNameSearchList(_nameController.text.toLowerCase()),
           'timestamp': DateTime.now().millisecondsSinceEpoch.toString()
         });
         FirebaseMessaging().subscribeToTopic(widget.uid);
