@@ -154,10 +154,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 SizedBox(height: 30),
                 utils.drawerTile(
                   label: 'Edit Profile',
-                  onTap: () =>
-                      changeScreen(EditProfile(
-                        uid: userSnap.documentID,
-                      )),
+                  onTap: () => changeScreen(EditProfile(
+                    uid: userSnap.documentID,
+                  )),
                 ),
                 utils.drawerTile(
                   label: 'Booked Items',
@@ -174,7 +173,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Share.share('TODO APP LINK & Description',
                           subject: 'Share to friend',
                           sharePositionOrigin:
-                          box.globalToLocal(Offset.zero) & box.size);
+                              box.globalToLocal(Offset.zero) & box.size);
                     }),
                 utils.drawerTile(
                   label: 'Logout',
@@ -198,7 +197,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   handleState();
                                   try {
                                     SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
+                                        await SharedPreferences.getInstance();
                                     if (!prefs.getBool("subscribed")) {
                                       FirebaseMessaging().unsubscribeFromTopic(
                                           userSnap.documentID);
@@ -228,22 +227,22 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             stream: firestore
                 .collection('products')
                 .where('category.category',
-                isEqualTo: userSnap.data['search']['category'] == 'default'
-                    ? null
-                    : userSnap.data['search']['category'])
+                    isEqualTo: userSnap.data['search']['category'] == 'default'
+                        ? null
+                        : userSnap.data['search']['category'])
                 .where('category.subCategory',
-                isEqualTo:
-                userSnap.data['search']['subCategory'] == 'default'
-                    ? null
-                    : userSnap.data['search']['subCategory'])
+                    isEqualTo:
+                        userSnap.data['search']['subCategory'] == 'default'
+                            ? null
+                            : userSnap.data['search']['subCategory'])
                 .where('location.state',
-                isEqualTo: userSnap.data['search']['state'] == 'default'
-                    ? null
-                    : userSnap.data['search']['state'])
+                    isEqualTo: userSnap.data['search']['state'] == 'default'
+                        ? null
+                        : userSnap.data['search']['state'])
                 .where('location.area',
-                isEqualTo: userSnap.data['search']['area'] == 'default'
-                    ? null
-                    : userSnap.data['search']['area'])
+                    isEqualTo: userSnap.data['search']['area'] == 'default'
+                        ? null
+                        : userSnap.data['search']['area'])
                 .snapshots(),
             builder: (context, productsnap) {
               if (productsnap.documents.length == 0) {
@@ -274,7 +273,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             symbolAndNumberSeparator: " ",
                           ),
                           amount: double.parse(productsnap.documents[index]
-                          ['price']
+                                  ['price']
                               .toString()
                               .replaceAll(",", "")),
                         );
@@ -287,8 +286,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) =>
-                                          ProductInfo(
+                                      builder: (_) => ProductInfo(
                                             docId: productsnap
                                                 .documents[index].documentID,
                                           )));
@@ -320,7 +318,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                     ),
                                     Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         ListTile(
                                           title: Text(
@@ -331,7 +329,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                           ),
                                           subtitle: Text(
                                             productsnap.documents[index]
-                                            ['description'],
+                                                ['description'],
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -344,18 +342,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                                 handleState();
                                               },
                                               icon: interestSet.contains(
-                                                  productsnap
-                                                      .documents[index]
-                                                      .documentID)
+                                                      productsnap
+                                                          .documents[index]
+                                                          .documentID)
                                                   ? Icon(
-                                                Icons.favorite,
-                                                color: Colors.red[800],
-                                              )
+                                                      Icons.favorite,
+                                                      color: Colors.red[800],
+                                                    )
                                                   : Icon(
-                                                  Icons.favorite_border)),
+                                                      Icons.favorite_border)),
                                           title: Text(
-                                            '${fmf.output.compactSymbolOnRight
-                                                .toString()}',
+                                            '${fmf.output.compactSymbolOnRight.toString()}',
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         )
