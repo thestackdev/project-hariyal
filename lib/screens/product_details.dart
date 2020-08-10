@@ -137,137 +137,141 @@ class _ProductDetailsState extends State<ProductDetails>
           .document(snapshot['address'])
           .snapshots(),
       builder: (context, addressSnap) {
-        return Container(
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2.3,
-                    child: Text('Category', style: TextStyle(fontSize: 18)),
-                  ),
-                  Expanded(
-                    child: SelectableText(
-                        utils.camelCase(snapshot['category']['category']),
-                        style: TextStyle(fontSize: 18)),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2.3,
-                    child:
-                        Text('Showroom Name', style: TextStyle(fontSize: 18)),
-                  ),
-                  Expanded(
-                    child: SelectableText(utils.camelCase(addressSnap['name']),
-                        style: TextStyle(fontSize: 18)),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2.3,
-                    child:
-                        Text('Available Area', style: TextStyle(fontSize: 18)),
-                  ),
-                  Expanded(
-                    child: SelectableText(utils.camelCase(addressSnap['area']),
-                        style: TextStyle(fontSize: 18)),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2.3,
-                    child:
-                        Text('Available State', style: TextStyle(fontSize: 18)),
-                  ),
-                  Expanded(
-                    child: SelectableText(utils.camelCase(addressSnap['state']),
-                        style: TextStyle(fontSize: 18)),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2.3,
-                    child: Text('Showroom Address',
-                        style: TextStyle(fontSize: 18)),
-                  ),
-                  Expanded(
-                    child: SelectableText(
-                      utils.camelCase(addressSnap['address']),
-                      style: TextStyle(fontSize: 18),
+        if (addressSnap != null && addressSnap.exists) {
+          return Container(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child: Text('Category', style: TextStyle(fontSize: 18)),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black87),
-                    borderRadius: BorderRadius.all(Radius.circular(6))),
-                width: MediaQuery.of(context).size.width,
-                child: FlatButton.icon(
-                  icon: Icon(
-                    Icons.call,
-                    color: Colors.black,
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                  onPressed: () {
-                    //login();
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(6.0),
+                    Expanded(
+                      child: SelectableText(
+                          utils.camelCase(snapshot['category']['category']),
+                          style: TextStyle(fontSize: 18)),
                     ),
-                  ),
-                  label: Text(
-                    'Call Showroom',
-                    style: TextStyle(color: Colors.black, fontSize: 20),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child:
+                          Text('Showroom Name', style: TextStyle(fontSize: 18)),
+                    ),
+                    Expanded(
+                      child: SelectableText(
+                          utils.camelCase(addressSnap['name']),
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child: Text('Available Area',
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                    Expanded(
+                      child: SelectableText(
+                          utils.camelCase(addressSnap['area']),
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child: Text('Available State',
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                    Expanded(
+                      child: SelectableText(
+                          utils.camelCase(addressSnap['state']),
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child: Text('Showroom Address',
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                    Expanded(
+                      child: SelectableText(
+                        utils.camelCase(addressSnap['address']),
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black87),
+                      borderRadius: BorderRadius.all(Radius.circular(6))),
+                  width: MediaQuery.of(context).size.width,
+                  child: FlatButton.icon(
+                    icon: Icon(
+                      Icons.call,
+                      color: Colors.black,
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                    onPressed: () {
+                      //login();
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(6.0),
+                      ),
+                    ),
+                    label: Text(
+                      'Call Showroom',
+                      style: TextStyle(color: Colors.black, fontSize: 20),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                child: RaisedButton.icon(
-                  icon: Icon(
-                    Icons.location_on,
-                    color: Colors.white,
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                  color: Colors.blueAccent[400],
-                  onPressed: () async {
-                    final availableMaps = await MapLauncher.installedMaps;
-                    await availableMaps.first.showMarker(
-                      coords: Coords(double.parse(snapshot['latitude']),
-                          double.parse(snapshot['longitude'])),
-                      title: "Ocean Beach",
-                    );
-                    /*if (await MapLauncher.isMapAvailable(MapType.google)) {
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: RaisedButton.icon(
+                    icon: Icon(
+                      Icons.location_on,
+                      color: Colors.white,
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                    color: Colors.blueAccent[400],
+                    onPressed: () async {
+                      final availableMaps = await MapLauncher.installedMaps;
+                      await availableMaps.first.showMarker(
+                        coords: Coords(double.parse(snapshot['latitude']),
+                            double.parse(snapshot['longitude'])),
+                        title: "Ocean Beach",
+                      );
+                      /*if (await MapLauncher.isMapAvailable(MapType.google)) {
                       await MapLauncher.showMarker(
                         mapType: MapType.google,
                         coords: Coords(double.parse(snapshot['latitude']),
@@ -276,22 +280,25 @@ class _ProductDetailsState extends State<ProductDetails>
                         description: 'Showroom Address',
                       );
                     }*/
-                  },
-                  elevation: 12,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(6.0),
+                    },
+                    elevation: 12,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(6.0),
+                      ),
+                    ),
+                    label: Text(
+                      'View showroom in maps',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ),
-                  label: Text(
-                    'View showroom in maps',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
                 ),
-              ),
-            ],
-          ),
-        );
+              ],
+            ),
+          );
+        } else {
+          return Utils().nullWidget('Something went wrong');
+        }
       },
     );
   }
