@@ -85,7 +85,7 @@ class _UserDetailsState extends State<UserDetails> {
             .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
       } else {
         setLoading(false);
-        Utils().toast(context, 'E-mail already in use by another user');
+        Utils().toast('E-mail already in use by another user');
       }
     });
   }
@@ -112,11 +112,10 @@ class _UserDetailsState extends State<UserDetails> {
         return;
       }
       if (error != null)
-        Utils().toast(context, error,
-            bgColor: Colors.red[800], textColor: Colors.white);
+        Utils().toast(error, bgColor: Colors.red[800], textColor: Colors.white);
       myLocation = null;
     } catch (e) {
-      Utils().toast(context, e.toString(),
+      Utils().toast(e.toString(),
           bgColor: Colors.red[800], textColor: Colors.white);
       myLocation = null;
     }
@@ -146,13 +145,13 @@ class _UserDetailsState extends State<UserDetails> {
 
   void next() async {
     if (_nameController.text.isEmpty) {
-      Utils().toast(context, 'Enter valid name');
+      Utils().toast('Enter valid name');
       return;
     }
     if (_emailController.text.isEmpty ||
         !_emailController.text.endsWith('.com') ||
         !_emailController.text.contains('@')) {
-      Utils().toast(context, 'Enter valid e-mail');
+      Utils().toast('Enter valid e-mail');
       return;
     }
 

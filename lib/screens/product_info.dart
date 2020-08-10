@@ -193,10 +193,15 @@ class _ProductInfoState extends State<ProductInfo> {
                                         Navigator.of(context)
                                             .push(MaterialPageRoute(
                                           builder: (_) => CheckOut(
-                                            pid: widget.docId,
-                                            uid: usersnap.documentID,
-                                            name: usersnap.data['name'],
-                                            phone: usersnap.data['phone'],
+                                            info: {
+                                              'pid': widget.docId,
+                                              'uid': usersnap.documentID,
+                                              'name': usersnap.data['name'],
+                                              'phone': usersnap.data['phone'],
+                                              'email': usersnap.data['email'],
+                                              'address': usersnap
+                                                  .data['permanentAddress']
+                                            },
                                           ),
                                         ));
                                       },
