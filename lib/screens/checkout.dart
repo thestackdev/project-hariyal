@@ -265,16 +265,16 @@ class _CheckOutState extends State<CheckOut> {
                               padding: EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(0),
-                                            topRight: Radius.circular(0),
-                                            bottomLeft: Radius.circular(12),
-                                            bottomRight: Radius.circular(0)),
-                                        color: Colors.black26),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
+                                      topLeft: Radius.circular(0),
+                                      topRight: Radius.circular(0),
+                                      bottomLeft: Radius.circular(12),
+                                      bottomRight: Radius.circular(0)),
+                                  color: Colors.black26),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.black87,
+                              ),
+                            ),
                                 ),
                               )
                             ],
