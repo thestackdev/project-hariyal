@@ -28,7 +28,7 @@ class _EditProfileState extends State<EditProfile> {
   final picker = ImagePicker();
 
   String img =
-      'https://firebasestorage.googleapis.com/v0/b/the-hariyal.appspot.com/o/customer_profile_pics%2Fgreen_pigeon_image.jpg?alt=media&token=74088da5-fabd-4107-80ad-1a6c8ce63946';
+      'https://firebasestorage.googleapis.com/v0/b/the-hariyal.appspot.com/o/customer_profile_pics%2Fgreen_pigeon_image.jpg?alt=media&token=533f37ea-e69f-42e1-9664-8c24f0d17500';
 
   @override
   void initState() {
