@@ -76,10 +76,9 @@ class OrderDetails extends StatelessWidget {
                       style: TextStyle(fontSize: 18, color: Colors.grey[800]),
                     ),
                   ),
-                  Container(
+                  Flexible(
                     child: Text(
                       oSnap.data.documentID,
-                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 18, color: Colors.black),
                     ),
                   )
@@ -120,10 +119,9 @@ class OrderDetails extends StatelessWidget {
                       style: TextStyle(fontSize: 18, color: Colors.grey[800]),
                     ),
                   ),
-                  Container(
+                  Flexible(
                     child: Text(
-                      oSnap.data.documentID,
-                      overflow: TextOverflow.ellipsis,
+                      '${oSnap.data['amount'].toString()} Rs.',
                       style: TextStyle(fontSize: 18, color: Colors.black),
                     ),
                   )

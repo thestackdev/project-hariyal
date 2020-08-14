@@ -26,7 +26,7 @@ class BookedItems extends StatelessWidget {
             return snap == null
                 ? utils.loadingIndicator()
                 : snap.hasData
-                    ? snap.data.documents.length <= 1
+                    ? snap.data.documents.length >= 0
                         ? buildUI(streamContext, snap)
                         : noItems()
                     : utils.loadingIndicator();
