@@ -114,342 +114,332 @@ class _CheckOutState extends State<CheckOut> {
     totalAmount = productSnap.data.data['price'];
 
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      margin: EdgeInsets.all(12),
-      child: Stack(
-        children: <Widget>[
-          SingleChildScrollView(
-            child: Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height - 50,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 20,
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        child: PNetworkImage(
-                          productSnap.data.data['images'][0],
-                          fit: BoxFit.fitWidth,
-                          width: 80,
-                          height: 80,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            Utils().camelCase(productSnap.data.data['title']),
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            '${totalAmount.toString()} Rs',
-                            style: TextStyle(
-                                fontSize: 20, color: Colors.grey[700]),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    'User Info',
-                    style: TextStyle(fontSize: 21),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.all(0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(6)),
-                      border: Border.all(color: Colors.grey[700]),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.all(12),
+        child: Stack(
+          children: <Widget>[
+            SingleChildScrollView(
+              child: Container(
+                height: MediaQuery.of(context).size.height - 50,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 10,
                     ),
-                    child: Stack(
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(utils.camelCase(name),
-                                  style: TextStyle(fontSize: 18)),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Text(phone, style: TextStyle(fontSize: 18))
-                            ],
-                          ),
+                        SizedBox(
+                          width: 20,
                         ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              edit(context, EditType.UserInfo);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(0),
-                                      topRight: Radius.circular(0),
-                                      bottomLeft: Radius.circular(12),
-                                      bottomRight: Radius.circular(0)),
-                                  color: Colors.black26),
-                              child: Icon(
-                                Icons.edit,
-                                color: Colors.black87,
-                              ),
-                            ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          child: PNetworkImage(
+                            productSnap.data.data['images'][0],
+                            fit: BoxFit.fitWidth,
+                            width: 80,
+                            height: 80,
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    'Address',
-                    style: TextStyle(fontSize: 21),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(6)),
-                      border: Border.all(color: Colors.grey[700]),
-                    ),
-                    child: address != 'default'
-                        ? Stack(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.all(12),
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          child: Text(
-                            '$name, $address',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              edit(context, EditType.Address);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(0),
-                                      topRight: Radius.circular(0),
-                                      bottomLeft: Radius.circular(12),
-                                      bottomRight: Radius.circular(0)),
-                                  color: Colors.black26),
-                              child: Icon(
-                                Icons.edit,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                        : Container(
-                      child: FlatButton(
-                        onPressed: () {
-                          edit(context, EditType.Address);
-                        },
-                        child: Text('Add New Address',
-                            style: TextStyle(fontSize: 18)),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    'Total',
-                    style: TextStyle(fontSize: 21),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(12),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(6)),
-                        border: Border.all(color: Colors.grey)),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: [
-                            Text(
-                              'C-GST',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.start,
-                            ),
-                            Spacer(),
-                            Text(
-                              '0 Rs.',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.end,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              'S-GST',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.start,
-                            ),
-                            Spacer(),
-                            Text(
-                              '0 Rs.',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.end,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              'Product Price',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.start,
-                            ),
-                            Spacer(),
-                            Text(
-                              '${productSnap.data.data['price'].toString()} Rs.',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.end,
-                            ),
-                          ],
                         ),
                         SizedBox(
-                          height: 20,
+                          width: 20,
                         ),
-                        Row(
-                          children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
                             Text(
-                              'Total',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.start,
+                              Utils().camelCase(productSnap.data.data['title']),
+                              style: TextStyle(fontSize: 20),
                             ),
-                            Spacer(),
+                            SizedBox(
+                              height: 10,
+                            ),
                             Text(
-                              '${totalAmount.toString()} Rs.',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.end,
+                              '${totalAmount.toString()} Rs',
+                              style: TextStyle(
+                                  fontSize: 20, color: Colors.grey[700]),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Text(
+                      'User Info',
+                      style: TextStyle(fontSize: 21),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.all(0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                        border: Border.all(color: Colors.grey[700]),
+                      ),
+                      child: Stack(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(utils.camelCase(name),
+                                    style: TextStyle(fontSize: 18)),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(phone, style: TextStyle(fontSize: 18))
+                              ],
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: GestureDetector(
+                              onTap: () {
+                                edit(context, EditType.UserInfo);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(0),
+                                        topRight: Radius.circular(0),
+                                        bottomLeft: Radius.circular(12),
+                                        bottomRight: Radius.circular(0)),
+                                    color: Colors.black26),
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Text(
+                      'Address',
+                      style: TextStyle(fontSize: 21),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                        border: Border.all(color: Colors.grey[700]),
+                      ),
+                      child: address != 'default'
+                          ? Stack(
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.all(12),
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.2,
+                                  child: Text(
+                                    '$name, $address',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      edit(context, EditType.Address);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(0),
+                                              topRight: Radius.circular(0),
+                                              bottomLeft: Radius.circular(12),
+                                              bottomRight: Radius.circular(0)),
+                                          color: Colors.black26),
+                                      child: Icon(
+                                        Icons.edit,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : Container(
+                              child: FlatButton(
+                                onPressed: () {
+                                  edit(context, EditType.Address);
+                                },
+                                child: Text('Add New Address',
+                                    style: TextStyle(fontSize: 18)),
+                              ),
+                            ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Text(
+                      'Total',
+                      style: TextStyle(fontSize: 21),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(6)),
+                          border: Border.all(color: Colors.grey)),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: [
+                              Text(
+                                'C-GST',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.start,
+                              ),
+                              Spacer(),
+                              Text(
+                                '0 Rs.',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.end,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'S-GST',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.start,
+                              ),
+                              Spacer(),
+                              Text(
+                                '0 Rs.',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.end,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'Product Price',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.start,
+                              ),
+                              Spacer(),
+                              Text(
+                                '${productSnap.data.data['price'].toString()} Rs.',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.end,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'Total',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.start,
+                              ),
+                              Spacer(),
+                              Text(
+                                '${totalAmount.toString()} Rs.',
+                                style: TextStyle(fontSize: 18),
+                                textAlign: TextAlign.end,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: RaisedButton(
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                color: Colors.blueAccent[400],
-                onPressed: () {
-                  if (name == null || name.isEmpty || name
-                      .trim()
-                      .length <= 3) {
-                    utils.toast('Add Proper Name', bgColor: Colors.red[800]);
-                    return;
-                  }
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: RaisedButton(
+                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                  color: Colors.blueAccent[400],
+                  onPressed: () {
+                    if (name == null ||
+                        name.isEmpty ||
+                        name.trim().length <= 3) {
+                      utils.toast('Add Proper Name', bgColor: Colors.red[800]);
+                      return;
+                    }
 
-                  if (phone == null ||
-                      phone.isEmpty ||
-                      phone
-                          .trim()
-                          .length <= 3) {
-                    utils.toast('Add Proper Phone Number',
-                        bgColor: Colors.red[800]);
-                    return;
-                  }
+                    if (phone == null ||
+                        phone.isEmpty ||
+                        phone.trim().length <= 3) {
+                      utils.toast('Add Proper Phone Number',
+                          bgColor: Colors.red[800]);
+                      return;
+                    }
 
-                  if (address == null ||
-                      address.isEmpty ||
-                      address
-                          .trim()
-                          .length < 10) {
-                    utils.toast('Select Proper Address',
-                        bgColor: Colors.red[800]);
-                    return;
-                  }
+                    if (address == null ||
+                        address.isEmpty ||
+                        address.trim().length < 10) {
+                      utils.toast('Select Proper Address',
+                          bgColor: Colors.red[800]);
+                      return;
+                    }
 
-                  var options = {
-                    'key': 'rzp_test_xRqW3eFH7qCf8l',
-                    'amount':
-                    num.parse(productSnap.data.data['price'].toString()) *
-                        100,
-                    'name': utils.camelCase(name),
-                    'description':
-                    utils.camelCase(productSnap.data.data['title']),
-                    'prefill': {'contact': phone, 'email': widget.info['email']}
-                  };
+                    var options = {
+                      'key': 'rzp_test_xRqW3eFH7qCf8l',
+                      'amount':
+                          num.parse(productSnap.data.data['price'].toString()) *
+                              100,
+                      'name': utils.camelCase(name),
+                      'description':
+                          utils.camelCase(productSnap.data.data['title']),
+                      'prefill': {
+                        'contact': phone,
+                        'email': widget.info['email']
+                      }
+                    };
 
-                  try {
-                    razorpay.open(options);
-                  } catch (e) {
-                    debugPrint(e);
-                  }
-                },
-                elevation: 12,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(40.0),
+                    try {
+                      razorpay.open(options);
+                    } catch (e) {
+                      debugPrint(e);
+                    }
+                  },
+                  elevation: 12,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(40.0),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Proceed to payment ',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  child: Text(
+                    'Proceed to payment ',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ));
   }
 
   void edit(BuildContext context, editType) {
@@ -562,17 +552,13 @@ class _CheckOutState extends State<CheckOut> {
                         onPressed: () {
                           if (editType == EditType.Address) {
                             if (_addressController.text.trim() != address &&
-                                _addressController.text
-                                    .trim()
-                                    .length >= 10) {
+                                _addressController.text.trim().length >= 10) {
                               address = _addressController.text.toLowerCase();
                             }
                           }
                           if (editType == EditType.UserInfo) {
                             if (_phoneController.text.trim() != phone &&
-                                _phoneController.text
-                                    .trim()
-                                    .length == 10) {
+                                _phoneController.text.trim().length == 10) {
                               phone = _phoneController.text;
                             }
                             if (_nameController.text != name &&
