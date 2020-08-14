@@ -65,7 +65,7 @@ class Utils {
   }
 
   Widget errorWidget(String error) {
-    if (error == null)
+    if (error == null || error.isEmpty)
       error = 'Something wen\'t wrong, try restarting app or contact developer';
     else
       error =

@@ -157,7 +157,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               ),
               utils.drawerTile(
                 label: 'Booked Items',
-                onTap: () => changeScreen(BookedItems()),
+                onTap: () => changeScreen(BookedItems(userSnap.documentID)),
               ),
               utils.drawerTile(
                 label: 'Interested Items',

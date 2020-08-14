@@ -28,6 +28,8 @@ class _CheckOutState extends State<CheckOut> {
   dynamic name, phone, uid, pid, address;
   Razorpay razorpay;
 
+  double totalAmount = 0;
+
   _CheckOutState({this.name, this.phone, this.uid, this.pid, this.address});
 
   @override
@@ -58,7 +60,9 @@ class _CheckOutState extends State<CheckOut> {
       'status': status,
       'reason': errorReason,
       'payment_id': paymentId,
-      'timeStamp': DateTime.now().millisecondsSinceEpoch.toString()
+      'timeStamp': DateTime.now().millisecondsSinceEpoch.toInt(),
+      'amount': totalAmount,
+      'oStatus': 0
     };
   }
 
@@ -89,7 +93,9 @@ class _CheckOutState extends State<CheckOut> {
   Widget build(BuildContext context) {
     try {
       return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text('Checkout'),
+        ),
         body: StreamBuilder<DocumentSnapshot>(
           stream: firestore.collection('products').document(pid).snapshots(),
           builder: (context, productSnap) {
@@ -105,15 +111,26 @@ class _CheckOutState extends State<CheckOut> {
   }
 
   Widget buildUI(AsyncSnapshot<DocumentSnapshot> productSnap) {
+    totalAmount = productSnap.data.data['price'];
+
     return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       margin: EdgeInsets.all(12),
       child: Stack(
         children: <Widget>[
           SingleChildScrollView(
             child: Container(
-              height: MediaQuery.of(context).size.height - 50,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height - 50,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -150,7 +167,7 @@ class _CheckOutState extends State<CheckOut> {
                             height: 10,
                           ),
                           Text(
-                            '${productSnap.data.data['price']} Rs',
+                            '${totalAmount.toString()} Rs',
                             style: TextStyle(
                                 fontSize: 20, color: Colors.grey[700]),
                           ),
@@ -234,48 +251,48 @@ class _CheckOutState extends State<CheckOut> {
                     ),
                     child: address != 'default'
                         ? Stack(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(12),
-                                width: MediaQuery.of(context).size.width / 1.2,
-                                child: Text(
-                                  '$name, $address',
-                                  style: TextStyle(fontSize: 20),
-                                ),
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.all(12),
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          child: Text(
+                            '$name, $address',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              edit(context, EditType.Address);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(0),
+                                      topRight: Radius.circular(0),
+                                      bottomLeft: Radius.circular(12),
+                                      bottomRight: Radius.circular(0)),
+                                  color: Colors.black26),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.black87,
                               ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    edit(context, EditType.Address);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(0),
-                                            topRight: Radius.circular(0),
-                                            bottomLeft: Radius.circular(12),
-                                            bottomRight: Radius.circular(0)),
-                                        color: Colors.black26),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          )
-                        : Container(
-                            child: FlatButton(
-                              onPressed: () {
-                                edit(context, EditType.Address);
-                              },
-                              child: Text('Add New Address',
-                                  style: TextStyle(fontSize: 18)),
                             ),
                           ),
+                        )
+                      ],
+                    )
+                        : Container(
+                      child: FlatButton(
+                        onPressed: () {
+                          edit(context, EditType.Address);
+                        },
+                        child: Text('Add New Address',
+                            style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
                   ),
                   SizedBox(
                     height: 30,
@@ -352,7 +369,7 @@ class _CheckOutState extends State<CheckOut> {
                             ),
                             Spacer(),
                             Text(
-                              '${productSnap.data.data['price'].toString()} Rs.',
+                              '${totalAmount.toString()} Rs.',
                               style: TextStyle(fontSize: 18),
                               textAlign: TextAlign.end,
                             ),
@@ -373,14 +390,41 @@ class _CheckOutState extends State<CheckOut> {
                 padding: EdgeInsets.symmetric(vertical: 12.0),
                 color: Colors.blueAccent[400],
                 onPressed: () {
+                  if (name == null || name.isEmpty || name
+                      .trim()
+                      .length <= 3) {
+                    utils.toast('Add Proper Name', bgColor: Colors.red[800]);
+                    return;
+                  }
+
+                  if (phone == null ||
+                      phone.isEmpty ||
+                      phone
+                          .trim()
+                          .length <= 3) {
+                    utils.toast('Add Proper Phone Number',
+                        bgColor: Colors.red[800]);
+                    return;
+                  }
+
+                  if (address == null ||
+                      address.isEmpty ||
+                      address
+                          .trim()
+                          .length < 10) {
+                    utils.toast('Select Proper Address',
+                        bgColor: Colors.red[800]);
+                    return;
+                  }
+
                   var options = {
                     'key': 'rzp_test_xRqW3eFH7qCf8l',
                     'amount':
-                        num.parse(productSnap.data.data['price'].toString()) *
-                            100,
+                    num.parse(productSnap.data.data['price'].toString()) *
+                        100,
                     'name': utils.camelCase(name),
                     'description':
-                        utils.camelCase(productSnap.data.data['title']),
+                    utils.camelCase(productSnap.data.data['title']),
                     'prefill': {'contact': phone, 'email': widget.info['email']}
                   };
 
@@ -515,16 +559,20 @@ class _CheckOutState extends State<CheckOut> {
                       width: MediaQuery.of(context).size.width - 32,
                       child: RaisedButton(
                         color: Colors.blueAccent,
-                        onPressed: () async {
+                        onPressed: () {
                           if (editType == EditType.Address) {
                             if (_addressController.text.trim() != address &&
-                                _addressController.text.trim().length >= 10) {
+                                _addressController.text
+                                    .trim()
+                                    .length >= 10) {
                               address = _addressController.text.toLowerCase();
                             }
                           }
                           if (editType == EditType.UserInfo) {
                             if (_phoneController.text.trim() != phone &&
-                                _phoneController.text.trim().length == 10) {
+                                _phoneController.text
+                                    .trim()
+                                    .length == 10) {
                               phone = _phoneController.text;
                             }
                             if (_nameController.text != name &&
@@ -533,6 +581,7 @@ class _CheckOutState extends State<CheckOut> {
                             }
                           }
                           handleState();
+
                           Navigator.of(context).pop();
                         },
                         child: Text(
