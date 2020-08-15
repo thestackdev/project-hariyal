@@ -45,7 +45,7 @@ class _SigninState extends State<Signin> {
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     if (!acceptTermsAndConditions) {
-      Utils().toast(context, 'Accept to terms & conditions to continue');
+      Utils().toast('Accept to terms & conditions to continue');
       return;
     }
 
@@ -61,7 +61,7 @@ class _SigninState extends State<Signin> {
           },
           verificationFailed: (AuthException exception) {
             setLoading(false);
-            Utils().toast(_scaffoldKey.currentContext, exception.message,
+            Utils().toast(exception.message,
                 bgColor: Colors.red[800], textColor: Colors.white);
           },
           codeSent: (String verificationId, [int forceResendingToken]) {
@@ -80,10 +80,10 @@ class _SigninState extends State<Signin> {
       } on PlatformException catch (e) {
         setLoading(false);
         print(e.details);
-        Utils().toast(context, e.message);
+        Utils().toast(e.message);
       } catch (e) {
         setLoading(false);
-        Utils().toast(context, e.toString());
+        Utils().toast(e.toString());
       }
     }
   }
@@ -99,8 +99,7 @@ class _SigninState extends State<Signin> {
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      Utils()
-          .toast(_scaffoldKey.currentContext, 'Wrong Otp', bgColor: Colors.red);
+      Utils().toast('Wrong Otp', bgColor: Colors.red);
     }
   }
 
@@ -325,7 +324,6 @@ class _SigninState extends State<Signin> {
                 onCompleted: (pin) {
                   if (pin.length != 6) {
                     Utils().toast(
-                      _scaffoldKey.currentContext,
                       'Enter valid code',
                     );
                     return;

@@ -18,13 +18,12 @@ class Utils {
     return colors[new Random().nextInt(6)];
   }
 
-  void toast(BuildContext context, String text, {Color bgColor, textColor}) {
+  void toast(String text, {Color bgColor, textColor}) {
     Fluttertoast.showToast(
         msg: text,
         toastLength: Toast.LENGTH_SHORT,
         timeInSecForIosWeb: 1,
-        backgroundColor:
-            bgColor != null ? bgColor : Theme.of(context).accentColor,
+        backgroundColor: bgColor != null ? bgColor : Colors.blue[800],
         textColor: textColor != null ? textColor : Colors.white,
         fontSize: 16.0,
         webPosition: 'center');
@@ -66,7 +65,7 @@ class Utils {
   }
 
   Widget errorWidget(String error) {
-    if (error == null)
+    if (error == null || error.isEmpty)
       error = 'Something wen\'t wrong, try restarting app or contact developer';
     else
       error =

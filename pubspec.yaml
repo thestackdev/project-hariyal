@@ -46,8 +46,8 @@ dependencies:
   flutter_swiper:
   lazy_load_scrollview:
   map_launcher:
-  flutter_upi:
   firebase_messaging:
+  razorpay_flutter:
 
 dev_dependencies:
   flutter_test:
