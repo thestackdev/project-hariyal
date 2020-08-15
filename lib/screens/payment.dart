@@ -53,7 +53,7 @@ class _PaymentState extends State<Payment> {
           return;
         }
         widget.order['status'] == 'SUCCESS'
-            ? Navigator.push(
+            ? Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (_) => Home(),
