@@ -46,144 +46,148 @@ class _PaymentState extends State<Payment> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (isLoading) {
-          Utils().toast('Please wait until payment is completed');
+    try {
+      return WillPopScope(
+        onWillPop: () {
+          if (isLoading) {
+            Utils().toast('Please wait until payment is completed');
+            return;
+          }
+          widget.order['status'] == 'SUCCESS'
+              ? Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => Home(),
+                  ),
+                )
+              : Navigator.of(context).pop(true);
           return;
-        }
-        widget.order['status'] == 'SUCCESS'
-            ? Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => Home(),
+        },
+        child: isLoading
+            ? Container(
+                color: Colors.white,
+                child: SpinKitRing(
+                  color: Theme.of(context).accentColor,
                 ),
               )
-            : Navigator.of(context).pop(true);
-        return;
-      },
-      child: isLoading
-          ? Container(
-              color: Colors.white,
-              child: SpinKitRing(
-                color: Theme.of(context).accentColor,
-              ),
-            )
-          : Scaffold(
-              body: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(100)),
-                              color: Colors.grey[200]),
-                          child: Icon(
-                            widget.order['status'] == 'SUCCESS'
-                                ? Icons.done
-                                : Icons.error_outline,
-                            size: 100,
-                            color: widget.order['status'] == 'SUCCESS'
-                                ? Colors.green[700]
-                                : Colors.red[700],
-                          ),
-                        ),
-                        ListTile(
-                          title: Text(
-                            widget.order['status'] == 'SUCCESS'
-                                ? 'Thank You!'
-                                : 'Failed',
-                            style: TextStyle(
-                                fontSize: 42,
-                                color: Colors.black45,
-                                fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                          subtitle: FittedBox(
-                            child: Text(
+            : Scaffold(
+                body: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 150,
+                            height: 150,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(100)),
+                                color: Colors.grey[200]),
+                            child: Icon(
                               widget.order['status'] == 'SUCCESS'
-                                  ? '\nYour Product is Booked Successfully.'
-                                  : '\nPayment Failed, Please try again or contact support',
+                                  ? Icons.done
+                                  : Icons.error_outline,
+                              size: 100,
+                              color: widget.order['status'] == 'SUCCESS'
+                                  ? Colors.green[700]
+                                  : Colors.red[700],
+                            ),
+                          ),
+                          ListTile(
+                            title: Text(
+                              widget.order['status'] == 'SUCCESS'
+                                  ? 'Thank You!'
+                                  : 'Failed',
                               style: TextStyle(
-                                  color: Colors.black38,
+                                  fontSize: 42,
+                                  color: Colors.black45,
                                   fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),
-                            fit: BoxFit.cover,
+                            subtitle: FittedBox(
+                              child: Text(
+                                widget.order['status'] == 'SUCCESS'
+                                    ? '\nYour Product is Booked Successfully.'
+                                    : '\nPayment Failed, Please try again or contact support',
+                                style: TextStyle(
+                                    color: Colors.black38,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Row(
-                      children: [
-                        if (widget.order['status'] == 'ERROR')
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        children: [
+                          if (widget.order['status'] == 'ERROR')
+                            Container(
+                              width: MediaQuery.of(context).size.width / 2,
+                              padding: EdgeInsets.all(12),
+                              child: RaisedButton(
+                                padding: EdgeInsets.symmetric(vertical: 12.0),
+                                color: Colors.transparent,
+                                onPressed: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(color: Colors.grey),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(6.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Retry',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 20),
+                                ),
+                              ),
+                            ),
                           Container(
-                            width: MediaQuery.of(context).size.width / 2,
+                            width: widget.order['status'] != 'ERROR'
+                                ? MediaQuery.of(context).size.width
+                                : MediaQuery.of(context).size.width / 2,
                             padding: EdgeInsets.all(12),
                             child: RaisedButton(
                               padding: EdgeInsets.symmetric(vertical: 12.0),
-                              color: Colors.transparent,
+                              color: Colors.blueAccent[400],
                               onPressed: () {
-                                Navigator.of(context).pop(true);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => Home(),
+                                  ),
+                                );
                               },
-                              elevation: 0,
+                              elevation: 12,
                               shape: RoundedRectangleBorder(
-                                side: BorderSide(color: Colors.grey),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(6.0),
                                 ),
                               ),
                               child: Text(
-                                'Retry',
+                                'Home',
                                 style: TextStyle(
-                                    color: Colors.black, fontSize: 20),
+                                    color: Colors.white, fontSize: 20),
                               ),
                             ),
                           ),
-                        Container(
-                          width: widget.order['status'] != 'ERROR'
-                              ? MediaQuery.of(context).size.width
-                              : MediaQuery.of(context).size.width / 2,
-                          padding: EdgeInsets.all(12),
-                          child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
-                            color: Colors.blueAccent[400],
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => Home(),
-                                ),
-                              );
-                            },
-                            elevation: 12,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(6.0),
-                              ),
-                            ),
-                            child: Text(
-                              'Home',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-    );
+      );
+    } catch (e) {
+      return Utils().errorWidget(e);
+    }
   }
 }

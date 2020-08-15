@@ -12,28 +12,32 @@ class BookedItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Booked Items'),
-      ),
-      body: SafeArea(
-        child: StreamBuilder(
-          stream: Firestore.instance
-              .collection('orders')
-              .where('uid', isEqualTo: uid)
-              .snapshots(),
-          builder: (streamContext, snap) {
-            return snap == null
-                ? utils.loadingIndicator()
-                : snap.hasData
-                    ? snap.data.documents.length >= 0
-                        ? buildUI(streamContext, snap)
-                        : noItems()
-                    : utils.loadingIndicator();
-          },
+    try {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Booked Items'),
         ),
-      ),
-    );
+        body: SafeArea(
+          child: StreamBuilder(
+            stream: Firestore.instance
+                .collection('orders')
+                .where('uid', isEqualTo: uid)
+                .snapshots(),
+            builder: (streamContext, snap) {
+              return snap == null
+                  ? utils.loadingIndicator()
+                  : snap.hasData
+                      ? snap.data.documents.length >= 0
+                          ? buildUI(streamContext, snap)
+                          : noItems()
+                      : utils.loadingIndicator();
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      return utils.errorWidget(e);
+    }
   }
 
   Widget buildUI(
