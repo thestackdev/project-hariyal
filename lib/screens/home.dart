@@ -160,7 +160,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
                 utils.drawerTile(
                   label: 'Booked Items',
-                  onTap: () => changeScreen(BookedItems()),
+                  onTap: () => changeScreen(BookedItems(userSnap.documentID)),
                 ),
                 utils.drawerTile(
                   label: 'Interested Items',
@@ -381,7 +381,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         currentTime.difference(backPressedTime) > Duration(seconds: 2);
     if (back) {
       backPressedTime = currentTime;
-      Utils().toast(context, 'Click again to exit app');
+      Utils().toast('Click again to exit app');
       return false;
     }
     return true;
