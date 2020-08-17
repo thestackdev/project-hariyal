@@ -48,6 +48,7 @@ dependencies:
   map_launcher:
   firebase_messaging:
   razorpay_flutter:
+  url_launcher:
 
 dev_dependencies:
   flutter_test:

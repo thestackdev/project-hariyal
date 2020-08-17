@@ -4,6 +4,7 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:the_project_hariyal/screens/widgets/network_image.dart';
 import 'package:the_project_hariyal/utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductDetails extends StatefulWidget {
   final pid;
@@ -239,7 +240,9 @@ class _ProductDetailsState extends State<ProductDetails>
                     ),
                     padding: EdgeInsets.symmetric(vertical: 12.0),
                     onPressed: () {
-                      //login();
+                      if (addressSnap.data['contactNumber'] != null ||
+                          addressSnap.data['contactNumber'].lenght == 10)
+                        launch('tel:+91${addressSnap.data['contactNumber']}');
                     },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
@@ -271,15 +274,15 @@ class _ProductDetailsState extends State<ProductDetails>
                             double.parse(snapshot['longitude'])),
                         title: "Ocean Beach",
                       );
-                      /*if (await MapLauncher.isMapAvailable(MapType.google)) {
-                      await MapLauncher.showMarker(
-                        mapType: MapType.google,
-                        coords: Coords(double.parse(snapshot['latitude']),
-                            double.parse(snapshot['longitude'])),
-                        title: addressSnap['name'],
-                        description: 'Showroom Address',
-                      );
-                    }*/
+                      if (await MapLauncher.isMapAvailable(MapType.google)) {
+                        await MapLauncher.showMarker(
+                          mapType: MapType.google,
+                          coords: Coords(double.parse(snapshot['latitude']),
+                              double.parse(snapshot['longitude'])),
+                          title: addressSnap['name'],
+                          description: 'Showroom Address',
+                        );
+                      }
                     },
                     elevation: 12,
                     shape: RoundedRectangleBorder(
