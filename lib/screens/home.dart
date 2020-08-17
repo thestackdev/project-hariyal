@@ -13,7 +13,6 @@ import 'package:the_project_hariyal/screens/filters.dart';
 import 'package:the_project_hariyal/screens/user_detail.dart';
 import 'package:the_project_hariyal/services/auth_services.dart';
 import 'package:the_project_hariyal/utils.dart';
-
 import 'booked_items.dart';
 import 'edit_profile.dart';
 import 'interested_items.dart';
@@ -226,6 +225,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             loadingBuilder: (context) => utils.loadingIndicator(),
             stream: firestore
                 .collection('products')
+                .where('authored', isEqualTo: true)
+                .where('isSold', isEqualTo: false)
+                .where('isDeleted', isEqualTo: false)
                 .where('category.category',
                     isEqualTo: userSnap.data['search']['category'] == 'default'
                         ? null
