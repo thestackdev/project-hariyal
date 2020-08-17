@@ -47,6 +47,9 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+        Date date = new Date()
+        String d = date.format('_ddMMYYYY')
+        setProperty("archivesBaseName", "hariyal_customer_v$versionName$d")
     }
 
     buildTypes {
